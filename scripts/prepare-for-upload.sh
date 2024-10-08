@@ -9,6 +9,6 @@ DST=$2
 rsync \
     -asP \
     --remove-source-files \
-    --exclude "*.hdf5" "*.hf5" \
+    --exclude "*.hdf5" --exclude "*.hf5" \
     $SRC \
     $DST
