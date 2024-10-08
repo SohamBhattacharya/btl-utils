@@ -1,0 +1,25 @@
+*.swp
+.#*
+*__pycache__*
+*.bak
+*.h5
+*.hdf5
+*.pdf
+*.png
+*.pyc
+*.root
+*~
+
+# VScode stuff
+*.code-workspace
+.vscode*
+
+# Other miscellaneous stuff
+*debug*
+*log*
+*temp*
+*tmp*
+
+
+
+
