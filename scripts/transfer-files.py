@@ -65,6 +65,13 @@ def main() :
     )
     
     parser.add_argument(
+        "--sumf",
+        help = "Force checksum creation even if it exists",
+        default = False,
+        action = "store_true",
+    )
+    
+    parser.add_argument(
         "--cmponly",
         help = (
             "Only compare files\n"
@@ -123,14 +130,20 @@ def main() :
             fdetails = get_file_details(f)
             csumfile = f"{fdetails['fname']}.sha512"
             
-            l_cmd = [
-                f"cd {fdetails['fdir']}; sha512sum {fdetails['fbase']} > {csumfile}",
-                f"cd {cwd}"
-            ]
+            if (not os.path.exists(f"{fdetails['fdir']}/{csumfile}") or args.sumf) :
+                
+                l_cmd = [
+                    f"cd {fdetails['fdir']}; sha512sum {fdetails['fbase']} > {csumfile}",
+                    f"cd {cwd}"
+                ]
+                
+                utils.run_cmd_list(l_cmd)
+                
+                print(f"[{ifile+1}/{nfiles}] Produced checksum for file {f}: {fdetails['fdir']}/{csumfile}")
             
-            utils.run_cmd_list(l_cmd)
-            
-            print(f"[{ifile+1}/{nfiles}] Produced checksum for file {f}: {fdetails['fdir']}/{csumfile}")
+            else :
+                
+                print(f"[{ifile+1}/{nfiles}] Skipping file {f}; checksum exists: {fdetails['fdir']}/{csumfile}")
         
         print("Finished producing checksums.")
     
