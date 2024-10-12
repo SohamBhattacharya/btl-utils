@@ -52,7 +52,7 @@ def main() :
     
     parser.add_argument(
         "--destlocal",
-        help = "Destination path mounted locally\n   ",
+        help = "Destination path mounted locally with sshfs\n   ",
         type = str,
         required = False,
     )
@@ -119,7 +119,7 @@ def main() :
         
         if (not os.path.exists(args.destlocal)) :
             
-            print(f"Error: cannot find destlocal: {args.destlocal}")
+            print(f"Error: cannot find <destlocal>: {args.destlocal}")
             exit(1)
         
         partitions = psutil.disk_partitions(all = True)
@@ -143,7 +143,7 @@ def main() :
         
         if (not ismountpoint) :
             
-            print(f"Error: destlocal is not (or, is not inside) a valid mountpoint: {args.destlocal}")
+            print(f"Error: <destlocal> is not (or, is not inside) a valid sshfs mountpoint: {args.destlocal}")
             exit(1)
     
     
@@ -270,8 +270,9 @@ def main() :
         
         if len(l_failed) :
             
-            print(f"Failed {len(l_failed)}/{nfiles} files:")
+            print(f"Failed following files:")
             print("\n".join(l_failed))
+            print(f"Failed {len(l_failed)}/{nfiles} files.")
         
         else :
             
