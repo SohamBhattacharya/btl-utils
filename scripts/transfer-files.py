@@ -3,6 +3,7 @@
 import argparse
 import glob
 import os
+import psutil
 
 import utils
 
@@ -23,18 +24,20 @@ def get_file_details(f) :
         "fext": fext,
     }
 
-# Compute checksums of hdf5 and root file extensions (only)
-# Transfer files
-# Compare checksums of aforementioned extensions (only)
 
 def main() :
+    """
+    Compute checksums of specified file extensions
+    Transfer files
+    Compare checksums of aforementioned extensions (only)
+    """
     
     # Argument parser
-    parser = argparse.ArgumentParser(formatter_class = argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(formatter_class = utils.Formatter)
     
     parser.add_argument(
         "--srcs",
-        help = "Source directory or file",
+        help = "Source directory or file\n   ",
         type = str,
         nargs = "*",
         required = True,
@@ -42,31 +45,37 @@ def main() :
     
     parser.add_argument(
         "--dest",
-        help = (
-            "Destination path (can be remote path like user@host:/path/to/directory); "
-            "can take a dummy string if no copying is required"
-        ),
+        help = "Remote destination path, for e.g. user@host:/path/to/directory/\n   ",
         type = str,
-        required = True,
+        required = False,
     )
     
     parser.add_argument(
         "--destlocal",
-        help = "Destination path mounted locally",
+        help = "Destination path mounted locally\n   ",
         type = str,
-        required = True,
+        required = False,
+    )
+    
+    parser.add_argument(
+        "--exts",
+        help = "Space separated list of extensions to be considered: .ext1 .ext2 ...\n   ",
+        type = str,
+        nargs = "+",
+        required = False,
+        default = [".hdf5", ",hf5"],
     )
     
     parser.add_argument(
         "--sumonly",
-        help = "Only create checksums",
+        help = "Only create checksums\n   ",
         default = False,
         action = "store_true",
     )
     
     parser.add_argument(
         "--sumf",
-        help = "Force checksum creation even if it exists",
+        help = "Force checksum creation even if it exists\n   ",
         default = False,
         action = "store_true",
     )
@@ -76,7 +85,7 @@ def main() :
         help = (
             "Only compare files\n"
             "sum: compare checksums; destination checksum files must exist in <destlocal>\n"
-            "cmp: compare byte by byte"
+            "cmp: compare byte by byte\n   "
         ),
         choices = ["sum", "cmp"],
         #default = "cmp",
@@ -84,12 +93,65 @@ def main() :
     
     # Parse arguments
     args = parser.parse_args()
-    #d_args = vars(args)
+    
+    
+    # Check if remote destination is valid 
+    if (args.dest and (not args.cmponly) and (not args.sumonly)) :
+        
+        dest = args.dest if (":" in args.dest) else f"{args.dest}:/"
+        uhost, destpath = dest.split(":")
+        user, host = uhost.split("@")
+        destpath = destpath if len(destpath) else "/"
+        
+        # Trailing comma after user is necessary to pass an empty password
+        cmd = f"lftp -c \"open -u {user}, sftp://{host}; cd {destpath}\""
+        print(cmd)
+        cmd_retval = os.system(cmd)
+        
+        if (cmd_retval) :
+            
+            print(f"Error: cannot connect or invalid destination path: {args.dest}")
+            exit(cmd_retval)
+    
+    
+    # Check if locally mounted destination is valid
+    if (args.destlocal) :
+        
+        if (not os.path.exists(args.destlocal)) :
+            
+            print(f"Error: cannot find destlocal: {args.destlocal}")
+            exit(1)
+        
+        partitions = psutil.disk_partitions(all = True)
+        # Select the remote partitions mounted using sshfs
+        partitions = [_part for _part in partitions if (part.fstype in ["fuse.sshfs"])]
+        
+        ismountpoint = False
+        destlocal = os.path.abspath(args.destlocal)
+        
+        for part in partitions :
+            
+            if part.fstype != "fuse.sshfs" :
+                
+                continue
+            
+            if destlocal.startswith(part.mountpoint) :
+                
+                ismountpoint = True
+                break
+        
+        
+        if (not ismountpoint) :
+            
+            print(f"Error: destlocal is not (or, is not inside) a valid mountpoint: {args.destlocal}")
+            exit(1)
+    
     
     l_file = []
     l_file_relative = []
-    l_ext = (".hdf5", ".h5", ".root")
     
+    
+    # Get the list of files with specified extensions
     for src in args.srcs :
         
         while "//" in src:
@@ -108,22 +170,24 @@ def main() :
         else :
             
             l_tmp = glob.glob(f"{src}/**", recursive = True)
-            l_tmp = [_f for _f in l_tmp if os.path.isfile(_f) and _f.endswith(l_ext)]
+            l_tmp = [_f for _f in l_tmp if os.path.isfile(_f) and _f.endswith(tuple(args.exts))]
             l_file.extend(l_tmp)
             
-            # If src is a/b, and the file is a/b/c/file.root
-            # Get b/c/file.root, which is the path relative to the destination
+            # If src is a/b, and the file is a/b/c/file.ext
+            # Get b/c/file.ext, which is the path relative to the destination
             srcdir = src.split("/")[-1]
             l_file_relative.extend([f"{srcdir}/{_f[len(src):]}" for _f in l_tmp])
     
     nfiles = len(l_file)
     cwd = os.getcwd()
     
+    
+    # Produce checksums for files with specified extensions
     if ((not args.cmponly) or args.sumonly) :
         
         print("\n")
         print("="*50)
-        print(f"Producing checksums for extensions {', '.join(l_ext)} ...")
+        print(f"Producing checksums for extensions {', '.join(args.exts)} ...")
         
         for ifile, f in enumerate(l_file) :
             
@@ -147,6 +211,8 @@ def main() :
         
         print("Finished producing checksums.")
     
+    
+    # Copy files with specified extensions
     if ((not args.cmponly) and (not args.sumonly)) :
         
         print("\n")
@@ -163,6 +229,8 @@ def main() :
         
         print("Finished copying files.")
     
+    
+    # Check the destination files
     if (not args.sumonly) :
         
         print("\n")

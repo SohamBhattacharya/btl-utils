@@ -1,5 +1,11 @@
+import argparse
 import os
 import re
+
+class Formatter(
+    argparse.ArgumentDefaultsHelpFormatter,
+    argparse.RawTextHelpFormatter
+): pass
 
 def run_cmd_list(l_cmd, debug = False) :
     

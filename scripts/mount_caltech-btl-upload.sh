@@ -40,5 +40,5 @@ elif [ "$OPT" = "0" ]; then
     fi
 else
     echo "Usage: "$(basename "$0")" <OPT>"
-    echo "    OPT = 1/0 for mount/unmount"
+    echo "    <OPT> = 1/0 for mount/unmount"
 fi
