@@ -124,7 +124,7 @@ def main() :
         
         partitions = psutil.disk_partitions(all = True)
         # Select the remote partitions mounted using sshfs
-        partitions = [_part for _part in partitions if (part.fstype in ["fuse.sshfs"])]
+        partitions = [_part for _part in partitions if (_part.fstype in ["fuse.sshfs"])]
         
         ismountpoint = False
         destlocal = os.path.abspath(args.destlocal)
