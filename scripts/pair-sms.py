@@ -8,7 +8,6 @@ import numpy
 import os
 import re
 import ROOT
-import subprocess
 import tqdm
 
 import utils
@@ -46,7 +45,11 @@ def main() :
     
     parser.add_argument(
         "--regexp",
-        help = "Keyed regular expression to extract run and barcode from the file name.\n   ",
+        help = (
+            "Keyed regular expression to extract run and SM barcode from the file name.\n"
+            "Generally the file path has the form run[RUN]/module_[BARCODE]_analysis.root"
+            "\n   "
+        ),
         type = str,
         required = False,
         default = "run(?P<run>\d+)/module_(?P<barcode>\d+)_analysis.root"
@@ -63,7 +66,7 @@ def main() :
     parser.add_argument(
         "--dmyaml",
         help = (
-            "Yaml file with DM information to load. Should be provided if it exists, as it's much faster than querying the database.\n"
+            "Yaml file with DM information to load. Should be provided if it exists, as it is much faster than querying the database.\n"
             "If the provided filename does not exist, it will be created with the information fetched from the database.\n"
             "If the file exists, it will be updated with DM information from the database."
             "\n   "
@@ -74,7 +77,7 @@ def main() :
     
     parser.add_argument(
         "--location",
-        help = "Location ID. CIT = 5023\n   ",
+        help = "Location ID: 5023 for CIT, 5380 for MIB, 3800 for PKU, 1003 for UVA \n   ",
         type = int,
         required = False,
     )
