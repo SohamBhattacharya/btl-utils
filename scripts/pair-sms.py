@@ -24,11 +24,6 @@ class SensorModule :
 
 
 def main() :
-    """
-    Pairs sensor modules with similar light yields for assembling detector modules
-    Needs to communicate with database; before running this script, open a tunnel with:
-    `ssh -L 8113:dbloader-mtd.cern.ch:8113 username@lxplus.cern.ch`
-    """
     
     # Argument parser
     parser = argparse.ArgumentParser(
