@@ -37,9 +37,9 @@ def main() :
     
     parser.add_argument(
         "--srcs",
-        help = "Source directory or file\n   ",
+        help = "Source directories or files\n   ",
         type = str,
-        nargs = "*",
+        nargs = "+",
         required = True,
     )
     
