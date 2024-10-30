@@ -19,7 +19,38 @@ class SensorModule :
     barcode: str = None
     run: int = None
     file: str = None
-    bar_ly_avg: float = None
+    
+    #bar_L_ly: list[float] = None
+    #bar_R_ly: list[float] = None
+    #bar_avg_ly: list[float] = None
+    
+    bar_L_ly: ROOT.TGraph = None
+    bar_R_ly: ROOT.TGraph = None
+    bar_avg_ly: ROOT.TGraph = None
+    
+    bar_L_peak_res: ROOT.TGraph = None
+    bar_R_peak_res: ROOT.TGraph = None
+    bar_avg_peak_res: ROOT.TGraph = None
+    
+    def bar_avg_ly_mean(self) :
+        
+        return self.bar_avg_ly.GetMean(axis = 2)
+    
+    def module_class(self) :
+        
+        module_class = 0
+        
+        #arr_bar_L_peak_res = numpy.array(self.bar_L_peak_res.GetY())
+        #arr_bar_R_peak_res = numpy.array(self.bar_R_peak_res.GetY())
+        
+        arr_bar_avg_peak_res = numpy.array(self.bar_avg_peak_res.GetY())
+        
+        #if (numpy.sum(arr_bar_L_peak_res > 0.045) or numpy.sum(arr_bar_R_peak_res > 0.045)) :
+        if (numpy.sum(arr_bar_avg_peak_res > 0.045)) :
+            
+            module_class = 1
+        
+        return module_class
 
 
 def main() :
@@ -101,6 +132,7 @@ def main() :
     
     d_sms = {}
     l_used_sm_barcodes = []
+    l_skipped_sm_barcodes = []
     
     # Get the list of files with specified extensions
     print(f"Getting list of files from {len(args.srcs)} source(s) ...")
@@ -130,8 +162,8 @@ def main() :
         
         rootfile = ROOT.TFile.Open(fname)
         
-        gr_bar_ly = rootfile.Get("g_avg_light_yield_vs_bar")
-        bar_ly_avg = gr_bar_ly.GetMean(axis = 2)
+        #gr_bar_ly = rootfile.Get("g_avg_light_yield_vs_bar")
+        #bar_avg_ly_mean = gr_bar_ly.GetMean(axis = 2)
         
         # If the SM ID is repeated, only use the latest run
         if (barcode in d_sms and run < d_sms[barcode].run) :
@@ -140,24 +172,40 @@ def main() :
         
         if (args.skip and barcode in args.skip) :
             
+            l_skipped_sm_barcodes.append(barcode)
             continue
         
         if (barcode in l_all_used_sm_barcodes) :
             
             l_used_sm_barcodes.append(barcode)
+            continue
         
         sm_tmp = SensorModule(
             barcode = barcode,
             run = run,
             file = fname,
-            bar_ly_avg = bar_ly_avg
+            
+            bar_L_ly = rootfile.Get("g_L_light_yield_vs_bar"),
+            bar_R_ly = rootfile.Get("g_R_light_yield_vs_bar"),
+            bar_avg_ly = rootfile.Get("g_avg_light_yield_vs_bar"),
+            
+            bar_L_peak_res = rootfile.Get("g_lyso_L_peak_res_vs_bar"),
+            bar_R_peak_res = rootfile.Get("g_lyso_R_peak_res_vs_bar"),
+            bar_avg_peak_res = rootfile.Get("g_avg_lyso_res_vs_bar"),
         )
+        
+        if (sm_tmp.module_class() > 0) :
+            
+            l_skipped_sm_barcodes.append(barcode)
+            continue
         
         d_sms[barcode] = sm_tmp
         
-        #print(f"run: {run}, barcode: {barcode}, {bar_ly_avg}")
+        #print(f"run: {run}, barcode: {barcode}, {bar_avg_ly_mean()}")
+        
+        rootfile.Close()
     
-    l_sms_sorted = sorted(d_sms.values(), key = lambda _x: _x.bar_ly_avg)
+    l_sms_sorted = sorted(d_sms.values(), key = lambda _x: _x.bar_avg_ly_mean())
     n_sms = len(l_sms_sorted)
     
     print()
@@ -187,25 +235,31 @@ def main() :
         print(f"{pair[0].barcode} , {pair[1].barcode}")
     
     print()
-    print(f"Paired SM details:")
+    print("Paired SM details:")
     for ipair, pair in enumerate(l_paired_sms) :
         
         sm1 = pair[0]
         sm2 = pair[1]
         
-        ly_asym = 100 * abs(sm1.bar_ly_avg-sm2.bar_ly_avg)/numpy.mean([sm1.bar_ly_avg, sm2.bar_ly_avg])
+        ly_asym = 100 * abs(sm1.bar_avg_ly_mean()-sm2.bar_avg_ly_mean())/numpy.mean([sm1.bar_avg_ly_mean(), sm2.bar_avg_ly_mean()])
         
         print()
         print(f"Pair {ipair+1}:")
-        print(f"    SM 1: Barcode = {sm1.barcode} , <Bar LY> = {sm1.bar_ly_avg:0.2f}, Run = {sm1.run}")
-        print(f"    SM 2: Barcode = {sm2.barcode} , <Bar LY> = {sm2.bar_ly_avg:0.2f}, Run = {sm2.run}")
+        print(f"    SM 1: Barcode = {sm1.barcode} , <Bar LY> = {sm1.bar_avg_ly_mean():0.2f}, Run = {sm1.run}")
+        print(f"    SM 2: Barcode = {sm2.barcode} , <Bar LY> = {sm2.bar_avg_ly_mean():0.2f}, Run = {sm2.run}")
         print(f"    <bar LY> asymmetry = {ly_asym:0.2f} %")
     
     print()
     print(f"{len(l_unpaired_sms)} unpaired SMs:")
     for sm in l_unpaired_sms :
         
-        print(f"Barcode = {sm.barcode} , <Bar LY> = {sm.bar_ly_avg:0.2f} , Run = {sm.run}")
+        print(f"Barcode = {sm.barcode} , <Bar LY> = {sm.bar_avg_ly_mean():0.2f} , Run = {sm.run}")
+    
+    print()
+    print(f"{len(l_skipped_sm_barcodes)} skipped SMs (failed QA/QC criteria). Barcodes:")
+    for barcode in l_skipped_sm_barcodes :
+        
+        print(f"{barcode}")
     
     print()
     print(f"{len(l_used_sm_barcodes)} skipped SMs (already used in DMs). Barcodes:")
