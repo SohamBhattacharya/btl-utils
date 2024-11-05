@@ -38,15 +38,26 @@ class SensorModule :
     
     def module_class(self) :
         
+        max_res = 0.045
+        min_ch_ly = 0.85 * 3200
+        min_bar_ly = 0.9 * 3200
+        
         module_class = 0
         
         #arr_bar_L_peak_res = numpy.array(self.bar_L_peak_res.GetY())
         #arr_bar_R_peak_res = numpy.array(self.bar_R_peak_res.GetY())
         
         arr_bar_avg_peak_res = numpy.array(self.bar_avg_peak_res.GetY())
+        arr_bar_L_ly  = numpy.array(self.bar_L_ly.GetY())
+        arr_bar_R_ly  = numpy.array(self.bar_R_ly.GetY())
+        arr_bar_avg_ly = numpy.array(self.bar_R_ly.GetY())
         
-        #if (numpy.sum(arr_bar_L_peak_res > 0.045) or numpy.sum(arr_bar_R_peak_res > 0.045)) :
-        if (numpy.sum(arr_bar_avg_peak_res > 0.045)) :
+        if (
+            numpy.sum(arr_bar_avg_peak_res > max_res) or
+            numpy.sum(arr_bar_L_ly < min_ch_ly) or
+            numpy.sum(arr_bar_R_ly < min_ch_ly) or
+            numpy.sum(arr_bar_avg_ly < min_bar_ly)
+            ) :
             
             module_class = 1
         
@@ -61,7 +72,7 @@ def main() :
         description = "Pairs sensor modules with similar light yields for assembling detector modules",
         epilog = (
             "Needs to communicate with database; before running this script, open a tunnel with:\n"
-            "ssh -L 8113:dbloader-mtd.cern.ch:8113 username@lxplus.cern.ch"
+            "ssh -f -N -L 8113:dbloader-mtd.cern.ch:8113 username@lxplus.cern.ch"
             "\n"
         ),
     )
@@ -157,7 +168,7 @@ def main() :
             regexp = args.regexp,
         )
         
-        run = int(parsed_result["run"])
+        run = int(parsed_result["run"]) if ("run" in parsed_result) else -1
         barcode = parsed_result["barcode"].strip()
         
         rootfile = ROOT.TFile.Open(fname)
