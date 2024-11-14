@@ -94,7 +94,7 @@ def main() :
         ),
         type = str,
         required = False,
-        default = "run(?P<run>\d+)/module_(?P<barcode>\d+)_analysis.root"
+        default = "run(?P<run>\d+)/module_(?P<barcode>\d+)_analysis_both_calibs.root"
     )
     
     parser.add_argument(
