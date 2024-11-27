@@ -1,0 +1,24 @@
+categories:
+  A: "int({lo_low_nbar}==0 and {lo_low_nch}==0 and {res_high_nbar}==0 and {spe_high_nch}==0 and {spe_low_nch}==0)"
+  B: "int({lo_low_nbar}==0 and {lo_low_nch}==1 and {res_high_nbar}==0 and {spe_high_nch}==0 and {spe_low_nch}==0)"
+  C: "int(not ({A} or {B}))"
+
+metrics:
+  lo_low_nbar: "numpy.count_nonzero(numpy.array({lo_bar}.GetY()) < {lo_bar_min})"
+  lo_low_nch: "numpy.count_nonzero(numpy.array({lo_ch}.GetY()) < {lo_ch_min})"
+  res_high_nbar: "numpy.count_nonzero(numpy.array({res_bar}.GetY()) > {res_bar_min})"
+  spe_high_nch: "numpy.count_nonzero(numpy.array({spe_ch}.GetY()) > {spe_ch_max})"
+  spe_low_nch: "numpy.count_nonzero(numpy.array({spe_ch}.GetY()) < {spe_ch_min})"
+
+read:
+  lo_bar: "g_avg_light_yield_vs_bar"
+  lo_ch: "g_light_yield_vs_ch"
+  res_bar: "g_avg_lyso_res_vs_bar"
+  spe_ch: "g_spe_vs_ch"
+
+values:
+  lo_bar_min: "(0.9*3200)"
+  lo_ch_min: "(0.85*3200)"
+  res_bar_min: 0.045
+  spe_ch_max: "(1.1*3.52)"
+  spe_ch_min: "(0.9*3.52)"

@@ -1,17 +1,27 @@
 import argparse
+import copy
 import dataclasses
 import itertools
 import json
+import numpy
 import os
 import re
 import subprocess
+import sys
 import tqdm
-import yaml
+
+from ruamel.yaml import YAML
+yaml = YAML()
+yaml.preserve_quotes = True
+yaml.width = 1024
 
 import ROOT
 ROOT.gROOT.SetBatch(1)
 
-import cms_lumi as cms_lumi
+sys.path.append(f"{os.getcwd()}/scripts")
+
+import constants
+import cms_lumi
 
 
 class Formatter(
@@ -28,6 +38,20 @@ class DetectorModule :
     feb: str = None
     sm1: str = None
     sm2: str = None
+    
+    def dict(self) :
+        
+        return dataclasses.asdict(self)
+
+
+@dataclasses.dataclass(init = True)
+class SensorModule :
+    
+    barcode: str = None
+    id: str = None
+    lyso: str = None
+    sipm1: str = None
+    sipm2: str = None
     
     def dict(self) :
         
@@ -93,13 +117,16 @@ def get_part_id(barcode) :
     return id
 
 
-def get_dm_barcodes(location_id = None) :
+def get_part_barcodes(
+    parttype,
+    location_id = None
+    ) :
     """
     Get list of DM barcodes
     Caltech location: 5023
     """
     
-    query = "select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = 'DetectorModule'"
+    query = f"select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = '{parttype}'"
     
     if (location_id is not None) :
         
@@ -117,7 +144,10 @@ def get_dm_barcodes(location_id = None) :
     return l_dm_barcode
 
 
-def get_dm_sm_barcodes(barcode) :
+def get_daughter_barcodes(
+        parent_barcode,
+        daughter_parttype
+    ) :
     """
     Get list of SM barcodes for a given DM barcode
     """
@@ -125,29 +155,46 @@ def get_dm_sm_barcodes(barcode) :
     dbquery_output = subprocess.run([
         "./scripts/rhapi.py",
         "-u", "http://localhost:8113",
-        f"select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = 'SensorModule' AND s.PART_PARENT_ID = (select s.ID from mtd_cmsr.parts s where s.BARCODE = '{barcode}')"
+        f"select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = '{daughter_parttype}' AND s.PART_PARENT_ID = (select s.ID from mtd_cmsr.parts s where s.BARCODE = '{parent_barcode}')"
     ], stdout = subprocess.PIPE)
     
-    l_sm_barcode = dbquery_output.stdout.decode("utf-8").split()[1:]
-    l_sm_barcode = [_barcode.strip() for _barcode in l_sm_barcode]
+    l_barcodes = dbquery_output.stdout.decode("utf-8").split()[1:]
+    l_barcodes = [_barcode.strip() for _barcode in l_barcodes]
     
-    return l_sm_barcode
+    return l_barcodes
 
 
-def get_dm_feb_barcode(barcode) :
-    """
-    Get FEB barcode for a given DM barcode
-    """
-    
-    dbquery_output = subprocess.run([
-        "./scripts/rhapi.py",
-        "-u", "http://localhost:8113",
-        f"select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = 'FE' AND s.PART_PARENT_ID = (select s.ID from mtd_cmsr.parts s where s.BARCODE = '{barcode}')"
-    ], stdout = subprocess.PIPE)
-    
-    feb_barcode = dbquery_output.stdout.decode("utf-8").split()[1].strip()
-    
-    return feb_barcode
+#def get_dm_sm_barcodes(barcode) :
+#    """
+#    Get list of SM barcodes for a given DM barcode
+#    """
+#    
+#    dbquery_output = subprocess.run([
+#        "./scripts/rhapi.py",
+#        "-u", "http://localhost:8113",
+#        f"select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = 'SensorModule' AND s.PART_PARENT_ID = (select s.ID from mtd_cmsr.parts s where s.BARCODE = '{barcode}')"
+#    ], stdout = subprocess.PIPE)
+#    
+#    l_sm_barcode = dbquery_output.stdout.decode("utf-8").split()[1:]
+#    l_sm_barcode = [_barcode.strip() for _barcode in l_sm_barcode]
+#    
+#    return l_sm_barcode
+#
+#
+#def get_dm_feb_barcode(barcode) :
+#    """
+#    Get FEB barcode for a given DM barcode
+#    """
+#    
+#    dbquery_output = subprocess.run([
+#        "./scripts/rhapi.py",
+#        "-u", "http://localhost:8113",
+#        f"select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = 'FE' AND s.PART_PARENT_ID = (select s.ID from mtd_cmsr.parts s where s.BARCODE = '{barcode}')"
+#    ], stdout = subprocess.PIPE)
+#    
+#    feb_barcode = dbquery_output.stdout.decode("utf-8").split()[1].strip()
+#    
+#    return feb_barcode
 
 
 def get_used_sm_barcodes(location_id = None, yamlfile = None, d_dms = None) :
@@ -160,7 +207,8 @@ def get_used_sm_barcodes(location_id = None, yamlfile = None, d_dms = None) :
     # Show all columns:
     # ./rhapi.py -u http://localhost:8113 "select s.* from mtd_cmsr.parts s where s.KIND_OF_PART = 'DetectorModule'"
     
-    d_dms = get_all_dm_info(
+    d_dms = get_all_part_info(
+        parttype = constants.DM.KIND_OF_PART,
         yamlfile = yamlfile,
         location_id = location_id,
     )
@@ -170,90 +218,266 @@ def get_used_sm_barcodes(location_id = None, yamlfile = None, d_dms = None) :
     return l_sm_barcodes
 
 
-def get_dm_info(barcode) :
-    """
-    Get DM information
-    """
-    
-    id = get_part_id(barcode)
-    feb = get_dm_feb_barcode(barcode)
-    l_sms = sorted(get_dm_sm_barcodes(barcode))
-    
-    dm = DetectorModule(
-        id = id,
-        barcode = barcode,
-        feb = feb,
-        sm1 = l_sms[0],
-        sm2 = l_sms[1],
-    )
-    
-    return dm
+#def get_dm_info(barcode) :
+#    """
+#    Get DM information
+#    """
+#    
+#    id = get_part_id(barcode)
+#    feb = get_dm_feb_barcode(barcode)
+#    l_sms = sorted(get_dm_sm_barcodes(barcode))
+#    
+#    dm = DetectorModule(
+#        id = id,
+#        barcode = barcode,
+#        feb = feb,
+#        sm1 = l_sms[0],
+#        sm2 = l_sms[1],
+#    )
+#    
+#    return dm
 
 
-def get_all_dm_info(location_id = None, yamlfile = None) :
+#def get_all_dm_info(location_id = None, yamlfile = None) :
+#    """
+#    Get the information for all DMs
+#    If yamlfile is provided, will load the information from there
+#    Will fetch the information of addtional DMs from the database if they are not in the file
+#    """
+#    
+#    l_dm_barcode = get_part_barcodes(parttype = constants.DM.KIND_OF_PART, location_id = location_id)
+#    
+#    d_dms = load_dm_info(yamlfile) if yamlfile else {}
+#    
+#    print("Fetching DM information from the database ... ")
+#    
+#    for barcode in tqdm.tqdm(l_dm_barcode) :
+#        
+#        if barcode in d_dms :
+#            
+#            continue
+#            
+#        d_dms[barcode] = get_dm_info(barcode)#.dict()
+#    
+#    print(f"Fetched information for {len(d_dms)} from the database.")
+#    
+#    return d_dms
+
+
+#def load_dm_info(yamlfile) :
+#    """
+#    Load DM info from yamlfile
+#    """
+#    
+#    d_dms = {}
+#    
+#    if (os.path.exists(yamlfile)) :
+#        
+#        print(f"Loading DM information from file: ({yamlfile}) ...")
+#        
+#        with open(yamlfile, "r") as fopen :
+#            
+#            d_dms = yaml.load(fopen.read(), Loader = yaml.RoundTripLoader)
+#        
+#        # Convert dict to DetectorModule object
+#        d_dms = {_key: DetectorModule(**_val) for _key, _val in d_dms.items()}
+#        
+#        print(f"Loaded information for {len(d_dms)} DMs.")
+#    
+#    else :
+#        
+#        print(f"DM information file ({yamlfile}) does not exist. No DM information loaded.")
+#    
+#    return d_dms
+
+
+#def save_all_dm_info(outyamlfile, inyamlfile = None, location_id = None, ret = False) :
+#    """
+#    Load existing DM info from inyamlfile
+#    Fetch additional DM info from database
+#    Save all DM info into outyamlfile
+#    """
+#    
+#    d_dms_orig = get_all_dm_info(yamlfile = inyamlfile, location_id = location_id)
+#    
+#    # Convert DetectorModule object to dict
+#    d_dms = {_key: _val.dict() for _key, _val in d_dms_orig.items()}
+#    
+#    outdir = os.path.dirname(outyamlfile)
+#    
+#    if len(outdir) :
+#        
+#        os.system(f"mkdir -p {outdir}")
+#    
+#    print(f"Saving DM information to file: {outyamlfile} ...")
+#    
+#    with open(outyamlfile, "w") as fopen :
+#        
+#        fopen.write(yaml.dump(d_dms))
+#    
+#    print(f"Saved information for {len(d_dms)} DMs.")
+#    
+#    if ret :
+#        
+#        return d_dms_orig
+
+
+def check_parttype(parttype) :
+    
+    assert parttype in [
+        constants.SIPM.KIND_OF_PART,
+        constants.LYSO.KIND_OF_PART,
+        constants.SM.KIND_OF_PART,
+        constants.FE.KIND_OF_PART,
+        constants.DM.KIND_OF_PART,
+    ]
+
+
+def get_part_info(
+        barcode,
+        parttype
+    ) :
     """
-    Get the information for all DMs
-    If yamlfile is provided, will load the information from there
-    Will fetch the information of addtional DMs from the database if they are not in the file
+    Get part information
     """
     
-    l_dm_barcode = get_dm_barcodes(location_id = location_id)
+    check_parttype(parttype)
     
-    d_dms = load_dm_info(yamlfile) if yamlfile else {}
+    part = None
     
-    print("Fetching DM information from the database ... ")
-    
-    for barcode in tqdm.tqdm(l_dm_barcode) :
+    if (parttype == constants.SM.KIND_OF_PART) :
         
-        if barcode in d_dms :
+        id = get_part_id(barcode)
+        lyso = get_daughter_barcodes(parent_barcode = barcode, daughter_parttype = constants.LYSO.KIND_OF_PART)
+        l_sipms = sorted(get_daughter_barcodes(parent_barcode = barcode, daughter_parttype = constants.SIPM.KIND_OF_PART))
+        
+        if (len(lyso) != 1 or len(l_sipms) != 2) :
+            
+            print(f"Error fetching parts for {parttype} {barcode} :")
+            print(f"  LYSO: {lyso}")
+            print(f"  SiPM: {l_sipms}")
+            #exit(1)
+            
+            return None
+        
+        lyso = lyso[0]
+        
+        part = SensorModule(
+            id = id,
+            barcode = barcode,
+            lyso = lyso,
+            sipm1 = l_sipms[0],
+            sipm2 = l_sipms[1],
+        )
+    
+    elif (parttype == constants.DM.KIND_OF_PART) :
+        
+        id = get_part_id(barcode)
+        feb = get_daughter_barcodes(parent_barcode = barcode, daughter_parttype = constants.FE.KIND_OF_PART)
+        l_sms = get_daughter_barcodes(parent_barcode = barcode, daughter_parttype = constants.SM.KIND_OF_PART)
+        
+        if (len(feb) != 1 or len(l_sms) != 2) :
+            
+            print(f"Error fetching parts for {parttype} {barcode} :")
+            print(f"  FEB: {feb}")
+            print(f"  SM: {l_sms}")
+            #exit(1)
+            
+            return None
+        
+        feb = feb[0]
+        
+        part = DetectorModule(
+            id = id,
+            barcode = barcode,
+            feb = feb,
+            sm1 = l_sms[0],
+            sm2 = l_sms[1],
+        )
+    
+    return part
+
+
+def get_all_part_info(parttype, location_id = None, yamlfile = None) :
+    """
+    Get the information for all parts
+    If yamlfile is provided, will load the information from there
+    Will fetch the information of addtional SMs from the database if they are not in the file
+    """
+    
+    check_parttype(parttype)
+    
+    l_part_barcodes = get_part_barcodes(parttype = parttype, location_id = location_id)
+    
+    d_parts = load_part_info(parttype = parttype, yamlfile = yamlfile) if yamlfile else {}
+    
+    print(f"Fetching {parttype} information from the database ... ")
+    
+    for barcode in tqdm.tqdm(l_part_barcodes) :
+        
+        if barcode in d_parts :
             
             continue
             
-        d_dms[barcode] = get_dm_info(barcode)#.dict()
+        part_info = get_part_info(barcode = barcode, parttype = parttype)
+        
+        if (part_info) :
+            
+            d_parts[barcode] = part_info
     
-    print(f"Fetched information for {len(d_dms)} from the database.")
+    print(f"Fetched information for {len(d_parts)} from the database.")
     
-    return d_dms
+    return d_parts
 
 
-def load_dm_info(yamlfile) :
+def load_part_info(parttype, yamlfile) :
     """
-    Load DM info from yamlfile
+    Load part info from yamlfile
     """
     
-    d_dms = {}
+    check_parttype(parttype)
+    
+    d_parts = {}
     
     if (os.path.exists(yamlfile)) :
         
-        print(f"Loading DM information from file: ({yamlfile}) ...")
+        print(f"Loading {parttype} information from file: ({yamlfile}) ...")
         
         with open(yamlfile, "r") as fopen :
             
-            d_dms = yaml.load(fopen.read(), Loader = yaml.FullLoader)
+            d_parts = yaml.load(fopen.read())#, Loader = yaml.RoundTripLoader)
         
-        # Convert dict to DetectorModule object
-        d_dms = {_key: DetectorModule(**_val) for _key, _val in d_dms.items()}
+        # Convert dict to SensorModule object
+        if (parttype == constants.SM.KIND_OF_PART) :
+            
+            d_parts = {_key: SensorModule(**_val) for _key, _val in d_parts.items()}
         
-        print(f"Loaded information for {len(d_dms)} DMs.")
+        elif (parttype == constants.DM.KIND_OF_PART) :
+            
+            d_parts = {_key: DetectorModule(**_val) for _key, _val in d_parts.items()}
+        
+        print(f"Loaded information for {len(d_parts)} {parttype}(s).")
     
     else :
         
-        print(f"DM information file ({yamlfile}) does not exist. No DM information loaded.")
+        print(f"{parttype} information file ({yamlfile}) does not exist. No {parttype} information loaded.")
     
-    return d_dms
+    return d_parts
 
 
-def save_all_dm_info(outyamlfile, inyamlfile = None, location_id = None, ret = False) :
+def save_all_part_info(parttype, outyamlfile, inyamlfile = None, location_id = None, ret = False) :
     """
-    Load existing DM info from inyamlfile
-    Fetch additional DM info from database
-    Save all DM info into outyamlfile
+    Load existing SM info from inyamlfile
+    Fetch additional SM info from database
+    Save all SM info into outyamlfile
     """
     
-    d_dms_orig = get_all_dm_info(yamlfile = inyamlfile, location_id = location_id)
+    check_parttype(parttype)
+    
+    d_parts_orig = get_all_part_info(parttype = parttype, yamlfile = inyamlfile, location_id = location_id)
     
     # Convert DetectorModule object to dict
-    d_dms = {_key: _val.dict() for _key, _val in d_dms_orig.items()}
+    d_parts = {_key: _val.dict() for _key, _val in d_parts_orig.items()}
     
     outdir = os.path.dirname(outyamlfile)
     
@@ -261,17 +485,17 @@ def save_all_dm_info(outyamlfile, inyamlfile = None, location_id = None, ret = F
         
         os.system(f"mkdir -p {outdir}")
     
-    print(f"Saving DM information to file: {outyamlfile} ...")
+    print(f"Saving {parttype} information to file: {outyamlfile} ...")
     
     with open(outyamlfile, "w") as fopen :
         
-        fopen.write(yaml.dump(d_dms))
+        yaml.dump(d_parts, fopen)
     
-    print(f"Saved information for {len(d_dms)} DMs.")
+    print(f"Saved information for {len(d_parts)} {parttype}(s).")
     
     if ret :
         
-        return d_dms_orig
+        return d_parts_orig
 
 
 def handle_flows(hist, underflow = True, overflow = True) :
@@ -384,7 +608,8 @@ def root_plot1D(
     
     canvas.cd(1)
     
-    legendHeight = legendheightscale * 0.065 * (len(l_hist) + 1.5*(len(legendtitle)>0))
+    nentries = sum([(len(_obj.GetTitle()) > 0) for _obj in l_hist+l_hist_overlay+l_graph_overlay])
+    legendHeight = legendheightscale * 0.065 * (nentries + 1.5*(len(legendtitle)>0))
     legendWidth = legendwidthscale * 0.4
     
     padTop = 1 - 0.3*canvas.GetTopMargin() - ROOT.gStyle.GetTickLength("y")
@@ -496,9 +721,13 @@ def root_plot1D(
     stack.GetYaxis().CenterLabels(centerlabely)
     
     for gr in l_graph_overlay :
-            
-            legend.AddEntry(gr, gr.GetTitle())
-            gr.Draw(gr_overlay_drawopt)
+        
+        legend.AddEntry(gr, gr.GetTitle(), gr.GetHistogram().GetOption())
+        #gr.Draw(gr_overlay_drawopt)
+        
+        # ROOT<=6.30 does not have SetOption() for TGraph, hence GetOption() will not work
+        gr.Draw(gr.GetHistogram().GetOption())
+        #print(gr.GetHistogram().GetOption())
     
     legend.Draw()
     
@@ -617,3 +846,62 @@ def root_plot1D(
     canvas.Close()
     
     return 0
+
+
+def eval_category(rootfile, d_catcfgs, barcode = "") :
+    
+    d_cat_result = copy.deepcopy(d_catcfgs)
+    
+    d_read_info = {}
+    d_fmt = d_cat_result["values"]
+    
+    for varkey, varname in d_cat_result["read"].items() :
+        
+        d_read_info[varkey] = rootfile.Get(varname)
+        d_fmt[varkey] = f"d_read_info['{varkey}']"
+    
+    for metric, metric_str in d_cat_result["metrics"].items() :
+        
+        metric_str = metric_str.format(**d_fmt)
+        d_cat_result["metrics"][metric] = eval(metric_str)
+    
+    cat = None
+    
+    for catname, cat_str in d_cat_result["categories"].items() :
+        
+        cat_str = cat_str.format(**{**d_cat_result["metrics"], **d_cat_result["categories"]})
+        d_cat_result["categories"][catname] = eval(cat_str)
+        
+        if d_cat_result["categories"][catname] :
+            
+            cat = catname
+    
+    err = False
+    
+    if (cat is None) :
+        
+        err = True
+        print(f"Error: module {barcode} category is invalid.")
+    
+    cat_sum = sum(list(d_cat_result["categories"].values()))
+    
+    if (cat_sum <= 0) :
+        
+        err = True
+        print(f"Error: module {barcode} in uncategorized.")
+    
+    elif (cat_sum > 1) :
+        
+        err = True
+        print(f"Error: module {barcode} uncategorization is not mutually exclusive.")
+    
+    if (err) :
+        
+        print(f"File: {rootfile.GetPath()}")
+        print("Categorization:")
+        yaml.dump(d_cat_result, sys.stdout)
+        sys.exit(1)
+    
+    d_cat_result["category"] = cat
+    
+    return d_cat_result

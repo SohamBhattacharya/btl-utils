@@ -15,11 +15,12 @@
 .vscode*
 
 # Other miscellaneous stuff
-*debug*
-*log*
-*temp*
-*tmp*
-data/*
-
-
-
+*debug/
+*log/
+*logs/
+*temp/
+*tmp/
+*data/
+*results/
+*output/
+*plots/

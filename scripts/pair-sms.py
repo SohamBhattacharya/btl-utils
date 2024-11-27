@@ -10,6 +10,7 @@ import re
 import ROOT
 import tqdm
 
+import constants
 import utils
 
 
@@ -20,9 +21,8 @@ class SensorModule :
     run: int = None
     file: str = None
     
-    #bar_L_ly: list[float] = None
-    #bar_R_ly: list[float] = None
-    #bar_avg_ly: list[float] = None
+    bar_L_spe: ROOT.TGraph = None
+    bar_R_spe: ROOT.TGraph = None
     
     bar_L_ly: ROOT.TGraph = None
     bar_R_ly: ROOT.TGraph = None
@@ -41,11 +41,13 @@ class SensorModule :
         max_res = 0.045
         min_ch_ly = 0.85 * 3200
         min_bar_ly = 0.9 * 3200
+        min_ch_spe = 0.9 * 3.52
+        max_ch_spe = 1.1 * 3.52
         
         module_class = 0
         
-        #arr_bar_L_peak_res = numpy.array(self.bar_L_peak_res.GetY())
-        #arr_bar_R_peak_res = numpy.array(self.bar_R_peak_res.GetY())
+        arr_bar_L_spe = numpy.array(self.bar_L_spe.GetY())
+        arr_bar_R_spe = numpy.array(self.bar_R_spe.GetY())
         
         arr_bar_avg_peak_res = numpy.array(self.bar_avg_peak_res.GetY())
         arr_bar_L_ly  = numpy.array(self.bar_L_ly.GetY())
@@ -54,9 +56,16 @@ class SensorModule :
         
         if (
             numpy.sum(arr_bar_avg_peak_res > max_res) or
+            
             numpy.sum(arr_bar_L_ly < min_ch_ly) or
             numpy.sum(arr_bar_R_ly < min_ch_ly) or
-            numpy.sum(arr_bar_avg_ly < min_bar_ly)
+            numpy.sum(arr_bar_avg_ly < min_bar_ly) or
+            
+            numpy.sum(arr_bar_L_spe < min_ch_spe) or
+            numpy.sum(arr_bar_R_spe < min_ch_spe) or
+            
+            numpy.sum(arr_bar_L_spe > max_ch_spe) or
+            numpy.sum(arr_bar_R_spe > max_ch_spe)
             ) :
             
             module_class = 1
@@ -127,7 +136,8 @@ def main() :
     # Parse arguments
     args = parser.parse_args()
     
-    d_produced_dms = utils.save_all_dm_info(
+    d_produced_dms = utils.save_all_part_info(
+        parttype = constants.DM.KIND_OF_PART,
         outyamlfile = args.dmyaml,
         inyamlfile = args.dmyaml,
         location_id = args.location,
@@ -195,6 +205,9 @@ def main() :
             barcode = barcode,
             run = run,
             file = fname,
+            
+            bar_L_spe = rootfile.Get("g_spe_L_vs_bar"),
+            bar_R_spe = rootfile.Get("g_spe_R_vs_bar"),
             
             bar_L_ly = rootfile.Get("g_L_light_yield_vs_bar"),
             bar_R_ly = rootfile.Get("g_R_light_yield_vs_bar"),
