@@ -1,6 +1,7 @@
 import argparse
 import copy
 import dataclasses
+import glob
 import itertools
 import json
 import numpy
@@ -30,14 +31,13 @@ class Formatter(
 ): pass
 
 
+
 @dataclasses.dataclass(init = True)
-class DetectorModule :
+class SiPMArray :
     
     barcode: str = None
     id: str = None
-    feb: str = None
-    sm1: str = None
-    sm2: str = None
+    tec_res: float = None
     
     def dict(self) :
         
@@ -52,6 +52,20 @@ class SensorModule :
     lyso: str = None
     sipm1: str = None
     sipm2: str = None
+    
+    def dict(self) :
+        
+        return dataclasses.asdict(self)
+
+
+@dataclasses.dataclass(init = True)
+class DetectorModule :
+    
+    barcode: str = None
+    id: str = None
+    feb: str = None
+    sm1: str = None
+    sm2: str = None
     
     def dict(self) :
         
@@ -101,6 +115,30 @@ def parse_string_regex(
     return result
 
 
+def get_file_list(
+    l_srcs,
+    regexp
+) :
+    """
+    Get the list of files with specified regular expression
+    """
+    rgx = re.compile(regexp)
+    
+    l_fnames = []
+    
+    for src in tqdm.tqdm(l_srcs) :
+        
+        while "//" in src:
+            
+            src = src.replace("//", "/")
+        
+        l_tmp = glob.glob(f"{src}/**", recursive = True)
+        l_tmp = [_f for _f in l_tmp if os.path.isfile(_f) and rgx.search(_f)]
+        l_fnames.extend(l_tmp)
+    
+    return l_fnames
+
+
 def get_part_id(barcode) :
     """
     Get part ID for given barcode
@@ -109,8 +147,9 @@ def get_part_id(barcode) :
     dbquery_output = subprocess.run([
         "./scripts/rhapi.py",
         "-u", "http://localhost:8113",
+        "-a",
         f"select s.ID from mtd_cmsr.parts s where s.BARCODE = '{barcode}'"
-    ], stdout = subprocess.PIPE)
+    ], stdout = subprocess.PIPE, check = True)
     
     id = dbquery_output.stdout.decode("utf-8").split()[1].strip()
     
@@ -135,8 +174,9 @@ def get_part_barcodes(
     dbquery_output = subprocess.run([
         "./scripts/rhapi.py",
         "-u", "http://localhost:8113",
+        "-a",
         query
-    ], stdout = subprocess.PIPE)
+    ], stdout = subprocess.PIPE, check = True)
     
     l_dm_barcode = dbquery_output.stdout.decode("utf-8").split()[1:]
     l_dm_barcode = [_barcode.strip() for _barcode in l_dm_barcode]
@@ -155,8 +195,9 @@ def get_daughter_barcodes(
     dbquery_output = subprocess.run([
         "./scripts/rhapi.py",
         "-u", "http://localhost:8113",
+        "-a",
         f"select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = '{daughter_parttype}' AND s.PART_PARENT_ID = (select s.ID from mtd_cmsr.parts s where s.BARCODE = '{parent_barcode}')"
-    ], stdout = subprocess.PIPE)
+    ], stdout = subprocess.PIPE, check = True)
     
     l_barcodes = dbquery_output.stdout.decode("utf-8").split()[1:]
     l_barcodes = [_barcode.strip() for _barcode in l_barcodes]
@@ -322,6 +363,31 @@ def get_used_sm_barcodes(location_id = None, yamlfile = None, d_dms = None) :
 #        return d_dms_orig
 
 
+def get_sipm_tec_res(
+    barcode
+) :
+    dbquery_output = subprocess.run([
+        "./scripts/rhapi.py",
+        "-u", "http://localhost:8113",
+        "-a",
+        f"select s.rac from mtd_cmsr.c3060 s where s.part_barcode = '{barcode}'"
+    ], stdout = subprocess.PIPE, check = True)
+    
+    tec_res = None
+    
+    try :
+        
+        tec_res = dbquery_output.stdout.decode("utf-8").split()[1].strip()
+        tec_res = float(tec_res)
+    
+    except Exception as err:
+        
+        print(f"Error getting TEC resistance of {barcode} :")
+        print(err)
+    
+    return tec_res
+
+
 def check_parttype(parttype) :
     
     assert parttype in [
@@ -367,7 +433,7 @@ def get_part_info(
             barcode = barcode,
             lyso = lyso,
             sipm1 = l_sipms[0],
-            sipm2 = l_sipms[1],
+            sipm2 = l_sipms[1]
         )
     
     elif (parttype == constants.DM.KIND_OF_PART) :
@@ -392,7 +458,18 @@ def get_part_info(
             barcode = barcode,
             feb = feb,
             sm1 = l_sms[0],
-            sm2 = l_sms[1],
+            sm2 = l_sms[1]
+        )
+    
+    elif (parttype == constants.SIPM.KIND_OF_PART) :
+        
+        id = get_part_id(barcode)
+        tec_res = get_sipm_tec_res(barcode = barcode)
+        
+        part = SiPMArray(
+            id = id,
+            barcode = barcode,
+            tec_res = tec_res
         )
     
     return part
@@ -456,6 +533,10 @@ def load_part_info(parttype, yamlfile) :
             
             d_parts = {_key: DetectorModule(**_val) for _key, _val in d_parts.items()}
         
+        elif (parttype == constants.SIPM.KIND_OF_PART) :
+            
+            d_parts = {_key: SiPMArray(**_val) for _key, _val in d_parts.items()}
+        
         print(f"Loaded information for {len(d_parts)} {parttype}(s).")
     
     else :
@@ -467,9 +548,9 @@ def load_part_info(parttype, yamlfile) :
 
 def save_all_part_info(parttype, outyamlfile, inyamlfile = None, location_id = None, ret = False) :
     """
-    Load existing SM info from inyamlfile
-    Fetch additional SM info from database
-    Save all SM info into outyamlfile
+    Load existing part info from inyamlfile
+    Fetch additional part info from database
+    Save all part info into outyamlfile
     """
     
     check_parttype(parttype)

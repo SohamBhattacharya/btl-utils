@@ -20,3 +20,10 @@ class DM:
 class FE:
     KIND_OF_PART = "FE"
 
+@dataclasses.dataclass(frozen = True)
+class LOCATION:
+    CIT = 5023
+    MIB = 5380
+    PKU = 3800
+    UVA = 1003
+

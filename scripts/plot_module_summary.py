@@ -26,13 +26,19 @@ class SensorModule(utils.SensorModule) :
     fname: str = None
     category: str = None
 
+@dataclasses.dataclass(init = True)
+class DetectorModule(utils.DetectorModule) :
+    
+    run: int = None
+    fname: str = None
+    category: str = None
 
 def main() :
     
     # Argument parser
     parser = argparse.ArgumentParser(
         formatter_class = utils.Formatter,
-        description = "Plots SM summary",
+        description = "Plots module summary",
     )
     
     parser.add_argument(
@@ -46,25 +52,33 @@ def main() :
     parser.add_argument(
         "--regexp",
         help = (
-            "Keyed regular expression to extract run and SM barcode from the file name.\n"
-            "Generally the file path has the form run[RUN]/module_[BARCODE]_analysis.root"
+            "Keyed regular expression to extract run and barcode from the file name.\n   "
+            "module example: \"run(?P<run>\\d+)/module_(?P<barcode>\\d+)_analysis_both_calibs.root\"\n   "
+            "DM example: \"run-(?P<run>\\d+)_DM-(?P<barcode>\\d+).root\""
             "\n   "
         ),
         type = str,
-        required = False,
-        default = "run(?P<run>\d+)/module_(?P<barcode>\d+)_analysis_both_calibs.root"
+        required = True,
     )
     
     parser.add_argument(
-        "--plotyaml",
+        "--plotcfg",
         help = "YAML file with plot configurations.\n   ",
         type = str,
         required = True,
     )
     
     parser.add_argument(
-        "--skipsms",
-        help = "List of runs to skip.\n   ",
+        "--moduletype",
+        help = "Module type.\n   ",
+        type = str,
+        required = True,
+        choices = [constants.SM.KIND_OF_PART, constants.DM.KIND_OF_PART]
+    )
+    
+    parser.add_argument(
+        "--skipmodules",
+        help = "List of module barcodes to skip.\n   ",
         type = str,
         nargs = "+",
         required = False,
@@ -73,7 +87,7 @@ def main() :
     
     parser.add_argument(
         "--skipruns",
-        help = "List of SM barcodes to skip.\n   ",
+        help = "List of runs to skip.\n   ",
         type = int,
         nargs = "+",
         required = False,
@@ -81,15 +95,29 @@ def main() :
     )
     
     parser.add_argument(
-        "--smyaml",
-        help = "YAML file with SM information (such as LYSO and SiPM barcodes).\n   ",
+        "--sipminfo",
+        help = "YAML file with SiPM information.\n   ",
         type = str,
-        required = True,
+        required = False,
     )
     
     parser.add_argument(
-        "--catyaml",
-        help = "YAML file with SM categorizations..\n   ",
+        "--sminfo",
+        help = "YAML file with module information.\n   ",
+        type = str,
+        required = False,
+    )
+    
+    parser.add_argument(
+        "--dminfo",
+        help = "YAML file with DM information.\n   ",
+        type = str,
+        required = False,
+    )
+    
+    parser.add_argument(
+        "--catcfg",
+        help = "YAML file with module categorization configuration.\n   ",
         type = str,
         required = True,
     )
@@ -104,25 +132,30 @@ def main() :
     # Parse arguments
     args = parser.parse_args()
     
-    rgx = re.compile(args.regexp)
-    
     # Get the list of files with specified pattern
     print(f"Getting list of files from {len(args.srcs)} source(s) ...")
     l_fnames = utils.get_file_list(l_srcs = args.srcs, regexp = args.regexp)
     
     d_loaded_sm_info = {}
     
-    if (args.smyaml) :
+    if (args.sminfo) :
         
-        print("Loading SM information from {args.smyaml}")
-        d_loaded_sm_info = utils.load_part_info(parttype = constants.SM.KIND_OF_PART, yamlfile = args.smyaml)
+        print("Loading SM information from {args.sminfo}")
+        d_loaded_sm_info = utils.load_part_info(parttype = constants.SM.KIND_OF_PART, yamlfile = args.sminfo)
     
-    # Get list of SMs
-    print(f"Parsing {len(l_fnames)} files to get SMs to process ...")
+    d_loaded_dm_info = {}
     
-    l_skipped_sms = []
-    d_duplicate_sms = []
-    d_sms = sortedcontainers.SortedDict()
+    if (args.dminfo) :
+        
+        print("Loading DM information from {args.dminfo}")
+        d_loaded_dm_info = utils.load_part_info(parttype = constants.DM.KIND_OF_PART, yamlfile = args.dminfo)
+    
+    # Get list of modules
+    print(f"Parsing {len(l_fnames)} files to get modules to process ...")
+    
+    l_skipped_modules = []
+    l_duplicate_modules = []
+    d_modules = sortedcontainers.SortedDict()
     
     for fname in tqdm.tqdm(l_fnames) :
         
@@ -134,50 +167,68 @@ def main() :
         run = int(parsed_result["run"]) if ("run" in parsed_result) else -1
         barcode = parsed_result["barcode"].strip()
         
-        if (run in args.skipruns or barcode in args.skipsms) :
+        if (run in args.skipruns or barcode in args.skipmodules) :
             
-            #print(f"Skipping SM {barcode}")
-            l_skipped_sms.append(barcode)
+            #print(f"Skipping module {barcode}")
+            l_skipped_modules.append(barcode)
             continue
         
-        # If the SM is repeated, only use the latest run
-        if (barcode in d_sms and run < d_sms[barcode].run) :
+        # If the module is repeated, only use the latest run
+        if (barcode in d_modules) :
             
-            d_duplicate_sms.append({"run": run, "barcode": barcode, "fname": fname})
-            continue
+            if (run < d_modules[barcode].run) :
+                
+                l_duplicate_modules.append({"run": run, "barcode": barcode, "fname": fname})
+                continue
+            
+            else :
+                
+                l_duplicate_modules.append({"run": d_modules[barcode].run, "barcode": barcode, "fname": d_modules[barcode].fname})
         
-        d_sms[barcode] = SensorModule(
-            barcode = barcode,
-            lyso = d_loaded_sm_info[barcode].lyso if barcode in d_loaded_sm_info else "0",
-            sipm1 = d_loaded_sm_info[barcode].sipm1 if barcode in d_loaded_sm_info else "0",
-            sipm2 = d_loaded_sm_info[barcode].sipm2 if barcode in d_loaded_sm_info else "0",
-            run = run,
-            fname = fname
-        )
+        if (args.moduletype == constants.SM.KIND_OF_PART) :
+            
+            d_modules[barcode] = SensorModule(
+                barcode = barcode,
+                lyso = d_loaded_sm_info[barcode].lyso if barcode in d_loaded_sm_info else "0",
+                sipm1 = d_loaded_sm_info[barcode].sipm1 if barcode in d_loaded_sm_info else "0",
+                sipm2 = d_loaded_sm_info[barcode].sipm2 if barcode in d_loaded_sm_info else "0",
+                run = run,
+                fname = fname
+            )
+        
+        elif (args.moduletype == constants.DM.KIND_OF_PART) :
+            
+            d_modules[barcode] = DetectorModule(
+                barcode = barcode,
+                sm1 = d_loaded_dm_info[barcode].sm1 if barcode in d_loaded_dm_info else "0",
+                sm2 = d_loaded_dm_info[barcode].sm2 if barcode in d_loaded_dm_info else "0",
+                run = run,
+                fname = fname
+            )
     
-    print(f"Skipped {len(l_skipped_sms)} SMs:")
-    print("\n".join(l_skipped_sms))
+    print(f"Skipped {len(l_skipped_modules)} modules:")
+    print("\n".join(l_skipped_modules))
     print()
     
-    print(f"Skipped {len(d_duplicate_sms)} duplicate SMs:")
+    print(f"Skipped {len(l_duplicate_modules)} duplicate modules:")
     print("#Run Barcode Filename")
-    for sm in d_duplicate_sms :
+    for module in l_duplicate_modules :
         
-        print(f"{sm['run']} {sm['barcode'], {sm['fname']}}")
+        print(f"{module['run']} {module['barcode']} {module['fname']}")
     
     print()
     
     # Read the plot config yaml
     d_plotcfgs = None
     
-    with open(args.plotyaml, "r") as fopen :
+    with open(args.plotcfg, "r") as fopen :
         
         d_plotcfgs = yaml.load(fopen.read())
     
     # Read the category config yaml
     d_catcfgs = None
     
-    with open(args.catyaml, "r") as fopen :
+    with open(args.catcfg, "r") as fopen :
         
         d_catcfgs = yaml.load(fopen.read())
     
@@ -189,27 +240,27 @@ def main() :
     }
     
     # Process the files
-    print(f"Processing {len(d_sms)} SMs ...")
+    print(f"Processing {len(d_modules)} modules ...")
     
     d_ones = {}
     
-    for sm in tqdm.tqdm(d_sms.values()) :
+    for module in tqdm.tqdm(d_modules.values()) :
         
-        rootfile = ROOT.TFile.Open(sm.fname)
+        rootfile = ROOT.TFile.Open(module.fname)
         
-        d_sm_cat = utils.eval_category(
+        d_module_cat = utils.eval_category(
             rootfile = rootfile,
             d_catcfgs = d_catcfgs,
-            barcode = sm.barcode
+            barcode = module.barcode
         )
         
-        sm_cat = d_sm_cat["category"]
-        d_cat_results["counts"][sm_cat] += 1
-        d_cat_results["modules"][sm_cat].append(DoubleQuotedScalarString(sm.barcode))
-        d_cat_results["results"][sm.barcode] = {
-            "category": DoubleQuotedScalarString(sm_cat),
-            **d_sm_cat["metrics"],
-            "fname": DoubleQuotedScalarString(sm.fname),
+        module.category = d_module_cat["category"]
+        d_cat_results["counts"][module.category] += 1
+        d_cat_results["modules"][module.category].append(DoubleQuotedScalarString(module.barcode))
+        d_cat_results["results"][module.barcode] = {
+            "category": DoubleQuotedScalarString(module.category),
+            **d_module_cat["metrics"],
+            "fname": DoubleQuotedScalarString(module.fname),
         }
         
         for plotname, plotcfg in d_plotcfgs.items() :
@@ -218,12 +269,8 @@ def main() :
                 
                 plot_arr = None
                 nelements = None
-                d_fmt = {
-                    "run": sm.run,
-                    "barcode": sm.barcode,
-                    "lyso": sm.lyso,
-                    "category": sm_cat,
-                }
+                
+                d_fmt = {**module.dict()}
                 
                 d_read_info = {}
                 
@@ -329,7 +376,7 @@ def main() :
                 mean_str = f"{round(mean)}" if mean > 100 else f"{mean:0.2f}"
                 stddev = hist.GetStdDev()
                 
-                hist.SetTitle(f"{hist.GetTitle()} [#mu: {mean_str}, #sigma/#mu: {stddev/mean*100:0.2f}%]")
+                hist.SetTitle(f"{hist.GetTitle()} [#mu: {mean_str}, #sigma/#mu: {stddev/abs(mean)*100:0.2f}%]")
             
             utils.root_plot1D(
                 l_hist = l_hists,
@@ -397,13 +444,13 @@ def main() :
             )
     
     #l_files_to_copy = [
-    #    args.plotyaml,
-    #    args.smyaml,
-    #    args.catyaml,
+    #    args.plotcfg,
+    #    args.sminfo,
+    #    args.catcfg,
     #]
     
     # Save the categorization
-    outfname = f"{args.outdir}/sm_categorization.yaml"
+    outfname = f"{args.outdir}/module_categorization.yaml"
     print(f"Writing categorizations to file ...")
     
     with open(outfname, "w") as fopen:
