@@ -19,10 +19,12 @@ yaml.width = 1024
 import ROOT
 ROOT.gROOT.SetBatch(1)
 
-sys.path.append(f"{os.getcwd()}/scripts")
+#sys.path.append(f"{os.getcwd()}/scripts")
+sys.path.append(os.path.split(os.path.realpath(__file__))[0])
 
 import constants
 import cms_lumi
+import tdrstyle
 
 
 class Formatter(
@@ -525,17 +527,17 @@ def load_part_info(parttype, yamlfile) :
             d_parts = yaml.load(fopen.read())#, Loader = yaml.RoundTripLoader)
         
         # Convert dict to SensorModule object
-        if (parttype == constants.SM.KIND_OF_PART) :
+        if (parttype == constants.SIPM.KIND_OF_PART) :
+            
+            d_parts = {_key: SiPMArray(**_val) for _key, _val in d_parts.items()}
+        
+        elif (parttype == constants.SM.KIND_OF_PART) :
             
             d_parts = {_key: SensorModule(**_val) for _key, _val in d_parts.items()}
         
         elif (parttype == constants.DM.KIND_OF_PART) :
             
             d_parts = {_key: DetectorModule(**_val) for _key, _val in d_parts.items()}
-        
-        elif (parttype == constants.SIPM.KIND_OF_PART) :
-            
-            d_parts = {_key: SiPMArray(**_val) for _key, _val in d_parts.items()}
         
         print(f"Loaded information for {len(d_parts)} {parttype}(s).")
     
@@ -544,6 +546,19 @@ def load_part_info(parttype, yamlfile) :
         print(f"{parttype} information file ({yamlfile}) does not exist. No {parttype} information loaded.")
     
     return d_parts
+
+
+def combine_parts(d_sipms, d_sms, d_dms) :
+    
+    for sm, sminfo in d_sms.items() :
+        
+        sminfo.sipm1 = d_sipms.get(sminfo.sipm1, sminfo.sipm1)
+        sminfo.sipm2 = d_sipms.get(sminfo.sipm2, sminfo.sipm2)
+    
+    for dm, dminfo in d_dms.items() :
+        
+        dminfo.sm1 = d_sms.get(dminfo.sm1, dminfo.sm1)
+        dminfo.sm2 = d_sms.get(dminfo.sm2, dminfo.sm2)
 
 
 def save_all_part_info(parttype, outyamlfile, inyamlfile = None, location_id = None, ret = False) :
@@ -598,10 +613,12 @@ def handle_flows(hist, underflow = True, overflow = True) :
 
 def get_canvas(ratio = False) :
     
-    ROOT.gROOT.LoadMacro(os.path.split(os.path.realpath(__file__))[0]+"/tdrstyle.C")
-    ROOT.gROOT.ProcessLine("setTDRStyle();")
+    #ROOT.gROOT.LoadMacro(os.path.split(os.path.realpath(__file__))[0]+"/tdrstyle.C")
+    #ROOT.gROOT.ProcessLine("setTDRStyle();")
     
-    ROOT.gROOT.SetStyle("tdrStyle")
+    tdrstyle.setTDRStyle()
+    
+    #ROOT.gROOT.SetStyle("tdrStyle")
     ROOT.gROOT.ForceStyle(True)
     
     ROOT.gStyle.SetPadTickX(0)

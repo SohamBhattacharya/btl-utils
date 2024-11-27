@@ -136,19 +136,37 @@ def main() :
     print(f"Getting list of files from {len(args.srcs)} source(s) ...")
     l_fnames = utils.get_file_list(l_srcs = args.srcs, regexp = args.regexp)
     
-    d_loaded_sm_info = {}
+    d_loaded_part_info = {
+        constants.SIPM.KIND_OF_PART: {},
+        constants.SM.KIND_OF_PART: {},
+        constants.DM.KIND_OF_PART: {},
+    }
+    
+    if (args.sipminfo) :
+        
+        print("Loading SiPM information from {args.sipminfo} ...")
+        d_loaded_part_info[constants.SIPM.KIND_OF_PART] = utils.load_part_info(parttype = constants.SIPM.KIND_OF_PART, yamlfile = args.sipminfo)
+        print(f"Loaded information for {len(d_loaded_part_info[constants.SIPM.KIND_OF_PART])} SiPMs.")
     
     if (args.sminfo) :
         
-        print("Loading SM information from {args.sminfo}")
-        d_loaded_sm_info = utils.load_part_info(parttype = constants.SM.KIND_OF_PART, yamlfile = args.sminfo)
-    
-    d_loaded_dm_info = {}
+        print("Loading SM information from {args.sminfo} ...")
+        d_loaded_part_info[constants.SM.KIND_OF_PART] = utils.load_part_info(parttype = constants.SM.KIND_OF_PART, yamlfile = args.sminfo)
+        print(f"Loaded information for {len(d_loaded_part_info[constants.SM.KIND_OF_PART])} SMs.")
     
     if (args.dminfo) :
         
-        print("Loading DM information from {args.dminfo}")
-        d_loaded_dm_info = utils.load_part_info(parttype = constants.DM.KIND_OF_PART, yamlfile = args.dminfo)
+        print("Loading DM information from {args.dminfo} ...")
+        d_loaded_part_info[constants.DM.KIND_OF_PART] = utils.load_part_info(parttype = constants.DM.KIND_OF_PART, yamlfile = args.dminfo)
+        print(f"Loaded information for {len(d_loaded_part_info[constants.DM.KIND_OF_PART])} DMs.")
+    
+    print("Combining parts ...")
+    utils.combine_parts(
+        d_sipms = d_loaded_part_info[constants.SIPM.KIND_OF_PART],
+        d_sms = d_loaded_part_info[constants.SM.KIND_OF_PART],
+        d_dms = d_loaded_part_info[constants.DM.KIND_OF_PART],
+    )
+    print("Combined parts.")
     
     # Get list of modules
     print(f"Parsing {len(l_fnames)} files to get modules to process ...")
@@ -189,9 +207,9 @@ def main() :
             
             d_modules[barcode] = SensorModule(
                 barcode = barcode,
-                lyso = d_loaded_sm_info[barcode].lyso if barcode in d_loaded_sm_info else "0",
-                sipm1 = d_loaded_sm_info[barcode].sipm1 if barcode in d_loaded_sm_info else "0",
-                sipm2 = d_loaded_sm_info[barcode].sipm2 if barcode in d_loaded_sm_info else "0",
+                lyso = d_loaded_part_info[constants.SM.KIND_OF_PART][barcode].lyso if barcode in d_loaded_part_info[constants.SM.KIND_OF_PART] else "0",
+                sipm1 = d_loaded_part_info[constants.SM.KIND_OF_PART][barcode].sipm1 if barcode in d_loaded_part_info[constants.SM.KIND_OF_PART] else "0",
+                sipm2 = d_loaded_part_info[constants.SM.KIND_OF_PART][barcode].sipm2 if barcode in d_loaded_part_info[constants.SM.KIND_OF_PART] else "0",
                 run = run,
                 fname = fname
             )
@@ -200,8 +218,8 @@ def main() :
             
             d_modules[barcode] = DetectorModule(
                 barcode = barcode,
-                sm1 = d_loaded_dm_info[barcode].sm1 if barcode in d_loaded_dm_info else "0",
-                sm2 = d_loaded_dm_info[barcode].sm2 if barcode in d_loaded_dm_info else "0",
+                sm1 = d_loaded_part_info[constants.DM.KIND_OF_PART][barcode].sm1 if barcode in d_loaded_part_info[constants.DM.KIND_OF_PART] else "0",
+                sm2 = d_loaded_part_info[constants.DM.KIND_OF_PART][barcode].sm2 if barcode in d_loaded_part_info[constants.DM.KIND_OF_PART] else "0",
                 run = run,
                 fname = fname
             )
@@ -412,11 +430,28 @@ def main() :
             for entrycfg in plotcfg["entries"].values() :
                 
                 gr = entrycfg["graph"]
+                
+                for fnname, fnstr in entrycfg.get("fit", {}).items() :
+                    
+                    f1 = ROOT.TF1(fnname, fnstr, plotcfg["xmin"], plotcfg["xmax"])
+                    f1.SetLineWidth(2)
+                    f1.SetLineStyle(7)
+                    f1.SetLineColor(entrycfg["color"])
+                    
+                    fit_res = gr.Fit(
+                        f1,
+                        option = "SEM",
+                        goption = "L",
+                        xmin = plotcfg["xmin"],
+                        xmax = plotcfg["xmax"]
+                    )
+                    
+                    #print("Fitted")
+                
                 gr.GetHistogram().SetOption(entrycfg["drawopt"])
                 l_graphs.append(gr)
             
             utils.root_plot1D(
-                #l_hist = [l_graphs[0].GetHistogram().Clone()],
                 l_hist = [ROOT.TH1F(f"h1_tmp_{plotname}", "", 1, plotcfg["xmin"], plotcfg["xmax"])],
                 outfile = f"{args.outdir}/{plotname}.pdf",
                 xrange = (plotcfg["xmin"], plotcfg["xmax"]),

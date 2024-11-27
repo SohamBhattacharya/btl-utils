@@ -94,7 +94,7 @@ h1_lo_LR_bar:
   gridy: False
 
 
-h1_lo_avg_bar:
+h1_lo-avg_bar:
   type: "hist1"
   entries:
     avg_light_yield_vs_bar:
@@ -184,7 +184,7 @@ h1_peak-res_LR_bar:
   gridy: False
 
 
-h1_peak-res_avg_bar:
+h1_peak-res-avg_bar:
   type: "hist1"
   entries:
     avg_light_yield_vs_bar:
@@ -208,7 +208,7 @@ h1_peak-res_avg_bar:
 ##################################################
 
 
-g1_spe_avg_vs_barcode:
+g1_spe-avg_vs_barcode:
   type: "graph"
   entries:
     spe_L_vs_barcode:
@@ -241,7 +241,7 @@ g1_spe_avg_vs_barcode:
   gridy: True
 
 
-g1_spe_min_vs_barcode:
+g1_spe-min_vs_barcode:
   type: "graph"
   entries:
     spe_L_vs_barcode:
@@ -274,7 +274,7 @@ g1_spe_min_vs_barcode:
   gridy: True
 
 
-g1_spe_max_vs_barcode:
+g1_spe-max_vs_barcode:
   type: "graph"
   entries:
     spe_L_vs_barcode:
@@ -307,7 +307,7 @@ g1_spe_max_vs_barcode:
   gridy: True
 
 
-g1_src-chg_avg_vs_barcode:
+g1_src-chg-avg_vs_barcode:
   type: "graph"
   entries:
     src_L_vs_barcode:
@@ -350,7 +350,7 @@ g1_src-chg_avg_vs_barcode:
   gridy: True
 
 
-g1_lo_avg_vs_barcode:
+g1_lo-avg_vs_barcode:
   type: "graph"
   entries:
     lo_L_vs_barcode:
@@ -393,7 +393,7 @@ g1_lo_avg_vs_barcode:
   gridy: True
 
 
-g1_lo_min_vs_barcode:
+g1_lo-min_vs_barcode:
   type: "graph"
   entries:
     lo_L_vs_barcode:
@@ -436,7 +436,7 @@ g1_lo_min_vs_barcode:
   gridy: True
 
 
-g1_lo_max_vs_barcode:
+g1_lo-max_vs_barcode:
   type: "graph"
   entries:
     lo_L_vs_barcode:
@@ -479,7 +479,7 @@ g1_lo_max_vs_barcode:
   gridy: True
 
 
-g1_peak-res_avg_vs_barcode:
+g1_peak-res-avg_vs_barcode:
   type: "graph"
   entries:
     res_L_vs_barcode:
@@ -522,7 +522,7 @@ g1_peak-res_avg_vs_barcode:
   gridy: True
 
 
-g1_peak-res_max_vs_barcode:
+g1_peak-res-max_vs_barcode:
   type: "graph"
   entries:
     res_L_vs_barcode:
@@ -565,7 +565,7 @@ g1_peak-res_max_vs_barcode:
   gridy: True
 
 
-g1_peak-res_max_vs_lyso:
+g1_peak-res-max_vs_lyso:
   type: "graph"
   entries:
     res_bar_vs_lyso:
