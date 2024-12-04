@@ -154,7 +154,7 @@ def get_part_id(barcode) :
     Get part ID for given barcode
     """
     
-    assert(is_tunnel_open(port = 8113))
+    assert is_tunnel_open(port = 8113), "Open tunnel to database first."
     
     dbquery_output = subprocess.run([
         "./python/rhapi.py",
@@ -177,7 +177,7 @@ def get_part_barcodes(
     Caltech location: 5023
     """
     
-    assert(is_tunnel_open(port = 8113))
+    assert is_tunnel_open(port = 8113), "Open tunnel to database first."
     
     query = f"select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = '{parttype}'"
     
@@ -206,7 +206,7 @@ def get_daughter_barcodes(
     Get list of SM barcodes for a given DM barcode
     """
     
-    assert(is_tunnel_open(port = 8113))
+    assert is_tunnel_open(port = 8113), "Open tunnel to database first."
     
     dbquery_output = subprocess.run([
         "./python/rhapi.py",
@@ -382,7 +382,7 @@ def get_used_sm_barcodes(location_id = None, yamlfile = None, d_dms = None) :
 def get_sipm_tec_res(
     barcode
 ) :
-    assert(is_tunnel_open(port = 8113))
+    assert is_tunnel_open(port = 8113), "Open tunnel to database first."
     
     dbquery_output = subprocess.run([
         "./python/rhapi.py",
