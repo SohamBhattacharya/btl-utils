@@ -7,6 +7,7 @@ import json
 import numpy
 import os
 import re
+import socket
 import subprocess
 import sys
 import tqdm
@@ -141,13 +142,22 @@ def get_file_list(
     return l_fnames
 
 
+def is_tunnel_open(port = 8113) :
+    
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        
+        return s.connect_ex(("localhost", port)) == 0
+
+
 def get_part_id(barcode) :
     """
     Get part ID for given barcode
     """
     
+    assert(is_tunnel_open(port = 8113))
+    
     dbquery_output = subprocess.run([
-        "./scripts/rhapi.py",
+        "./python/rhapi.py",
         "-u", "http://localhost:8113",
         "-a",
         f"select s.ID from mtd_cmsr.parts s where s.BARCODE = '{barcode}'"
@@ -167,6 +177,8 @@ def get_part_barcodes(
     Caltech location: 5023
     """
     
+    assert(is_tunnel_open(port = 8113))
+    
     query = f"select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = '{parttype}'"
     
     if (location_id is not None) :
@@ -174,7 +186,7 @@ def get_part_barcodes(
         query = f"{query} AND s.LOCATION_ID = {location_id}"
     
     dbquery_output = subprocess.run([
-        "./scripts/rhapi.py",
+        "./python/rhapi.py",
         "-u", "http://localhost:8113",
         "-a",
         query
@@ -194,8 +206,10 @@ def get_daughter_barcodes(
     Get list of SM barcodes for a given DM barcode
     """
     
+    assert(is_tunnel_open(port = 8113))
+    
     dbquery_output = subprocess.run([
-        "./scripts/rhapi.py",
+        "./python/rhapi.py",
         "-u", "http://localhost:8113",
         "-a",
         f"select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = '{daughter_parttype}' AND s.PART_PARENT_ID = (select s.ID from mtd_cmsr.parts s where s.BARCODE = '{parent_barcode}')"
@@ -213,7 +227,7 @@ def get_daughter_barcodes(
 #    """
 #    
 #    dbquery_output = subprocess.run([
-#        "./scripts/rhapi.py",
+#        "./python/rhapi.py",
 #        "-u", "http://localhost:8113",
 #        f"select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = 'SensorModule' AND s.PART_PARENT_ID = (select s.ID from mtd_cmsr.parts s where s.BARCODE = '{barcode}')"
 #    ], stdout = subprocess.PIPE)
@@ -230,7 +244,7 @@ def get_daughter_barcodes(
 #    """
 #    
 #    dbquery_output = subprocess.run([
-#        "./scripts/rhapi.py",
+#        "./python/rhapi.py",
 #        "-u", "http://localhost:8113",
 #        f"select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = 'FE' AND s.PART_PARENT_ID = (select s.ID from mtd_cmsr.parts s where s.BARCODE = '{barcode}')"
 #    ], stdout = subprocess.PIPE)
@@ -368,8 +382,10 @@ def get_used_sm_barcodes(location_id = None, yamlfile = None, d_dms = None) :
 def get_sipm_tec_res(
     barcode
 ) :
+    assert(is_tunnel_open(port = 8113))
+    
     dbquery_output = subprocess.run([
-        "./scripts/rhapi.py",
+        "./python/rhapi.py",
         "-u", "http://localhost:8113",
         "-a",
         f"select s.rac from mtd_cmsr.c3060 s where s.part_barcode = '{barcode}'"

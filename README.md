@@ -35,7 +35,7 @@ Update tar file with new results in directory:<br>
 ### SM summary examples
 
 ```bash
-./python plot_module_summary.py \
+./python/plot_module_summary.py \
 --srcs /path/to/dir/with/runs \
 --regexp "run(?P<run>\d+)/module_(?P<barcode>\d+)_analysis_both_calibs.root" \
 --moduletype SensorModule \
@@ -49,7 +49,7 @@ Update tar file with new results in directory:<br>
 ### DM summary examples
 
 ```bash
-./python plot_module_summary.py \
+./python/plot_module_summary.py \
 --srcs /path/to/dir/with/runs \
 --regexp "run-(?P<run>\d+)_DM-(?P<barcode>\d+).root" \
 --moduletype DetectorModule \
