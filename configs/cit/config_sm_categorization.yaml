@@ -1,8 +1,14 @@
+# Define categories in terms of metrics and values
+# Python expressions will be evaluated
+# For e.g.: a metric {key} needs to be defined under "metrics" block as key: expression
 categories:
   A: "int({lo_low_nbar}==0 and {lo_low_nch}==0 and {res_high_nbar}==0 and {spe_high_nch}==0 and {spe_low_nch}==0)"
   B: "int({lo_low_nbar}==0 and {lo_low_nch}==1 and {res_high_nbar}==0 and {spe_high_nch}==0 and {spe_low_nch}==0)"
   C: "int(not ({A} or {B}))"
 
+# Define metrics in terms of objects (like tgraphs) read from files
+# Python expressions will be evaluated
+# For e.g.: an object {key} needs to be defined under "read" block as key: object_name
 metrics:
   lo_low_nbar: "numpy.count_nonzero(numpy.array({lo_bar}.GetY()) < {lo_bar_min})"
   lo_low_nch: "numpy.count_nonzero(numpy.array({lo_ch}.GetY()) < {lo_ch_min})"
@@ -10,12 +16,15 @@ metrics:
   spe_high_nch: "numpy.count_nonzero(numpy.array({spe_ch}.GetY()) > {spe_ch_max})"
   spe_low_nch: "numpy.count_nonzero(numpy.array({spe_ch}.GetY()) < {spe_ch_min})"
 
+# Define the objects to be read from files
 read:
   lo_bar: "g_avg_light_yield_vs_bar"
   lo_ch: "g_light_yield_vs_ch"
   res_bar: "g_avg_lyso_res_vs_bar"
   spe_ch: "g_spe_vs_ch"
 
+# Define values
+# Python expressions will be evaluated
 values:
   lo_bar_min: "(0.9*3200)"
   lo_ch_min: "(0.85*3200)"

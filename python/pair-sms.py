@@ -108,8 +108,8 @@ def main() :
     
     parser.add_argument(
         "--skip",
-        help = "List of SM barcodes to skip.\n   ",
-        type = int,
+        help = "List of SM barcodes (or files with a barcode per line) to skip.\n   ",
+        type = str,
         nargs = "+",
         required = False,
     )
@@ -146,6 +146,19 @@ def main() :
     
     l_all_used_sm_barcodes = list(itertools.chain(*[[_dm.sm1, _dm.sm2] for _dm in d_produced_dms.values()]))
     #print(l_all_used_sm_barcodes)
+    
+    l_toskip_sm_barcodes = []
+    
+    for toskip in args.skip :
+        
+        if (os.path.isfile(toskip)) :
+            
+            l_tmp = numpy.loadtxt(toskip, dtype = str).flatten()
+            l_toskip_sm_barcodes.extend(l_tmp)
+        
+        else :
+            
+            l_toskip_sm_barcodes.append(toskip)
     
     l_fnames = []
     

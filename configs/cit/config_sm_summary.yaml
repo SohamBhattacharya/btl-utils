@@ -2,6 +2,10 @@
 ########## 1D histograms #########################
 ##################################################
 
+# Define plot quantity in terms of objects (like tgraphs) read from files
+# Python expressions will be evaluated
+# For e.g.: an object {key} needs to be defined under "read" block as key: object_name
+
 h1_spe_LR_bar:
   type: "hist1"
   entries:

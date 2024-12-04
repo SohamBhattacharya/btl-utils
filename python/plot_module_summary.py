@@ -431,22 +431,22 @@ def main() :
                 
                 gr = entrycfg["graph"]
                 
-                for fnname, fnstr in entrycfg.get("fit", {}).items() :
-                    
-                    f1 = ROOT.TF1(fnname, fnstr, plotcfg["xmin"], plotcfg["xmax"])
-                    f1.SetLineWidth(2)
-                    f1.SetLineStyle(7)
-                    f1.SetLineColor(entrycfg["color"])
-                    
-                    fit_res = gr.Fit(
-                        f1,
-                        option = "SEM",
-                        goption = "L",
-                        xmin = plotcfg["xmin"],
-                        xmax = plotcfg["xmax"]
-                    )
-                    
-                    #print("Fitted")
+                #for fnname, fnstr in entrycfg.get("fit", {}).items() :
+                #    
+                #    f1 = ROOT.TF1(fnname, fnstr, plotcfg["xmin"], plotcfg["xmax"])
+                #    f1.SetLineWidth(2)
+                #    f1.SetLineStyle(7)
+                #    f1.SetLineColor(entrycfg["color"])
+                #    
+                #    fit_res = gr.Fit(
+                #        f1,
+                #        option = "SEM",
+                #        goption = "L",
+                #        xmin = plotcfg["xmin"],
+                #        xmax = plotcfg["xmax"]
+                #    )
+                #    
+                #    #print("Fitted")
                 
                 gr.GetHistogram().SetOption(entrycfg["drawopt"])
                 l_graphs.append(gr)

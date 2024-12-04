@@ -142,8 +142,8 @@ g1_deltaT-std_vs_tec-std:
         tR: "g_DeltaTTopR"
         bL: "g_DeltaTBottomL"
         bR: "g_DeltaTBottomR"
-      fit: 
-        pol0: "[0]+([1]*x)"
+      #fit: 
+      #  pol0: "[0]+([1]*x)"
       label: "At 4 min."
       color: 1
       marker: 4
