@@ -78,7 +78,7 @@ def main() :
     
     parser.add_argument(
         "--skipmodules",
-        help = "List of module barcodes to skip.\n   ",
+        help = "List of SM barcodes (or files with a barcode per line) to skip.\n   ",
         type = str,
         nargs = "+",
         required = False,
@@ -171,9 +171,21 @@ def main() :
     # Get list of modules
     print(f"Parsing {len(l_fnames)} files to get modules to process ...")
     
+    l_toskip_modules = []
     l_skipped_modules = []
     l_duplicate_modules = []
     d_modules = sortedcontainers.SortedDict()
+    
+    for toskip in args.skipmodules :
+        
+        if (os.path.isfile(toskip)) :
+            
+            l_tmp = numpy.loadtxt(toskip, dtype = str).flatten()
+            l_toskip_modules.extend(l_tmp)
+        
+        else :
+            
+            l_toskip_modules.append(toskip)
     
     for fname in tqdm.tqdm(l_fnames) :
         
@@ -185,7 +197,7 @@ def main() :
         run = int(parsed_result["run"]) if ("run" in parsed_result) else -1
         barcode = parsed_result["barcode"].strip()
         
-        if (run in args.skipruns or barcode in args.skipmodules) :
+        if (run in args.skipruns or barcode in l_toskip_modules) :
             
             #print(f"Skipping module {barcode}")
             l_skipped_modules.append(barcode)
