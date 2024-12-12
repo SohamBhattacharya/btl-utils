@@ -216,7 +216,7 @@ def main() :
             
             continue
         
-        if (args.skip and barcode in args.skip) :
+        if (barcode in l_toskip_sm_barcodes) :
             
             l_skipped_sm_barcodes.append(barcode)
             continue

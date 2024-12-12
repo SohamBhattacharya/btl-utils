@@ -2,9 +2,12 @@
 # Python expressions will be evaluated
 # For e.g.: a metric {key} needs to be defined under "metrics" block as key: expression
 categories:
-  A: "int({lo_low_nbar}==0 and {lo_low_nch}==0 and {res_high_nbar}==0 and {spe_high_nch}==0 and {spe_low_nch}==0)"
-  B: "int({lo_low_nbar}==0 and {lo_low_nch}==1 and {res_high_nbar}==0 and {spe_high_nch}==0 and {spe_low_nch}==0)"
-  C: "int(not ({A} or {B}))"
+  #A: "int({lo_low_nbar}==0 and {lo_low_nch}==0 and {spe_high_nch}==0 and {spe_low_nch}==0) and {res_high_nbar}==0"
+  #B: "int({lo_low_nbar}==0 and {lo_low_nch}==1 and {spe_high_nch}==0 and {spe_low_nch}==0) and {res_high_nbar}==0"
+  #C: "int(not ({A} or {B}))"
+  
+  A: "{res_high_nbar}==0"
+  X: "int(not ({A}))"
 
 # Define metrics in terms of objects (like tgraphs) read from files
 # Python expressions will be evaluated

@@ -1,9 +1,11 @@
 import argparse
+import ast
 import copy
 import dataclasses
 import glob
 import itertools
 import json
+import more_itertools
 import numpy
 import os
 import re
@@ -149,9 +151,9 @@ def is_tunnel_open(port = 8113) :
         return s.connect_ex(("localhost", port)) == 0
 
 
-def get_part_id(barcode) :
+def get_part_ids(barcode_min, barcode_max) :
     """
-    Get part ID for given barcode
+    Get part IDs for a range of barcodes
     """
     
     assert is_tunnel_open(port = 8113), "Open tunnel to database first."
@@ -160,12 +162,14 @@ def get_part_id(barcode) :
         "./python/rhapi.py",
         "-u", "http://localhost:8113",
         "-a",
-        f"select s.ID from mtd_cmsr.parts s where s.BARCODE = '{barcode}'"
+        "-f", "json2",
+        f"select s.ID,s.BARCODE from mtd_cmsr.parts s where s.BARCODE >= '{barcode_min}' and s.BARCODE <='{barcode_max}'"
     ], stdout = subprocess.PIPE, check = True)
     
-    id = dbquery_output.stdout.decode("utf-8").split()[1].strip()
+    dbquery_output = dbquery_output.stdout.decode("utf-8")
+    l_infodicts = ast.literal_eval(dbquery_output)["data"]
     
-    return id
+    return l_infodicts
 
 
 def get_part_barcodes(
@@ -173,8 +177,7 @@ def get_part_barcodes(
     location_id = None
     ) :
     """
-    Get list of DM barcodes
-    Caltech location: 5023
+    Get list of part barcodes
     """
     
     assert is_tunnel_open(port = 8113), "Open tunnel to database first."
@@ -192,66 +195,49 @@ def get_part_barcodes(
         query
     ], stdout = subprocess.PIPE, check = True)
     
-    l_dm_barcode = dbquery_output.stdout.decode("utf-8").split()[1:]
-    l_dm_barcode = [_barcode.strip() for _barcode in l_dm_barcode]
+    l_part_barcode = dbquery_output.stdout.decode("utf-8").split()[1:]
+    l_part_barcode = [_barcode.strip() for _barcode in l_part_barcode]
     
-    return l_dm_barcode
+    return l_part_barcode
 
 
-def get_daughter_barcodes(
-        parent_barcode,
-        daughter_parttype
+def get_daughter_info(
+    parent_barcode_min,
+    parent_barcode_max,
     ) :
     """
-    Get list of SM barcodes for a given DM barcode
+    Get list of daughter information dictionaries for a range of parent barcodes
     """
     
     assert is_tunnel_open(port = 8113), "Open tunnel to database first."
+    
+    l_parent_infodicts = get_part_ids(
+        barcode_min = parent_barcode_min,
+        barcode_max = parent_barcode_max
+    )
+    
+    l_parent_ids = [_info["id"] for _info in l_parent_infodicts]
     
     dbquery_output = subprocess.run([
         "./python/rhapi.py",
         "-u", "http://localhost:8113",
         "-a",
-        f"select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = '{daughter_parttype}' AND s.PART_PARENT_ID = (select s.ID from mtd_cmsr.parts s where s.BARCODE = '{parent_barcode}')"
+        "-f", "json2",
+        f"select s.PART_PARENT_ID,s.BARCODE,s.KIND_OF_PART from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids))}"
     ], stdout = subprocess.PIPE, check = True)
     
-    l_barcodes = dbquery_output.stdout.decode("utf-8").split()[1:]
-    l_barcodes = [_barcode.strip() for _barcode in l_barcodes]
+    dbquery_output = dbquery_output.stdout.decode("utf-8")
     
-    return l_barcodes
-
-
-#def get_dm_sm_barcodes(barcode) :
-#    """
-#    Get list of SM barcodes for a given DM barcode
-#    """
-#    
-#    dbquery_output = subprocess.run([
-#        "./python/rhapi.py",
-#        "-u", "http://localhost:8113",
-#        f"select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = 'SensorModule' AND s.PART_PARENT_ID = (select s.ID from mtd_cmsr.parts s where s.BARCODE = '{barcode}')"
-#    ], stdout = subprocess.PIPE)
-#    
-#    l_sm_barcode = dbquery_output.stdout.decode("utf-8").split()[1:]
-#    l_sm_barcode = [_barcode.strip() for _barcode in l_sm_barcode]
-#    
-#    return l_sm_barcode
-#
-#
-#def get_dm_feb_barcode(barcode) :
-#    """
-#    Get FEB barcode for a given DM barcode
-#    """
-#    
-#    dbquery_output = subprocess.run([
-#        "./python/rhapi.py",
-#        "-u", "http://localhost:8113",
-#        f"select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = 'FE' AND s.PART_PARENT_ID = (select s.ID from mtd_cmsr.parts s where s.BARCODE = '{barcode}')"
-#    ], stdout = subprocess.PIPE)
-#    
-#    feb_barcode = dbquery_output.stdout.decode("utf-8").split()[1].strip()
-#    
-#    return feb_barcode
+    l_daughter_infodicts = ast.literal_eval(dbquery_output)["data"]
+    
+    # Insert the parent barcode to each daughter part dictionary
+    for infodict in l_daughter_infodicts :
+        
+        parent_info = next((_pinfo for _pinfo in l_parent_infodicts if _pinfo["id"] == infodict["partParentId"]), None)
+        assert (parent_info is not None), "Could not find parent"
+        infodict["parentBarcode"] = parent_info["barcode"]
+    
+    return l_parent_infodicts, l_daughter_infodicts
 
 
 def get_used_sm_barcodes(location_id = None, yamlfile = None, d_dms = None) :
@@ -275,112 +261,9 @@ def get_used_sm_barcodes(location_id = None, yamlfile = None, d_dms = None) :
     return l_sm_barcodes
 
 
-#def get_dm_info(barcode) :
-#    """
-#    Get DM information
-#    """
-#    
-#    id = get_part_id(barcode)
-#    feb = get_dm_feb_barcode(barcode)
-#    l_sms = sorted(get_dm_sm_barcodes(barcode))
-#    
-#    dm = DetectorModule(
-#        id = id,
-#        barcode = barcode,
-#        feb = feb,
-#        sm1 = l_sms[0],
-#        sm2 = l_sms[1],
-#    )
-#    
-#    return dm
-
-
-#def get_all_dm_info(location_id = None, yamlfile = None) :
-#    """
-#    Get the information for all DMs
-#    If yamlfile is provided, will load the information from there
-#    Will fetch the information of addtional DMs from the database if they are not in the file
-#    """
-#    
-#    l_dm_barcode = get_part_barcodes(parttype = constants.DM.KIND_OF_PART, location_id = location_id)
-#    
-#    d_dms = load_dm_info(yamlfile) if yamlfile else {}
-#    
-#    print("Fetching DM information from the database ... ")
-#    
-#    for barcode in tqdm.tqdm(l_dm_barcode) :
-#        
-#        if barcode in d_dms :
-#            
-#            continue
-#            
-#        d_dms[barcode] = get_dm_info(barcode)#.dict()
-#    
-#    print(f"Fetched information for {len(d_dms)} from the database.")
-#    
-#    return d_dms
-
-
-#def load_dm_info(yamlfile) :
-#    """
-#    Load DM info from yamlfile
-#    """
-#    
-#    d_dms = {}
-#    
-#    if (os.path.exists(yamlfile)) :
-#        
-#        print(f"Loading DM information from file: ({yamlfile}) ...")
-#        
-#        with open(yamlfile, "r") as fopen :
-#            
-#            d_dms = yaml.load(fopen.read(), Loader = yaml.RoundTripLoader)
-#        
-#        # Convert dict to DetectorModule object
-#        d_dms = {_key: DetectorModule(**_val) for _key, _val in d_dms.items()}
-#        
-#        print(f"Loaded information for {len(d_dms)} DMs.")
-#    
-#    else :
-#        
-#        print(f"DM information file ({yamlfile}) does not exist. No DM information loaded.")
-#    
-#    return d_dms
-
-
-#def save_all_dm_info(outyamlfile, inyamlfile = None, location_id = None, ret = False) :
-#    """
-#    Load existing DM info from inyamlfile
-#    Fetch additional DM info from database
-#    Save all DM info into outyamlfile
-#    """
-#    
-#    d_dms_orig = get_all_dm_info(yamlfile = inyamlfile, location_id = location_id)
-#    
-#    # Convert DetectorModule object to dict
-#    d_dms = {_key: _val.dict() for _key, _val in d_dms_orig.items()}
-#    
-#    outdir = os.path.dirname(outyamlfile)
-#    
-#    if len(outdir) :
-#        
-#        os.system(f"mkdir -p {outdir}")
-#    
-#    print(f"Saving DM information to file: {outyamlfile} ...")
-#    
-#    with open(outyamlfile, "w") as fopen :
-#        
-#        fopen.write(yaml.dump(d_dms))
-#    
-#    print(f"Saved information for {len(d_dms)} DMs.")
-#    
-#    if ret :
-#        
-#        return d_dms_orig
-
-
 def get_sipm_tec_res(
-    barcode
+    barcode_min,
+    barcode_max
 ) :
     assert is_tunnel_open(port = 8113), "Open tunnel to database first."
     
@@ -388,22 +271,30 @@ def get_sipm_tec_res(
         "./python/rhapi.py",
         "-u", "http://localhost:8113",
         "-a",
-        f"select s.rac from mtd_cmsr.c3060 s where s.part_barcode = '{barcode}'"
+        "-f", "json2",
+        f"select s.part_barcode,s.rac from mtd_cmsr.c3060 s where s.part_barcode >= '{barcode_min}' and s.part_barcode <= '{barcode_max}'"
     ], stdout = subprocess.PIPE, check = True)
     
-    tec_res = None
+    dbquery_output = dbquery_output.stdout.decode("utf-8")
     
-    try :
+    l_tecdicts = ast.literal_eval(dbquery_output)["data"]
+    
+    d_tec_res = {}
+    
+    for tec in l_tecdicts :
         
-        tec_res = dbquery_output.stdout.decode("utf-8").split()[1].strip()
-        tec_res = float(tec_res)
-    
-    except Exception as err:
+        try :
+            
+            barcode = tec["partBarcode"]
+            tec_res = float(tec["rac"])
+            d_tec_res[barcode] = tec_res
         
-        print(f"Error getting TEC resistance of {barcode} :")
-        print(err)
+        except Exception as err:
+            
+            print(f"Error getting TEC resistance of: {tec}")
+            print(err)
     
-    return tec_res
+    return d_tec_res
 
 
 def check_parttype(parttype) :
@@ -418,7 +309,8 @@ def check_parttype(parttype) :
 
 
 def get_part_info(
-        barcode,
+        barcode_min,
+        barcode_max,
         parttype
     ) :
     """
@@ -427,70 +319,101 @@ def get_part_info(
     
     check_parttype(parttype)
     
-    part = None
+    d_parts = {}
     
     if (parttype == constants.SM.KIND_OF_PART) :
         
-        id = get_part_id(barcode)
-        lyso = get_daughter_barcodes(parent_barcode = barcode, daughter_parttype = constants.LYSO.KIND_OF_PART)
-        l_sipms = sorted(get_daughter_barcodes(parent_barcode = barcode, daughter_parttype = constants.SIPM.KIND_OF_PART))
-        
-        if (len(lyso) != 1 or len(l_sipms) != 2) :
-            
-            print(f"Error fetching parts for {parttype} {barcode} :")
-            print(f"  LYSO: {lyso}")
-            print(f"  SiPM: {l_sipms}")
-            #exit(1)
-            
-            return None
-        
-        lyso = lyso[0]
-        
-        part = SensorModule(
-            id = id,
-            barcode = barcode,
-            lyso = lyso,
-            sipm1 = l_sipms[0],
-            sipm2 = l_sipms[1]
+        l_parent_infodicts, l_daughter_infodicts = get_daughter_info(
+            parent_barcode_min = barcode_min,
+            parent_barcode_max = barcode_max
         )
+        
+        print(f"Fetched information for {len(l_parent_infodicts)} {parttype}(s) from the database. Processing ...")
+        for pinfodict in tqdm.tqdm(l_parent_infodicts) :
+            
+            id = pinfodict["id"]
+            barcode = pinfodict["barcode"]
+        
+            lyso = next((_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.LYSO.KIND_OF_PART and _info["partParentId"] == id)), None)
+            l_sipms = natural_sort([_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.SIPM.KIND_OF_PART and _info["partParentId"] == id)])
+            part = None
+            
+            if (lyso is None or len(l_sipms) != 2) :
+                
+                print(f"Error fetching parts for {parttype} {barcode} :")
+                print(f"  LYSO: {lyso}")
+                print(f"  SiPM: {l_sipms}")
+            
+            else :
+                
+                part = SensorModule(
+                    id = str(id),
+                    barcode = str(barcode),
+                    lyso = str(lyso),
+                    sipm1 = l_sipms[0],
+                    sipm2 = l_sipms[1]
+                )
+            
+            d_parts[barcode] = part
+    
     
     elif (parttype == constants.DM.KIND_OF_PART) :
         
-        id = get_part_id(barcode)
-        feb = get_daughter_barcodes(parent_barcode = barcode, daughter_parttype = constants.FE.KIND_OF_PART)
-        l_sms = get_daughter_barcodes(parent_barcode = barcode, daughter_parttype = constants.SM.KIND_OF_PART)
-        
-        if (len(feb) != 1 or len(l_sms) != 2) :
-            
-            print(f"Error fetching parts for {parttype} {barcode} :")
-            print(f"  FEB: {feb}")
-            print(f"  SM: {l_sms}")
-            #exit(1)
-            
-            return None
-        
-        feb = feb[0]
-        
-        part = DetectorModule(
-            id = id,
-            barcode = barcode,
-            feb = feb,
-            sm1 = l_sms[0],
-            sm2 = l_sms[1]
+        l_parent_infodicts, l_daughter_infodicts = get_daughter_info(
+            parent_barcode_min = barcode_min,
+            parent_barcode_max = barcode_max
         )
+        
+        print(f"Fetched information for {len(l_parent_infodicts)} {parttype}(s) from the database. Processing ...")
+        for pinfodict in tqdm.tqdm(l_parent_infodicts) :
+            
+            id = pinfodict["id"]
+            barcode = pinfodict["barcode"]
+            
+            feb = next((_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.FE.KIND_OF_PART and _info["partParentId"] == id)), None)
+            l_sms = natural_sort([_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.SM.KIND_OF_PART and _info["partParentId"] == id)])
+            part = None
+            
+            if (feb is None or len(l_sms) != 2) :
+                
+                print(f"Error fetching parts for {parttype} {barcode} :")
+                print(f"  FEB: {feb}")
+                print(f"  SM: {l_sms}")
+            
+            else :
+                
+                part = DetectorModule(
+                    id = str(id),
+                    barcode = str(barcode),
+                    feb = str(feb),
+                    sm1 = l_sms[0],
+                    sm2 = l_sms[1]
+                )
+            
+            d_parts[barcode] = part
+    
     
     elif (parttype == constants.SIPM.KIND_OF_PART) :
         
-        id = get_part_id(barcode)
-        tec_res = get_sipm_tec_res(barcode = barcode)
+        l_infodicts = get_part_ids(barcode_min = barcode_min, barcode_max = barcode_max)
+        d_tec_res = get_sipm_tec_res(barcode_min = barcode_min, barcode_max = barcode_max)
         
-        part = SiPMArray(
-            id = id,
-            barcode = barcode,
-            tec_res = tec_res
-        )
+        print(f"Fetched information for {len(l_infodicts)} {parttype}(s) from the database. Processing ...")
+        for infodict in tqdm.tqdm(l_infodicts) :
+            
+            id = infodict["id"]
+            barcode = infodict["barcode"]
+            tec_res = d_tec_res[barcode]
+            
+            part = SiPMArray(
+                id = str(id),
+                barcode = str(barcode),
+                tec_res = tec_res
+            )
+            
+            d_parts[barcode] = part
     
-    return part
+    return d_parts
 
 
 def get_all_part_info(parttype, location_id = None, yamlfile = None) :
@@ -502,25 +425,65 @@ def get_all_part_info(parttype, location_id = None, yamlfile = None) :
     
     check_parttype(parttype)
     
-    l_part_barcodes = get_part_barcodes(parttype = parttype, location_id = location_id)
-    
     d_parts = load_part_info(parttype = parttype, yamlfile = yamlfile) if yamlfile else {}
     
     print(f"Fetching {parttype} information from the database ... ")
+    l_part_barcodes = get_part_barcodes(parttype = parttype, location_id = location_id)
+    print(f"Found {len(l_part_barcodes)} {parttype}(s) on the database.")
     
-    for barcode in tqdm.tqdm(l_part_barcodes) :
-        
-        if barcode in d_parts :
-            
-            continue
-            
-        part_info = get_part_info(barcode = barcode, parttype = parttype)
-        
-        if (part_info) :
-            
-            d_parts[barcode] = part_info
+    # Only fetch the ones that have not alreday been loaded
+    l_part_barcodes = list(set(l_part_barcodes) - set(list(d_parts.keys())))
+    print(f"Fetching {len(l_part_barcodes)} {parttype}(s) from the database ...")
     
-    print(f"Fetched information for {len(d_parts)} from the database.")
+    # Group the barcodes and then use ranges to fetch from database
+    # Significantly faster than looping over barcodes
+    l_part_barcodes_int = sorted([int(_bc) for _bc in l_part_barcodes])
+    l_barcode_groups_tmp = [list(group) for group in more_itertools.consecutive_groups(l_part_barcodes_int)]
+    
+    # Merge groups if they span < 500
+    # Otherwise there can be too many groups which takes a long time to query
+    # However, this may add additional barcodes that are not needed (such as those not at the desired location)
+    # Filter them out later
+    l_barcode_groups = []
+    for igroup, group in enumerate(l_barcode_groups_tmp) :
+        
+        if (not l_barcode_groups) :
+            
+            l_barcode_groups.append(group)
+        
+        else :
+            
+            barcode_min = l_barcode_groups[-1][1]
+            barcode_max = group[-1] if (len(group) > 1) else group[0]
+            
+            if (barcode_max-barcode_min) < 500 :
+                
+                l_barcode_groups[-1].extend(group)
+            
+            else :
+                
+                l_barcode_groups.append(group)
+    
+    for igroup, group in enumerate(l_barcode_groups) :
+        
+        #print(group)
+        barcode_min = group[0]
+        barcode_max = group[-1] if (len(group) > 1) else group[0]
+        
+        print(f"Fetching barcode group {igroup+1}/{len(l_barcode_groups)} having {len(group)} {parttype}(s) ...")
+        
+        d_parts_fetched = get_part_info(
+            barcode_min = str(barcode_min),
+            barcode_max = str(barcode_max),
+            parttype = parttype
+        )
+        
+        # Filter out the additional barcodes
+        d_parts_fetched = {_key: _val for _key, _val in d_parts_fetched.items() if _key in l_part_barcodes}
+        
+        d_parts.update(d_parts_fetched)
+    
+    print(f"Found information for {len(d_parts)} {parttype}(s) in total.")
     
     return d_parts
 
@@ -536,7 +499,7 @@ def load_part_info(parttype, yamlfile) :
     
     if (os.path.exists(yamlfile)) :
         
-        print(f"Loading {parttype} information from file: ({yamlfile}) ...")
+        print(f"Loading {parttype} information from file: {yamlfile} ...")
         
         with open(yamlfile, "r") as fopen :
             
