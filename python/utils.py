@@ -416,7 +416,7 @@ def get_part_info(
     return d_parts
 
 
-def get_all_part_info(parttype, location_id = None, yamlfile = None) :
+def get_all_part_info(parttype, location_id = None, yamlfile = None, nodb = False) :
     """
     Get the information for all parts
     If yamlfile is provided, will load the information from there
@@ -427,61 +427,63 @@ def get_all_part_info(parttype, location_id = None, yamlfile = None) :
     
     d_parts = load_part_info(parttype = parttype, yamlfile = yamlfile) if yamlfile else {}
     
-    print(f"Fetching {parttype} information from the database ... ")
-    l_part_barcodes = get_part_barcodes(parttype = parttype, location_id = location_id)
-    print(f"Found {len(l_part_barcodes)} {parttype}(s) on the database.")
-    
-    # Only fetch the ones that have not alreday been loaded
-    l_part_barcodes = list(set(l_part_barcodes) - set(list(d_parts.keys())))
-    print(f"Fetching {len(l_part_barcodes)} {parttype}(s) from the database ...")
-    
-    # Group the barcodes and then use ranges to fetch from database
-    # Significantly faster than looping over barcodes
-    l_part_barcodes_int = sorted([int(_bc) for _bc in l_part_barcodes])
-    l_barcode_groups_tmp = [list(group) for group in more_itertools.consecutive_groups(l_part_barcodes_int)]
-    
-    # Merge groups if they span < 500
-    # Otherwise there can be too many groups which takes a long time to query
-    # However, this may add additional barcodes that are not needed (such as those not at the desired location)
-    # Filter them out later
-    l_barcode_groups = []
-    for igroup, group in enumerate(l_barcode_groups_tmp) :
+    if (not nodb) :
+         
+        print(f"Fetching {parttype} information from the database ... ")
+        l_part_barcodes = get_part_barcodes(parttype = parttype, location_id = location_id)
+        print(f"Found {len(l_part_barcodes)} {parttype}(s) on the database.")
         
-        if (not l_barcode_groups) :
-            
-            l_barcode_groups.append(group)
+        # Only fetch the ones that have not already been loaded
+        l_part_barcodes = list(set(l_part_barcodes) - set(list(d_parts.keys())))
+        print(f"Fetching {len(l_part_barcodes)} {parttype}(s) from the database ...")
         
-        else :
+        # Group the barcodes and then use ranges to fetch from database
+        # Significantly faster than looping over barcodes
+        l_part_barcodes_int = sorted([int(_bc) for _bc in l_part_barcodes])
+        l_barcode_groups_tmp = [list(group) for group in more_itertools.consecutive_groups(l_part_barcodes_int)]
+        
+        # Merge groups if they span < 500
+        # Otherwise there can be too many groups which takes a long time to query
+        # However, this may add additional barcodes that are not needed (such as those not at the desired location)
+        # Filter them out later
+        l_barcode_groups = []
+        for igroup, group in enumerate(l_barcode_groups_tmp) :
             
-            barcode_min = l_barcode_groups[-1][1]
-            barcode_max = group[-1] if (len(group) > 1) else group[0]
-            
-            if (barcode_max-barcode_min) < 500 :
+            if (not l_barcode_groups) :
                 
-                l_barcode_groups[-1].extend(group)
+                l_barcode_groups.append(group)
             
             else :
                 
-                l_barcode_groups.append(group)
-    
-    for igroup, group in enumerate(l_barcode_groups) :
+                barcode_min = l_barcode_groups[-1][1]
+                barcode_max = group[-1] if (len(group) > 1) else group[0]
+                
+                if (barcode_max-barcode_min) < 500 :
+                    
+                    l_barcode_groups[-1].extend(group)
+                
+                else :
+                    
+                    l_barcode_groups.append(group)
         
-        #print(group)
-        barcode_min = group[0]
-        barcode_max = group[-1] if (len(group) > 1) else group[0]
-        
-        print(f"Fetching barcode group {igroup+1}/{len(l_barcode_groups)} having {len(group)} {parttype}(s) ...")
-        
-        d_parts_fetched = get_part_info(
-            barcode_min = str(barcode_min),
-            barcode_max = str(barcode_max),
-            parttype = parttype
-        )
-        
-        # Filter out the additional barcodes
-        d_parts_fetched = {_key: _val for _key, _val in d_parts_fetched.items() if _key in l_part_barcodes}
-        
-        d_parts.update(d_parts_fetched)
+        for igroup, group in enumerate(l_barcode_groups) :
+            
+            #print(group)
+            barcode_min = group[0]
+            barcode_max = group[-1] if (len(group) > 1) else group[0]
+            
+            print(f"Fetching barcode group {igroup+1}/{len(l_barcode_groups)} having {len(group)} {parttype}(s) ...")
+            
+            d_parts_fetched = get_part_info(
+                barcode_min = str(barcode_min),
+                barcode_max = str(barcode_max),
+                parttype = parttype
+            )
+            
+            # Filter out the additional barcodes
+            d_parts_fetched = {_key: _val for _key, _val in d_parts_fetched.items() if _key in l_part_barcodes}
+            
+            d_parts.update(d_parts_fetched)
     
     print(f"Found information for {len(d_parts)} {parttype}(s) in total.")
     
@@ -540,7 +542,7 @@ def combine_parts(d_sipms, d_sms, d_dms) :
         dminfo.sm2 = d_sms.get(dminfo.sm2, dminfo.sm2)
 
 
-def save_all_part_info(parttype, outyamlfile, inyamlfile = None, location_id = None, ret = False) :
+def save_all_part_info(parttype, outyamlfile, inyamlfile = None, location_id = None, ret = False, nodb = False) :
     """
     Load existing part info from inyamlfile
     Fetch additional part info from database
@@ -549,7 +551,7 @@ def save_all_part_info(parttype, outyamlfile, inyamlfile = None, location_id = N
     
     check_parttype(parttype)
     
-    d_parts_orig = get_all_part_info(parttype = parttype, yamlfile = inyamlfile, location_id = location_id)
+    d_parts_orig = get_all_part_info(parttype = parttype, yamlfile = inyamlfile, location_id = location_id, nodb = nodb)
     
     # Convert DetectorModule object to dict
     d_parts = {_key: _val.dict() for _key, _val in d_parts_orig.items()}

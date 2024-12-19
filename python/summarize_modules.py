@@ -65,7 +65,7 @@ def main() :
         "--plotcfg",
         help = "YAML file with plot configurations.\n   ",
         type = str,
-        required = True,
+        required = False,
     )
     
     parser.add_argument(
@@ -110,7 +110,7 @@ def main() :
     
     parser.add_argument(
         "--dminfo",
-        help = "YAML file with DM information.\n   ",
+        help = "YAML file with DM information. Will update the file with additional DMs on the database, if --pairsms is passed.\n   ",
         type = str,
         required = False,
     )
@@ -120,6 +120,28 @@ def main() :
         help = "YAML file with module categorization configuration.\n   ",
         type = str,
         required = True,
+    )
+    
+    parser.add_argument(
+        "--pairsms",
+        help = "Will pair SMs using the \"pairing\" metric in the categorization configuration \n   ",
+        action = "store_true",
+        default = False
+    )
+    
+    parser.add_argument(
+        "--location",
+        help = "Location \n   ",
+        type = str,
+        required = False,
+        choices = [_loc for _loc in dir(constants.LOCATION) if not _loc.startswith("__")],
+    )
+    
+    parser.add_argument(
+        "--nodb",
+        help = "Will not fetch information from the database \n   ",
+        action = "store_true",
+        default = False
     )
     
     parser.add_argument(
@@ -144,21 +166,21 @@ def main() :
     
     if (args.sipminfo) :
         
-        print("Loading SiPM information from {args.sipminfo} ...")
+        #print(f"Loading SiPM information from {args.sipminfo} ...")
         d_loaded_part_info[constants.SIPM.KIND_OF_PART] = utils.load_part_info(parttype = constants.SIPM.KIND_OF_PART, yamlfile = args.sipminfo)
-        print(f"Loaded information for {len(d_loaded_part_info[constants.SIPM.KIND_OF_PART])} SiPMs.")
+        #print(f"Loaded information for {len(d_loaded_part_info[constants.SIPM.KIND_OF_PART])} SiPMs.")
     
     if (args.sminfo) :
         
-        print("Loading SM information from {args.sminfo} ...")
+        #print(f"Loading SM information from {args.sminfo} ...")
         d_loaded_part_info[constants.SM.KIND_OF_PART] = utils.load_part_info(parttype = constants.SM.KIND_OF_PART, yamlfile = args.sminfo)
-        print(f"Loaded information for {len(d_loaded_part_info[constants.SM.KIND_OF_PART])} SMs.")
+        #print(f"Loaded information for {len(d_loaded_part_info[constants.SM.KIND_OF_PART])} SMs.")
     
     if (args.dminfo) :
         
-        print("Loading DM information from {args.dminfo} ...")
+        #print(f"Loading DM information from {args.dminfo} ...")
         d_loaded_part_info[constants.DM.KIND_OF_PART] = utils.load_part_info(parttype = constants.DM.KIND_OF_PART, yamlfile = args.dminfo)
-        print(f"Loaded information for {len(d_loaded_part_info[constants.DM.KIND_OF_PART])} DMs.")
+        #print(f"Loaded information for {len(d_loaded_part_info[constants.DM.KIND_OF_PART])} DMs.")
     
     print("Combining parts ...")
     utils.combine_parts(
@@ -249,11 +271,13 @@ def main() :
     print()
     
     # Read the plot config yaml
-    d_plotcfgs = None
+    d_plotcfgs = {}
     
-    with open(args.plotcfg, "r") as fopen :
+    if (args.plotcfg) :
         
-        d_plotcfgs = yaml.load(fopen.read())
+        with open(args.plotcfg, "r") as fopen :
+            
+            d_plotcfgs = yaml.load(fopen.read())
     
     # Read the category config yaml
     d_catcfgs = None
@@ -490,22 +514,85 @@ def main() :
                 lumiText = "Phase-2"
             )
     
-    #l_files_to_copy = [
-    #    args.plotcfg,
-    #    args.sminfo,
-    #    args.catcfg,
-    #]
     
     # Save the categorization
     outfname = f"{args.outdir}/module_categorization.yaml"
-    print(f"Writing categorizations to file ...")
+    print(f"Writing categorizations to: {outfname}")
     
     with open(outfname, "w") as fopen:
         
         yaml.dump(d_cat_results, fopen)
     
-    print(f"Written categorizations to file: {outfname}")
-
+    
+    # Pair SMs
+    if (args.pairsms) :
+        
+        d_cat_pairs = {}
+        
+        d_produced_dms = utils.save_all_part_info(
+            parttype = constants.DM.KIND_OF_PART,
+            outyamlfile = args.dminfo,
+            inyamlfile = args.dminfo,
+            location_id = vars(constants.LOCATION)[args.location],
+            ret = True,
+            nodb = args.nodb
+        )
+        
+        l_used_sms = list(itertools.chain(*[[_dm.sm1, _dm.sm2] for _dm in d_produced_dms.values()]))
+        
+        for cat in d_cat_results["categories"].keys() :
+            
+            #l_sms = [{_sm: d_cat_results["results"][_sm]} for _sm in d_cat_results["modules"][cat] if _sm not in l_used_sms]
+            l_sms = [{
+                "barcode": _sm,
+                "pairing": d_cat_results["results"][_sm]["pairing"],
+            } for _sm in d_cat_results["modules"][cat] if _sm not in l_used_sms]
+            #l_sms = [_sm for _sm in l_sms if _sm not in l_used_sms]
+            n_sms = len(l_sms)
+            
+            l_sms_sorted = sorted(l_sms, key = lambda _sm: _sm["pairing"])
+            
+            #print()
+            print(f"Finding pairs in {n_sms} category {cat} SMs ...")
+            
+            l_sm_groups = [l_sms_sorted[_i: _i+2] if (_i < n_sms-1) else l_sms_sorted[_i: _i+1] for _i in range(0, n_sms, 2)]
+            l_sm_pairs = [sorted(_pair, key = lambda _x: int(_x["barcode"])) for _pair in l_sm_groups if len(_pair) == 2]
+            
+            d_cat_pairs[cat] = l_sm_pairs
+            
+            outfname = f"{args.outdir}/sm-pairs_cat-{cat}.csv"
+            print(f"Writing pairing results to: {outfname} ...")
+            with open(outfname, "w") as fopen :
+                
+                print("#sm1 barcode , sm2 barcode , sm1 metric , sm2 metric", file = fopen)
+                for pair in l_sm_pairs :
+                    
+                    print(f"{pair[0]['barcode']} , {pair[1]['barcode']} , {pair[0]['pairing']:.2f} , {pair[1]['pairing']:.2f}", file = fopen)
+    
+    
+    # Save arguments
+    outfname = f"{args.outdir}/arguments.yaml"
+    print(f"Writing program arguments to: {outfname} ...")
+    with open(outfname, "w") as fopen:
+        
+        yaml.dump(vars(args), fopen)
+    
+    # Copy relevant files to the output directory for reference
+    l_files_to_copy = [
+        *args.skipmodules,
+        args.plotcfg,
+        args.catcfg,
+        args.sipminfo,
+        args.sminfo,
+        args.dminfo,
+    ]
+    
+    l_files_to_copy = [_f for _f in l_files_to_copy if _f and os.path.isfile(_f)]
+    
+    for fname in l_files_to_copy :
+        
+        print(f"Copying {fname} to {args.outdir} ...")
+        os.system(f"cp {fname} {args.outdir}/")
 
 
 if __name__ == "__main__" :
