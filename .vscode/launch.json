@@ -1,0 +1,90 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        
+        {
+            "name": "Python Debugger: transfer-files.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/python/transfer-files.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args" : ["--srcs", "tmp/src", "--dest", "sobhatta@login-2.ultralight.org:/storage/af/user/sobhatta/public", "--destlocal", "/home/soham/mnt/caltech_afs_sobhatta"]
+            //"args" : ["--srcs", "tmp/src", "--dest", "sobhatta@login-2.ultralight.org:/storage/af/user/sobhatta/public", "--destlocal", "/home/soham/mnt/caltech_afs_sobhatta", "--sumonly"]
+            //"args" : ["--srcs", "tmp/src", "--dest", "sobhatta@login-2.ultralight.org:/storage/af/user/sobhatta/public", "--destlocal", "/home/soham/mnt/caltech_afs_sobhatta", "--cmponly", "sum"]
+        },
+        
+        {
+            "name": "Python Debugger: pair_sms",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/python/summarize_modules.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args" : [
+                "--srcs", "/media/soham/D/Programs/Caltech/MTD/BTL/btl-production/data/QAQC_SM/qaqc-gui_output/SM_QAQC_Production",
+                "--regexp", "run(?P<run>\\d+)/module_(?P<barcode>\\d+)_analysis_both_calibs.root",
+                "--moduletype", "SensorModule",
+                "--catcfg", "configs/cit/config_sm_categorization.yaml",
+                "--outdir", "results/cit/sm_summary/w-calib",
+                "--skipmodules", "info/cit/skip_sms.txt",
+                "--sminfo", "info/cit/sm_info.yaml",
+                "--dminfo", "info/cit/dm_info.yaml",
+                "--pairsms",
+                "--location", "CIT"
+                
+            ]
+        },
+        
+        {
+            "name": "Python Debugger: plot_sm_summary",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/python/summarize_modules.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args" : [
+                "--srcs", "/media/soham/D/Programs/Caltech/MTD/BTL/btl-production/data/QAQC_SM/qaqc-gui_output/SM_QAQC_Production",
+                "--regexp", "run(?P<run>\\d+)/module_(?P<barcode>\\d+)_analysis_both_calibs.root",
+                "--moduletype", "SensorModule",
+                "--plotcfg", "configs/cit/config_sm_summary.yaml",
+                "--catcfg", "configs/cit/config_sm_categorization.yaml",
+                "--outdir", "results/cit/sm_summary/w-calib",
+                "--skipmodules", "info/cit/skip_sms.txt",
+                "--sminfo", "info/cit/sm_info.yaml"
+            ]
+        },
+        
+        {
+            "name": "Python Debugger: plot_dm_summary",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/python/summarize_modules.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args" : [
+                "--srcs", "/media/soham/D/Programs/Caltech/MTD/BTL/btl-production/data/QAQC_DM/plots_w-offset",
+                "--regexp", "run-(?P<run>\\d+)_DM-(?P<barcode>\\d+).root",
+                "--moduletype", "DetectorModule",
+                "--plotcfg", "configs/cit/config_dm_summary.yaml",
+                "--catcfg", "configs/cit/config_dm_categorization.yaml",
+                "--outdir", "results/cit/dm_summary",
+                "--sipminfo", "info/cit/sipm_info.yaml",
+                "--sminfo", "info/cit/sm_info.yaml",
+                "--dminfo", "info/cit/dm_info.yaml",
+                "--skipmodules", "32110040004215"
+            ]
+        }
+    ]
+}
