@@ -223,7 +223,7 @@ def get_daughter_info(
         "-u", "http://localhost:8113",
         "-a",
         "-f", "json2",
-        f"select s.PART_PARENT_ID,s.BARCODE,s.KIND_OF_PART from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids))}"
+        f"select s.PART_PARENT_ID,s.BARCODE,s.KIND_OF_PART from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}" # Remove the trailing comma in a single element tuple: (X,)
     ], stdout = subprocess.PIPE, check = True)
     
     dbquery_output = dbquery_output.stdout.decode("utf-8")

@@ -3,8 +3,8 @@
 USER=$1
 
 if [ -z "${USER}" ]; then
-    echo "Error."
-    echo "Usage: start_db_tunnel.sh <lxplus username>"
+    echo "Error. Usage:"
+    echo "start_db_tunnel.sh <lxplus username>"
     exit 1
 fi
 
