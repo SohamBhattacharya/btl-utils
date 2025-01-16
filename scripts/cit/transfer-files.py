@@ -5,7 +5,7 @@ import glob
 import os
 import psutil
 
-import utils
+import python.utils as utils
 
 
 def get_file_details(f) :
