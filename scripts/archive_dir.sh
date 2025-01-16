@@ -22,7 +22,7 @@ if [ ! -f $OUTPUT ]; then
 else
     echo "Updating $OUTPUT"
     # The u flag will only update the tar file with new content
-    tar ucfv $OUTPUT $DIRNAME
+    tar ufv $OUTPUT $DIRNAME
 fi
 
 
