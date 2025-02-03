@@ -17,11 +17,11 @@
 ## Get module and parts info from database
 
 * Run the scripts to get the information from the database
-* Create the script for your BAC (under the corresponding directory) if not already there. For e.g.
+* Create the script for your BAC (under `scripts/<bac>`) if not already there. For e.g.
   - `./scripts/cit/get_sipm_info.py`
   - `./scripts/cit/get_dm_info.py`
   - `./scripts/cit/get_sm_info.py`
-* Simply changing `location_id = constants.LOCATION.XYZ` should be enough (`XYZ = CIT, UVA, MIB, PKU`).
+* Simply changing `location_id = constants.LOCATION.BAC` should be enough (`BAC = CIT, UVA, MIB, PKU`).
 
 ## Module summaries
 
