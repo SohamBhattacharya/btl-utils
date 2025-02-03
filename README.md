@@ -16,12 +16,24 @@
 
 ## Get module and parts info from database
 
-* Run the scripts to get the information from the database
 * Create the script for your BAC (under `scripts/<bac>`) if not already there. For e.g.
   - `./scripts/cit/get_sipm_info.py`
-  - `./scripts/cit/get_dm_info.py`
   - `./scripts/cit/get_sm_info.py`
-* Simply changing `location_id = constants.LOCATION.BAC` should be enough (`BAC = CIT, UVA, MIB, PKU`).
+  - `./scripts/cit/get_dm_info.py`
+
+* Make BAC specific changes, for example:
+  ```python
+  utils.save_all_part_info(
+    parttype = constants.SM.KIND_OF_PART,
+    outyamlfile = "info/cit/sm_info.yaml",
+    inyamlfile = "info/cit/sm_info.yaml",
+    location_id = constants.LOCATION.CIT,
+    ret = False
+  )
+  ```
+  `<bac> = cit, uva, mib, pku`<br>
+  `<BAC> = CIT, UVA, MIB, PKU`
+* Run the scripts to get the information from the database
 
 ## Module summaries
 
