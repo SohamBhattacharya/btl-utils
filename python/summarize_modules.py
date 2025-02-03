@@ -221,7 +221,7 @@ def main() :
         
         else :
             
-            l_toproc_modules.append(toskip)
+            l_toproc_modules.append(toproc)
     
     for toskip in args.skipmodules :
         
@@ -248,6 +248,10 @@ def main() :
             
             #print(f"Skipping module {barcode}")
             l_skipped_modules.append(barcode)
+            continue
+        
+        if (l_toproc_modules and barcode not in l_toproc_modules) :
+            
             continue
         
         # If the module is repeated, only use the latest run
