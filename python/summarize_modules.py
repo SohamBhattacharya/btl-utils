@@ -43,7 +43,7 @@ def main() :
     
     parser.add_argument(
         "--srcs",
-        help = "Source directories.\n   ",
+        help = "Source directories.\n",
         type = str,
         nargs = "+",
         required = True,
@@ -52,10 +52,10 @@ def main() :
     parser.add_argument(
         "--regexp",
         help = (
-            "Keyed regular expression to extract run and barcode from the file name.\n   "
-            "module example: \"run(?P<run>\\d+)/module_(?P<barcode>\\d+)_analysis_both_calibs.root\"\n   "
+            "Keyed regular expression to extract run and barcode from the file name.\n"
+            "SM example: \"run(?P<run>\\d+)/module_(?P<barcode>\\d+)_analysis_both_calibs.root\"\n"
             "DM example: \"run-(?P<run>\\d+)_DM-(?P<barcode>\\d+).root\""
-            "\n   "
+            "\n"
         ),
         type = str,
         required = True,
@@ -63,22 +63,31 @@ def main() :
     
     parser.add_argument(
         "--plotcfg",
-        help = "YAML file with plot configurations.\n   ",
+        help = "YAML file with plot configurations.\n",
         type = str,
         required = False,
     )
     
     parser.add_argument(
         "--moduletype",
-        help = "Module type.\n   ",
+        help = "Module type.\n",
         type = str,
         required = True,
         choices = [constants.SM.KIND_OF_PART, constants.DM.KIND_OF_PART]
     )
     
     parser.add_argument(
+        "--modules",
+        help = "Only process this list of modules (or files with a barcode per line) to, unless it is in the skipmodules list.\n",
+        type = str,
+        nargs = "+",
+        required = False,
+        default = [],
+    )
+    
+    parser.add_argument(
         "--skipmodules",
-        help = "List of SM barcodes (or files with a barcode per line) to skip.\n   ",
+        help = "List of modules (or files with a barcode per line) to skip.\n",
         type = str,
         nargs = "+",
         required = False,
@@ -87,7 +96,7 @@ def main() :
     
     parser.add_argument(
         "--skipruns",
-        help = "List of runs to skip.\n   ",
+        help = "List of runs to skip.\n",
         type = int,
         nargs = "+",
         required = False,
@@ -96,42 +105,46 @@ def main() :
     
     parser.add_argument(
         "--sipminfo",
-        help = "YAML file with SiPM information.\n   ",
+        help = "YAML file with SiPM information.\n",
         type = str,
         required = False,
     )
     
     parser.add_argument(
         "--sminfo",
-        help = "YAML file with module information.\n   ",
+        help = "YAML file with module information.\n",
         type = str,
         required = False,
     )
     
     parser.add_argument(
         "--dminfo",
-        help = "YAML file with DM information. Will update the file with additional DMs on the database, if --pairsms is passed.\n   ",
+        help = (
+            "YAML file with DM information.\n"
+            "Will update the file with additional DMs on the database, if --pairsms is passed.\n"
+            "This is needed if one wants to omit the already used SMs from the pairing.\n"
+        ),
         type = str,
         required = False,
     )
     
     parser.add_argument(
         "--catcfg",
-        help = "YAML file with module categorization configuration.\n   ",
+        help = "YAML file with module categorization configuration.\n",
         type = str,
         required = True,
     )
     
     parser.add_argument(
         "--pairsms",
-        help = "Will pair SMs using the \"pairing\" metric in the categorization configuration \n   ",
+        help = "Will pair SMs using the \"pairing\" metric in the categorization configuration \n",
         action = "store_true",
         default = False
     )
     
     parser.add_argument(
         "--location",
-        help = "Location \n   ",
+        help = "Location \n",
         type = str,
         required = False,
         choices = [_loc for _loc in dir(constants.LOCATION) if not _loc.startswith("__")],
@@ -139,14 +152,14 @@ def main() :
     
     parser.add_argument(
         "--nodb",
-        help = "Will not fetch information from the database \n   ",
+        help = "Will not fetch information from the database \n",
         action = "store_true",
         default = False
     )
     
     parser.add_argument(
         "--outdir",
-        help = "Output directory.\n   ",
+        help = "Output directory.\n",
         type = str,
         required = True,
     )
@@ -193,10 +206,22 @@ def main() :
     # Get list of modules
     print(f"Parsing {len(l_fnames)} files to get modules to process ...")
     
+    l_toproc_modules = []
     l_toskip_modules = []
     l_skipped_modules = []
     l_duplicate_modules = []
     d_modules = sortedcontainers.SortedDict()
+    
+    for toproc in args.modules :
+        
+        if (os.path.isfile(toproc)) :
+            
+            l_tmp = numpy.loadtxt(toproc, dtype = str).flatten()
+            l_toproc_modules.extend(l_tmp)
+        
+        else :
+            
+            l_toproc_modules.append(toskip)
     
     for toskip in args.skipmodules :
         
@@ -297,6 +322,7 @@ def main() :
     print(f"Processing {len(d_modules)} modules ...")
     
     d_ones = {}
+    l_modules_nodata = []
     
     for module in tqdm.tqdm(d_modules.values()) :
         
@@ -360,16 +386,22 @@ def main() :
                     
                     nelements = len(plot_arr)
                     
-                    # Create and store arrays of ones of specific lengths; no need to recreate them everytime
-                    if nelements not in d_ones :
+                    if nelements :
                         
-                        d_ones[nelements] = numpy.ones(nelements)
+                        # Create and store arrays of ones of specific lengths; no need to recreate them everytime
+                        if nelements not in d_ones :
+                            
+                            d_ones[nelements] = numpy.ones(nelements)
+                        
+                        #print(module.barcode, plot_arr)
+                        
+                        entrycfg["hist"].FillN(
+                            nelements,
+                            plot_arr,
+                            d_ones[nelements]
+                        )
                     
-                    entrycfg["hist"].FillN(
-                        nelements,
-                        plot_arr,
-                        d_ones[nelements]
-                    )
+                    l_modules_nodata.append((module, plotname, entryname))
                 
                 elif (plotcfg["type"] == "graph") :
                     
@@ -400,6 +432,10 @@ def main() :
                         print(f"  x[{len(plotx_arr)}]: {plotx_arr}")
                         print(f"  y[{len(ploty_arr)}]: {ploty_arr}")
                         sys.exit(1)
+                    
+                    if (not len(plotx_arr) or not len(ploty_arr)) :
+                        
+                        l_modules_nodata.append((module, plotname, entryname))
                     
                     for plotx, ploty in numpy.dstack((plotx_arr, ploty_arr))[0] :
                         
@@ -593,6 +629,13 @@ def main() :
         
         print(f"Copying {fname} to {args.outdir} ...")
         os.system(f"cp {fname} {args.outdir}/")
+    
+    if len(l_modules_nodata) :
+        
+        print(f"No data found for the following {len(l_modules_nodata)} modules:")
+        for module, plotname, entryname in l_modules_nodata:
+            
+            print(f"[barcode {module.barcode}] [plot {plotname}] [entry {entryname}]")
 
 
 if __name__ == "__main__" :
