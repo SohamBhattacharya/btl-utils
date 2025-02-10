@@ -57,6 +57,7 @@ class SensorModule :
     lyso: str = None
     sipm1: str = None
     sipm2: str = None
+    prod_datime: str = None
     
     def dict(self) :
         
@@ -71,6 +72,7 @@ class DetectorModule :
     feb: str = None
     sm1: str = None
     sm2: str = None
+    prod_datime: str = None
     
     def dict(self) :
         
@@ -163,7 +165,8 @@ def get_part_ids(barcode_min, barcode_max) :
         "-u", "http://localhost:8113",
         "-a",
         "-f", "json2",
-        f"select s.ID,s.BARCODE from mtd_cmsr.parts s where s.BARCODE >= '{barcode_min}' and s.BARCODE <='{barcode_max}'"
+        #f"select s.ID,s.BARCODE from mtd_cmsr.parts s where s.BARCODE >= '{barcode_min}' and s.BARCODE <='{barcode_max}'"
+        f"select s.* from mtd_cmsr.parts s where s.BARCODE >= '{barcode_min}' and s.BARCODE <='{barcode_max}'"
     ], stdout = subprocess.PIPE, check = True)
     
     dbquery_output = dbquery_output.stdout.decode("utf-8")
@@ -183,6 +186,7 @@ def get_part_barcodes(
     assert is_tunnel_open(port = 8113), "Open tunnel to database first."
     
     query = f"select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = '{parttype}'"
+    #query = f"select s.* from mtd_cmsr.parts s where s.KIND_OF_PART = '{parttype}'"
     
     if (location_id is not None) :
         
@@ -223,14 +227,15 @@ def get_daughter_info(
         "-u", "http://localhost:8113",
         "-a",
         "-f", "json2",
-        f"select s.PART_PARENT_ID,s.BARCODE,s.KIND_OF_PART from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}" # Remove the trailing comma in a single element tuple: (X,)
+        #f"select s.PART_PARENT_ID,s.BARCODE,s.KIND_OF_PART from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}" # Remove the trailing comma in a single element tuple: (X,)
+        f"select s.* from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}" # Remove the trailing comma in a single element tuple: (X,)
     ], stdout = subprocess.PIPE, check = True)
     
     dbquery_output = dbquery_output.stdout.decode("utf-8")
     
     l_daughter_infodicts = ast.literal_eval(dbquery_output)["data"]
     
-    # Insert the parent barcode to each daughter part dictionary
+    # Insert the parent barcode in each daughter part dictionary
     for infodict in l_daughter_infodicts :
         
         parent_info = next((_pinfo for _pinfo in l_parent_infodicts if _pinfo["id"] == infodict["partParentId"]), None)
@@ -333,6 +338,7 @@ def get_part_info(
             
             id = pinfodict["id"]
             barcode = pinfodict["barcode"]
+            prod_datime = pinfodict["productionDate"]
         
             lyso = next((_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.LYSO.KIND_OF_PART and _info["partParentId"] == id)), None)
             l_sipms = natural_sort([_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.SIPM.KIND_OF_PART and _info["partParentId"] == id)])
@@ -351,7 +357,8 @@ def get_part_info(
                     barcode = str(barcode),
                     lyso = str(lyso),
                     sipm1 = l_sipms[0],
-                    sipm2 = l_sipms[1]
+                    sipm2 = l_sipms[1],
+                    prod_datime = prod_datime
                 )
             
             d_parts[barcode] = part
@@ -369,6 +376,7 @@ def get_part_info(
             
             id = pinfodict["id"]
             barcode = pinfodict["barcode"]
+            prod_datime = pinfodict["productionDate"]
             
             feb = next((_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.FE.KIND_OF_PART and _info["partParentId"] == id)), None)
             l_sms = natural_sort([_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.SM.KIND_OF_PART and _info["partParentId"] == id)])
@@ -387,7 +395,8 @@ def get_part_info(
                     barcode = str(barcode),
                     feb = str(feb),
                     sm1 = l_sms[0],
-                    sm2 = l_sms[1]
+                    sm2 = l_sms[1],
+                    prod_datime = prod_datime
                 )
             
             d_parts[barcode] = part
@@ -455,7 +464,7 @@ def get_all_part_info(parttype, location_id = None, yamlfile = None, nodb = Fals
             
             else :
                 
-                barcode_min = l_barcode_groups[-1][1]
+                barcode_min = l_barcode_groups[-1][0]
                 barcode_max = group[-1] if (len(group) > 1) else group[0]
                 
                 if (barcode_max-barcode_min) < 500 :
@@ -553,8 +562,8 @@ def save_all_part_info(parttype, outyamlfile, inyamlfile = None, location_id = N
     
     d_parts_orig = get_all_part_info(parttype = parttype, yamlfile = inyamlfile, location_id = location_id, nodb = nodb)
     
-    # Convert DetectorModule object to dict
-    d_parts = {_key: _val.dict() for _key, _val in d_parts_orig.items()}
+    # Convert Module object to dict
+    d_parts = {_key: _val.dict() for _key, _val in d_parts_orig.items() if _val}
     
     outdir = os.path.dirname(outyamlfile)
     
@@ -638,6 +647,15 @@ def get_canvas(ratio = False) :
     return canvas
 
 
+def get_draw_opt(obj) :
+    
+    drawopt = obj.GetHistogram().GetOption() if hasattr(obj, "GetHistogram") else obj.GetOption()
+    drawopt = drawopt.replace("hist", "L")
+    drawopt = f"{drawopt}F" if obj.GetFillStyle() else drawopt
+    
+    return drawopt
+
+
 def root_plot1D(
     l_hist,
     outfile,
@@ -650,9 +668,9 @@ def root_plot1D(
     no_xerror = False,
     logx = False,
     logy = False,
-    title = "",
     xtitle = "",
     ytitle = "",
+    timeformatx = "",
     xtitle_ratio = "",
     ytitle_ratio = "",
     yrange_ratio = (0, 2),
@@ -736,13 +754,21 @@ def root_plot1D(
         
         if (len(hist.GetTitle())) :
             
-            legend.AddEntry(hist, hist.GetTitle(), "F")#, "LP")
+            #legend.AddEntry(hist, hist.GetTitle(), "F")#, "LP")
+            legend.AddEntry(hist, hist.GetTitle(), get_draw_opt(hist))
     
     # Add a dummy histogram so that the X-axis range can be beyond the histogram range
     #h1_xRange = ROOT.TH1F("h1_xRange", "h1_xRange", 1, xrange[0], xrange[1])
     #stack.Add(h1_xRange)
     
     stack.Draw(stackdrawopt)
+    
+    if timeformatx :
+        
+        stack.GetXaxis().SetTimeDisplay(1)
+        stack.GetXaxis().SetTimeFormat(timeformatx)
+        stack.GetXaxis().SetTimeOffset(0, "gmt")
+        stack.GetXaxis().SetLabelSize(0.04)
     
     stack.GetXaxis().SetRangeUser(xrange[0], xrange[1])
     stack.SetMinimum(yrange[0])
@@ -764,7 +790,8 @@ def root_plot1D(
             
             if (len(hist.GetTitle())) :
                 
-                legend.AddEntry(hist, hist.GetTitle())#, hist.GetOption())#, "LPE")
+                #legend.AddEntry(hist, hist.GetTitle())#, hist.GetOption())#, "LPE")
+                legend.AddEntry(hist, hist.GetTitle(), get_draw_opt(hist))#, hist.GetOption())#, "LPE")
         
         stack_overlay.Draw("nostack same")
         
@@ -800,7 +827,8 @@ def root_plot1D(
     
     for gr in l_graph_overlay :
         
-        legend.AddEntry(gr, gr.GetTitle(), gr.GetHistogram().GetOption())
+        #legend.AddEntry(gr, gr.GetTitle(), gr.GetHistogram().GetOption())
+        legend.AddEntry(gr, gr.GetTitle(), get_draw_opt(gr))
         #gr.Draw(gr_overlay_drawopt)
         
         # ROOT<=6.30 does not have SetOption() for TGraph, hence GetOption() will not work
