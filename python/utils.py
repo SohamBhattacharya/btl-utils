@@ -646,7 +646,6 @@ def root_plot1D(
     ratio_num_den_pairs = [],
     l_hist_overlay = [],
     l_graph_overlay = [],
-    gr_overlay_drawopt = "PE1",
     ratio_mode = "mc",
     no_xerror = False,
     logx = False,
@@ -921,7 +920,8 @@ def root_plot1D(
         os.system(f"mkdir -p {outdir}")
     
     canvas.SaveAs(f"{outfile_noext}.pdf")
-    canvas.SaveAs(f"{outfile_noext}.png")
+    #canvas.SaveAs(f"{outfile_noext}.png")
+    pdf_to_png(infilename = f"{outfile_noext}.pdf")
     canvas.Close()
     
     return 0
@@ -984,3 +984,21 @@ def eval_category(rootfile, d_catcfgs, barcode = "") :
     d_cat_result["category"] = cat
     
     return d_cat_result
+
+
+def pdf_to_png(infilename, outfilename = None) :
+    
+    infname, _ = os.path.splitext(infilename)
+    
+    if (outfilename) :
+        
+        outfilename, _ = os.path.splitext(outfilename)
+    
+    else :
+        
+        outfilename = infname
+    
+    # .png is automatically added to the output file name
+    retval = os.system(f"pdftoppm -cropbox -r 300 -png -singlefile {infilename} {outfilename}")
+    
+    return retval

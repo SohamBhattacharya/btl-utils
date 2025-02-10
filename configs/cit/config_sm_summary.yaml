@@ -207,24 +207,24 @@ h1_peak-res-avg_bar:
   gridy: False
 
 
-h1_lo_fom_bar:
-  type: "hist1"
-  entries:
-    lo_fom_vs_bar:
-      plot: "100*((numpy.array({loL}.GetY())**(2*-0.7)) + (numpy.array({loR}.GetY())[::-1]**(2*-0.7)))**0.5"
-      read:
-        loL: "g_L_light_yield_vs_bar"
-        loR: "g_R_light_yield_vs_bar"
-      label: "#alpha = -0.7"
-      color: 1
-      fillstyle: 3002
-  xmin: 0
-  xmax: 1
-  nbins: 100
-  xtitle: "Bar LO FOM [100(LO^{2#alpha}_{L}+LO^{2#alpha}_{R})^{1/2}] "
-  ytitle: "Entries"
-  gridx: True
-  gridy: False
+#h1_lo_fom_bar:
+#  type: "hist1"
+#  entries:
+#    lo_fom_vs_bar:
+#      plot: "100*((numpy.array({loL}.GetY())**(2*-0.7)) + (numpy.array({loR}.GetY())[::-1]**(2*-0.7)))**0.5"
+#      read:
+#        loL: "g_L_light_yield_vs_bar"
+#        loR: "g_R_light_yield_vs_bar"
+#      label: "#alpha = -0.7"
+#      color: 1
+#      fillstyle: 3002
+#  xmin: 0
+#  xmax: 1
+#  nbins: 100
+#  xtitle: "Bar LO FOM [100(LO^{2#alpha}_{L}+LO^{2#alpha}_{R})^{1/2}] "
+#  ytitle: "Entries"
+#  gridx: True
+#  gridy: False
 
 
 ##################################################
@@ -245,6 +245,8 @@ g1_spe-avg_vs_barcode:
       marker: 4
       size: 1
       drawopt: "P"
+      fit: 
+        pol0: "[0]+([1]*x)"
     spe_R_vs_barcode:
       plotx: "int('{barcode}'.split('3211002000')[1])"
       ploty: "{spe}.GetMean(2)"
@@ -255,8 +257,10 @@ g1_spe-avg_vs_barcode:
       marker: 4
       size: 1
       drawopt: "P"
+      fit: 
+        pol0: "[0]+([1]*x)"
   xmin: 8400
-  xmax: 8700
+  xmax: null
   ymin: 2
   ymax: 5
   xtitle: "SM barcode [prefix 3211002000]"
@@ -289,7 +293,7 @@ g1_spe-min_vs_barcode:
       size: 1
       drawopt: "P"
   xmin: 8400
-  xmax: 8700
+  xmax: null
   ymin: 2
   ymax: 5
   xtitle: "SM barcode [prefix 3211002000]"
@@ -322,7 +326,7 @@ g1_spe-max_vs_barcode:
       size: 1
       drawopt: "P"
   xmin: 8400
-  xmax: 8700
+  xmax: null
   ymin: 2
   ymax: 5
   xtitle: "SM barcode [prefix 3211002000]"
@@ -344,6 +348,8 @@ g1_src-chg-avg_vs_barcode:
       marker: 4
       size: 1
       drawopt: "P"
+      fit: 
+        pol0: "[0]+([1]*x)"
     src_R_vs_barcode:
       plotx: "int('{barcode}'.split('3211002000')[1])"
       ploty: "{src}.GetMean(2)"
@@ -354,6 +360,8 @@ g1_src-chg-avg_vs_barcode:
       marker: 4
       size: 1
       drawopt: "P"
+      fit: 
+        pol0: "[0]+([1]*x)"
     src_bar_vs_barcode:
       plotx: "int('{barcode}'.split('3211002000')[1])"
       ploty: "{src}.GetMean(2)"
@@ -364,8 +372,10 @@ g1_src-chg-avg_vs_barcode:
       marker: 4
       size: 1
       drawopt: "P"
+      fit: 
+        pol0: "[0]+([1]*x)"
   xmin: 8400
-  xmax: 8700
+  xmax: null
   ymin: 0
   ymax: 4
   xtitle: "SM barcode [prefix 3211002000]"
@@ -387,6 +397,8 @@ g1_lo-avg_vs_barcode:
       marker: 4
       size: 1
       drawopt: "P"
+      fit: 
+        pol0: "[0]+([1]*x)"
     lo_R_vs_barcode:
       plotx: "int('{barcode}'.split('3211002000')[1])"
       ploty: "{lo}.GetMean(2)/1000"
@@ -397,6 +409,8 @@ g1_lo-avg_vs_barcode:
       marker: 4
       size: 1
       drawopt: "P"
+      fit: 
+        pol0: "[0]+([1]*x)"
     lo_bar_vs_barcode:
       plotx: "int('{barcode}'.split('3211002000')[1])"
       ploty: "{lo}.GetMean(2)/1000"
@@ -407,8 +421,10 @@ g1_lo-avg_vs_barcode:
       marker: 4
       size: 1
       drawopt: "P"
+      fit: 
+        pol0: "[0]+([1]*x)"
   xmin: 8400
-  xmax: 8700
+  xmax: null
   ymin: 1.5
   ymax: 5.5
   xtitle: "SM barcode [prefix 3211002000]"
@@ -451,7 +467,7 @@ g1_lo-min_vs_barcode:
       size: 1
       drawopt: "P"
   xmin: 8400
-  xmax: 8700
+  xmax: null
   ymin: 1.5
   ymax: 5.5
   xtitle: "SM barcode [prefix 3211002000]"
@@ -494,7 +510,7 @@ g1_lo-max_vs_barcode:
       size: 1
       drawopt: "P"
   xmin: 8400
-  xmax: 8700
+  xmax: null
   ymin: 1.5
   ymax: 5.5
   xtitle: "SM barcode [prefix 3211002000]"
@@ -516,6 +532,8 @@ g1_peak-res-avg_vs_barcode:
       marker: 4
       size: 1
       drawopt: "P"
+      fit: 
+        pol0: "[0]+([1]*x)"
     res_R_vs_barcode:
       plotx: "int('{barcode}'.split('3211002000')[1])"
       ploty: "{res}.GetMean(2)*100"
@@ -526,6 +544,8 @@ g1_peak-res-avg_vs_barcode:
       marker: 4
       size: 1
       drawopt: "P"
+      fit: 
+        pol0: "[0]+([1]*x)"
     res_bar_vs_barcode:
       plotx: "int('{barcode}'.split('3211002000')[1])"
       ploty: "{res}.GetMean(2)*100"
@@ -536,8 +556,10 @@ g1_peak-res-avg_vs_barcode:
       marker: 4
       size: 1
       drawopt: "P"
+      fit: 
+        pol0: "[0]+([1]*x)"
   xmin: 8400
-  xmax: 8700
+  xmax: null
   ymin: 0
   ymax: 10
   xtitle: "SM barcode [prefix 3211002000]"
@@ -580,7 +602,7 @@ g1_peak-res-max_vs_barcode:
       size: 1
       drawopt: "P"
   xmin: 8400
-  xmax: 8700
+  xmax: null
   ymin: 0
   ymax: 10
   xtitle: "SM barcode [prefix 3211002000]"
@@ -603,7 +625,7 @@ g1_peak-res-max_vs_lyso:
       size: 1
       drawopt: "P"
   xmin: 1350
-  xmax: 2300
+  xmax: null
   ymin: 0
   ymax: 10
   xtitle: "LYSO barcode [prefix 3211000010]"
@@ -624,7 +646,7 @@ g1_cat_vs_barcode:
       size: 1
       drawopt: "P"
   xmin: 8400
-  xmax: 8700
+  xmax: null
   ymin: -1
   ymax: 5
   xtitle: "SM barcode [prefix 3211002000]"

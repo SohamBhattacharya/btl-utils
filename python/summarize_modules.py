@@ -405,7 +405,9 @@ def main() :
                             d_ones[nelements]
                         )
                     
-                    l_modules_nodata.append((module, plotname, entryname))
+                    else :
+                        
+                        l_modules_nodata.append((module, plotname, entryname))
                 
                 elif (plotcfg["type"] == "graph") :
                     
@@ -503,34 +505,64 @@ def main() :
             
             l_graphs = []
             
+            xmin = plotcfg["xmin"]
+            xmax = plotcfg["xmax"]
+            
             for entrycfg in plotcfg["entries"].values() :
                 
                 gr = entrycfg["graph"]
                 
-                #for fnname, fnstr in entrycfg.get("fit", {}).items() :
-                #    
-                #    f1 = ROOT.TF1(fnname, fnstr, plotcfg["xmin"], plotcfg["xmax"])
-                #    f1.SetLineWidth(2)
-                #    f1.SetLineStyle(7)
-                #    f1.SetLineColor(entrycfg["color"])
-                #    
-                #    fit_res = gr.Fit(
-                #        f1,
-                #        option = "SEM",
-                #        goption = "L",
-                #        xmin = plotcfg["xmin"],
-                #        xmax = plotcfg["xmax"]
-                #    )
-                #    
-                #    #print("Fitted")
+                for fnname, fnstr in entrycfg.get("fit", {}).items() :
+                    
+                    xmin_fn = min(numpy.array(gr.GetX()))
+                    xmax_fn = max(numpy.array(gr.GetX()))
+                    
+                    f1 = ROOT.TF1(fnname, fnstr, xmin_fn, xmax_fn)
+                    f1.SetLineWidth(2)
+                    f1.SetLineStyle(7)
+                    f1.SetLineColor(entrycfg["color"])
+                    
+                    fit_res = gr.Fit(
+                        f1,
+                        option = "SEM",
+                        goption = "L",
+                        xmin = xmin_fn,
+                        xmax = xmax_fn
+                    )
+                    
+                    #fn_fitted = gr.GetListOfFunctions().FindObject(fnname)
+                    #fn_fitted.SetLineColor(entrycfg["color"])
+                    #fn_fitted.SetLineWidth(2)
+                    #fn_fitted.SetLineStyle(7)
+                    #fn_fitted.SetMarkerSize(0)
+                    #print("Fitted")
                 
                 gr.GetHistogram().SetOption(entrycfg["drawopt"])
                 l_graphs.append(gr)
+                
+                arr_x_tmp = numpy.array(gr.GetX())
+                
+                if plotcfg["xmin"] is None :
+                    
+                    xmin = min(xmin, min(arr_x_tmp)) if xmin is not None else min(arr_x_tmp)
+                
+                if plotcfg["xmax"] is None :
+                    
+                    xmax = max(xmax, max(arr_x_tmp)) if xmax is not None else max(arr_x_tmp)
+            
+            if plotcfg["xmin"] is None and abs(xmin) > 100:
+                
+                xmin = 100*numpy.floor(xmin/100)
+            
+            if plotcfg["xmax"] is None and abs(xmin) > 100:
+                
+                xmax = 100*numpy.ceil(xmax/100)
+            
             
             utils.root_plot1D(
-                l_hist = [ROOT.TH1F(f"h1_tmp_{plotname}", "", 1, plotcfg["xmin"], plotcfg["xmax"])],
+                l_hist = [ROOT.TH1F(f"h1_tmp_{plotname}", "", 1, xmin, xmax)],
                 outfile = f"{args.outdir}/{plotname}.pdf",
-                xrange = (plotcfg["xmin"], plotcfg["xmax"]),
+                xrange = (xmin, xmax),
                 yrange = (plotcfg["ymin"], plotcfg["ymax"]),
                 l_graph_overlay = l_graphs,
                 logx = plotcfg.get("logx", False),
@@ -636,7 +668,7 @@ def main() :
     
     if len(l_modules_nodata) :
         
-        print(f"No data found for the following {len(l_modules_nodata)} modules:")
+        print(f"No data found for the following {len(l_modules_nodata)} entries:")
         for module, plotname, entryname in l_modules_nodata:
             
             print(f"[barcode {module.barcode}] [plot {plotname}] [entry {entryname}]")
