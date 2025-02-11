@@ -255,9 +255,11 @@ def main() :
             continue
         
         # If the module is repeated, only use the latest run
+        # Update: use the file with the latest timestamp
         if (barcode in d_modules) :
             
-            if (run < d_modules[barcode].run) :
+            #if (run < d_modules[barcode].run) :
+            if (os.path.getmtime(fname) < os.path.getmtime(d_modules[barcode].fname)) :
                 
                 l_duplicate_modules.append({"run": run, "barcode": barcode, "fname": fname})
                 continue

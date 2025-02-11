@@ -8,6 +8,7 @@
             - [Pair SMs](#pair-sms)
         - [DM summary examples](#dm-summary-examples)
             - [Plot](#plot-1)
+        - [Module progress](#module-progress)
     - [Create tar file with results](#create-tar-file-with-results)
 
 
@@ -37,6 +38,7 @@
 
 ## Module summaries
 
+* Recommended: get the module and parts info from the databse first
 * Create your module configuration yaml under `configs/<bac>`
 * Examples can be found under `configs/cit`
 
@@ -86,6 +88,15 @@
 --dminfo info/cit/dm_info.yaml \
 --skipmodules 32110040004215
 ```
+
+### Module progress
+```bash
+./python/plot_module_progress.py \
+--moduletype SensorModule DetectorModule \
+--locations CIT MIB PKU UVA \
+--outdir results/module_progress
+```
+
 
 ## Create tar file with results
 
