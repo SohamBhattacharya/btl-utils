@@ -8,7 +8,7 @@
             - [Pair SMs](#pair-sms)
         - [DM summary examples](#dm-summary-examples)
             - [Plot](#plot-1)
-        - [Module progress](#module-progress)
+    - [Module progress](#module-progress)
     - [Create tar file with results](#create-tar-file-with-results)
 
 
@@ -89,7 +89,7 @@
 --skipmodules 32110040004215
 ```
 
-### Module progress
+## Module progress
 ```bash
 ./python/plot_module_progress.py \
 --moduletype SensorModule DetectorModule \
