@@ -1,22 +1,19 @@
 #!/usr/bin/env python3
 
 import argparse
-import dataclasses
-import glob
-import itertools
 import numpy
 import os
-import re
 import ROOT
-import sortedcontainers
-import sys
-import tqdm
 
+from datetime import datetime
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString
 
 import constants
 import utils
 from utils import yaml
+
+
+LOC_ALL = "ALL"
 
 
 def main() :
@@ -88,7 +85,9 @@ def main() :
                 ret = True
             )
             
-            d_module_time[mtype][loc] = numpy.array([ROOT.TDatime(_module.prod_datime).Convert() for _module in d_module_info[mtype][loc].values() if _module and _module.prod_datime], dtype = float)
+            d_module_time[mtype][loc] = numpy.array([
+                ROOT.TDatime(_module.prod_datime).Convert(toGMT = True) for _module in d_module_info[mtype][loc].values() if _module and _module.prod_datime
+            ], dtype = float)
             
             time_min = min(time_min, min(d_module_time[mtype][loc]))
             time_max = max(time_max, max(d_module_time[mtype][loc]))
@@ -101,8 +100,8 @@ def main() :
     for mtype in args.moduletypes :
         
         d_module_hist[mtype] = {}
-        d_module_hist[mtype]["ALL"] = {}
-        d_module_hist[mtype]["ALL"]["hist"] = ROOT.TH1F(f"h1_{mtype}_all", "All", nbins, time_min, time_max)
+        d_module_hist[mtype][LOC_ALL] = {}
+        d_module_hist[mtype][LOC_ALL]["hist"] = ROOT.TH1F(f"h1_{mtype}_{LOC_ALL}", "All", nbins, time_min, time_max)
         
         for loc in args.locations :
             
@@ -118,7 +117,7 @@ def main() :
                 numpy.ones(len(arr_time))
             )
             
-            d_module_hist[mtype]["ALL"]["hist"].Add(d_module_hist[mtype][loc]["hist"])
+            d_module_hist[mtype][LOC_ALL]["hist"].Add(d_module_hist[mtype][loc]["hist"])
             d_module_hist[mtype][loc]["hist_cumu"] = d_module_hist[mtype][loc]["hist"].GetCumulative()
             
             d_module_hist[mtype][loc]["hist_cumu"].SetLineStyle(7)
@@ -128,21 +127,35 @@ def main() :
             d_module_hist[mtype][loc]["hist_cumu"].SetMarkerSize(0)
             d_module_hist[mtype][loc]["hist_cumu"].SetFillStyle(0)
         
-        d_module_hist[mtype]["ALL"]["hist_cumu"] = d_module_hist[mtype]["ALL"]["hist"].GetCumulative()
-        #d_module_hist[mtype]["ALL"]["hist_cumu"].SetLineStyle(7)
-        d_module_hist[mtype]["ALL"]["hist_cumu"].SetLineWidth(2)
-        d_module_hist[mtype]["ALL"]["hist_cumu"].SetLineColor(getattr(constants.COLORS, "ALL"))
-        d_module_hist[mtype]["ALL"]["hist_cumu"].SetOption("hist")
-        d_module_hist[mtype]["ALL"]["hist_cumu"].SetMarkerSize(0)
+        d_module_hist[mtype][LOC_ALL]["hist_cumu"] = d_module_hist[mtype][LOC_ALL]["hist"].GetCumulative()
+        #d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetLineStyle(7)
+        d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetLineWidth(2)
+        d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetLineColor(getattr(constants.COLORS, LOC_ALL))
+        d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetOption("hist")
+        d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetMarkerSize(0)
         d_module_hist[mtype][loc]["hist_cumu"].SetFillStyle(0)
         
-        l_hists = [d_module_hist[mtype][_loc]["hist_cumu"] for _loc in args.locations+["ALL"]]
+        l_hists = [d_module_hist[mtype][_loc]["hist_cumu"] for _loc in args.locations+[LOC_ALL]]
+        
+        outfile_csv = f"{args.outdir}/progress_{mtype}.csv"
+        
+        l_locations = args.locations+[LOC_ALL]
+        
+        arr_data = numpy.array([[
+            datetime.fromtimestamp(int(d_module_hist[mtype][LOC_ALL]["hist_cumu"].GetBinCenter(_ibin+1))).strftime("%Y-%m-%d"),
+            *[str(d_module_hist[mtype][_loc]["hist"].GetBinContent(_ibin+1)) for _loc in l_locations]
+        ] for _ibin in range(nbins)], dtype = str)
+        
+        print(f"Saving data to: {outfile_csv}")
+        numpy.savetxt(outfile_csv, arr_data, fmt = "%s", delimiter = " , ", header = " , ".join(["Date"] + l_locations))
         
         for hist in l_hists :
             
             hist.Scale(1.0/1000)
         
         #ROOT.TGaxis.SetMaxDigits(2)
+        mtype_label = "SM" if mtype == constants.SM.KIND_OF_PART else "DM"
+        
         utils.root_plot1D(
             l_hist = l_hists,
             outfile = f"{args.outdir}/progress_{mtype}.pdf",
@@ -151,11 +164,11 @@ def main() :
             logx = False,
             logy = False,
             xtitle = "Date",
-            ytitle = f"{mtype} count / 1000",
+            ytitle = f"Cumulative {mtype_label} count / 1000",
             timeformatx = "#lower[0.3]{#splitline{%Y}{%d/%m}}",
             gridx = True,
             gridy = True,
-            ndivisionsx = (3, 1, 0),
+            ndivisionsx = (4, 1, 0),
             ndivisionsy = None,
             stackdrawopt = "nostack",
             legendpos = "UR",

@@ -4,22 +4,27 @@ import ROOT
 @dataclasses.dataclass(frozen = True)
 class SIPM:
     KIND_OF_PART = "SiPMArray"
+    LABEL = "SiPM"
 
 @dataclasses.dataclass(frozen = True)
 class LYSO:
     KIND_OF_PART = "LYSOMatrix #1"
+    LABEL = "LYSO"
 
 @dataclasses.dataclass(frozen = True)
 class SM:
     KIND_OF_PART = "SensorModule"
+    LABEL = "SM"
 
 @dataclasses.dataclass(frozen = True)
 class DM:
     KIND_OF_PART = "DetectorModule"
+    LABEL = "DM"
 
 @dataclasses.dataclass(frozen = True)
 class FE:
     KIND_OF_PART = "FE"
+    LABEL = "FEB"
 
 @dataclasses.dataclass(frozen = True)
 class LOCATION:
