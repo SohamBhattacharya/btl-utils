@@ -5,6 +5,7 @@ import dataclasses
 import glob
 import itertools
 import json
+import logging
 import more_itertools
 import numpy
 import os
@@ -28,6 +29,10 @@ sys.path.append(os.path.split(os.path.realpath(__file__))[0])
 import constants
 import cms_lumi
 import tdrstyle
+
+
+logging.basicConfig(format = "[%(levelname)s] [%(asctime)s] %(message)s", level = logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class Formatter(

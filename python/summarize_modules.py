@@ -16,6 +16,7 @@ from ruamel.yaml.scalarstring import DoubleQuotedScalarString
 
 import constants
 import utils
+from utils import logging
 from utils import yaml
 
 
@@ -168,7 +169,7 @@ def main() :
     args = parser.parse_args()
     
     # Get the list of files with specified pattern
-    print(f"Getting list of files from {len(args.srcs)} source(s) ...")
+    logging.info(f"Getting list of files from {len(args.srcs)} source(s) ...")
     l_fnames = utils.get_file_list(l_srcs = args.srcs, regexp = args.regexp)
     
     d_loaded_part_info = {
@@ -195,16 +196,16 @@ def main() :
         d_loaded_part_info[constants.DM.KIND_OF_PART] = utils.load_part_info(parttype = constants.DM.KIND_OF_PART, yamlfile = args.dminfo)
         #print(f"Loaded information for {len(d_loaded_part_info[constants.DM.KIND_OF_PART])} DMs.")
     
-    print("Combining parts ...")
+    logging.info("Combining parts ...")
     utils.combine_parts(
         d_sipms = d_loaded_part_info[constants.SIPM.KIND_OF_PART],
         d_sms = d_loaded_part_info[constants.SM.KIND_OF_PART],
         d_dms = d_loaded_part_info[constants.DM.KIND_OF_PART],
     )
-    print("Combined parts.")
+    logging.info("Combined parts.")
     
     # Get list of modules
-    print(f"Parsing {len(l_fnames)} files to get modules to process ...")
+    logging.info(f"Parsing {len(l_fnames)} files to get modules to process ...")
     
     l_toproc_modules = []
     l_toskip_modules = []
@@ -289,11 +290,11 @@ def main() :
                 fname = fname
             )
     
-    print(f"Skipped {len(l_skipped_modules)} modules:")
+    logging.info(f"Skipped {len(l_skipped_modules)} modules:")
     print("\n".join(l_skipped_modules))
     print()
     
-    print(f"Skipped {len(l_duplicate_modules)} duplicate modules:")
+    logging.info(f"Skipped {len(l_duplicate_modules)} duplicate modules:")
     print("#Run Barcode Filename")
     for module in l_duplicate_modules :
         
@@ -325,7 +326,7 @@ def main() :
     }
     
     # Process the files
-    print(f"Processing {len(d_modules)} modules ...")
+    logging.info(f"Processing {len(d_modules)} modules ...")
     
     d_ones = {}
     l_modules_nodata = []
@@ -436,7 +437,7 @@ def main() :
                     
                     if (len(plotx_arr) != len(ploty_arr)) :
                         
-                        print(f"Error: Mismatch in x and y data dimensions for plot \"{plotname}\".")
+                        logging.error(f"Error: Mismatch in x and y data dimensions for plot \"{plotname}\".")
                         print(f"  x[{len(plotx_arr)}]: {plotx_arr}")
                         print(f"  y[{len(ploty_arr)}]: {ploty_arr}")
                         sys.exit(1)
@@ -455,7 +456,7 @@ def main() :
                 
                 else :
                     
-                    print(f"Error: Invalid plot type \"{plotcfg['type']}\" for plot \"{plotname}\".")
+                    logging.error(f"Error: Invalid plot type \"{plotcfg['type']}\" for plot \"{plotname}\".")
                     sys.exit(1)
         
         rootfile.Close()
@@ -591,7 +592,7 @@ def main() :
     
     # Save the categorization
     outfname = f"{args.outdir}/module_categorization.yaml"
-    print(f"Writing categorizations to: {outfname}")
+    logging.info(f"Writing categorizations to: {outfname}")
     
     with open(outfname, "w") as fopen:
         
@@ -627,7 +628,7 @@ def main() :
             l_sms_sorted = sorted(l_sms, key = lambda _sm: _sm["pairing"])
             
             #print()
-            print(f"Finding pairs in {n_sms} category {cat} SMs ...")
+            logging.info(f"Finding pairs in {n_sms} category {cat} SMs ...")
             
             l_sm_groups = [l_sms_sorted[_i: _i+2] if (_i < n_sms-1) else l_sms_sorted[_i: _i+1] for _i in range(0, n_sms, 2)]
             l_sm_pairs = [sorted(_pair, key = lambda _x: int(_x["barcode"])) for _pair in l_sm_groups if len(_pair) == 2]
@@ -635,7 +636,7 @@ def main() :
             d_cat_pairs[cat] = l_sm_pairs
             
             outfname = f"{args.outdir}/sm-pairs_cat-{cat}.csv"
-            print(f"Writing pairing results to: {outfname} ...")
+            logging.info(f"Writing pairing results to: {outfname} ...")
             with open(outfname, "w") as fopen :
                 
                 print("#sm1 barcode , sm2 barcode , sm1 metric , sm2 metric", file = fopen)
@@ -646,7 +647,7 @@ def main() :
     
     # Save arguments
     outfname = f"{args.outdir}/arguments.yaml"
-    print(f"Writing program arguments to: {outfname} ...")
+    logging.info(f"Writing program arguments to: {outfname} ...")
     with open(outfname, "w") as fopen:
         
         yaml.dump(vars(args), fopen)
@@ -665,12 +666,12 @@ def main() :
     
     for fname in l_files_to_copy :
         
-        print(f"Copying {fname} to {args.outdir} ...")
+        logging.info(f"Copying {fname} to {args.outdir} ...")
         os.system(f"cp {fname} {args.outdir}/")
     
     if len(l_modules_nodata) :
         
-        print(f"No data found for the following {len(l_modules_nodata)} entries:")
+        logging.info(f"No data found for the following {len(l_modules_nodata)} entries:")
         for module, plotname, entryname in l_modules_nodata:
             
             print(f"[barcode {module.barcode}] [plot {plotname}] [entry {entryname}]")
