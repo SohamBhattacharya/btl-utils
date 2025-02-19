@@ -41,14 +41,15 @@
 * Recommended: get the module and parts information from the databse first
 * Create your module configuration yaml under `configs/<BAC>`
 * Examples can be found under `configs/CIT`
+* For summary plots with barcodes (like light output vs. SM barcode), you may have to change the barcode prefix in the configuration
+* Run `/python/summarize_modules.py --help` to see explanations for the arguments
 
 ### SM summary examples
 
 #### Plot
 ```bash
 ./python/summarize_modules.py \
---srcs /path/to/dir/with/runs \
---regexp "run(?P<run>\d+)/module_(?P<barcode>\d+)_analysis.root" \
+--srcs "/path/to/dir/with/runs:run(?P<run>\d+)/module_(?P<barcode>\d+)_analysis.root" \
 --moduletype SensorModule \
 --plotcfg configs/CIT/config_sm_summary.yaml \
 --catcfg configs/CIT/config_sm_categorization_na.yaml \
@@ -60,8 +61,7 @@
 #### Pair SMs
 ```bash
 ./python/summarize_modules.py \
---srcs /path/to/dir/with/runs \
---regexp "run(?P<run>\d+)/module_(?P<barcode>\d+)_analysis.root" \
+--srcs "/path/to/dir/with/runs:run(?P<run>\d+)/module_(?P<barcode>\d+)_analysis.root" \
 --moduletype SensorModule \
 --catcfg configs/CIT/config_sm_categorization_na.yaml \
 --outdir results/sm_summary/w-calib \
@@ -76,8 +76,7 @@
 #### Plot
 ```bash
 ./python/summarize_modules.py \
---srcs /path/to/dir/with/runs \
---regexp "run-(?P<run>\d+)_DM-(?P<barcode>\d+).root" \
+--srcs "/path/to/dir/with/runs:run-(?P<run>\d+)_DM-(?P<barcode>\d+).root" \
 --moduletype DetectorModule \
 --plotcfg configs/CIT/config_dm_summary.yaml \
 --catcfg configs/CIT/config_dm_categorization.yaml \

@@ -129,16 +129,20 @@ def parse_string_regex(
 
 def get_file_list(
     l_srcs,
-    regexp
+    l_regexps,
+    flatten = True,
+    #ret_regexp = False
 ) :
     """
     Get the list of files with specified regular expression
     """
-    rgx = re.compile(regexp)
     
     l_fnames = []
+    l_ret_regexps = []
     
-    for src in tqdm.tqdm(l_srcs) :
+    for src, regexp in tqdm.tqdm(zip(l_srcs, l_regexps)) :
+        
+        rgx = re.compile(regexp)
         
         while "//" in src:
             
@@ -146,9 +150,15 @@ def get_file_list(
         
         l_tmp = glob.glob(f"{src}/**", recursive = True)
         l_tmp = [_f for _f in l_tmp if os.path.isfile(_f) and rgx.search(_f)]
-        l_fnames.extend(l_tmp)
+        
+        if (flatten) :
+            l_fnames.extend(l_tmp)
+            l_ret_regexps.extend([regexp]*len(l_tmp))
+        else :
+            l_fnames.append(l_tmp)
+            l_ret_regexps.append([regexp]*len(l_tmp))
     
-    return l_fnames
+    return l_fnames, l_ret_regexps
 
 
 def is_tunnel_open(port = 8113) :

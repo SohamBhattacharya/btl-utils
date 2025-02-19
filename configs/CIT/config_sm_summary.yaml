@@ -263,6 +263,7 @@ g1_spe-avg_vs_barcode:
   xmax: null
   ymin: 2
   ymax: 5
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 3211002000]"
   ytitle: "Single p.e. charge [pC]"
   gridx: True
@@ -296,6 +297,7 @@ g1_spe-min_vs_barcode:
   xmax: null
   ymin: 2
   ymax: 5
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 3211002000]"
   ytitle: "Single p.e. charge [pC]"
   gridx: True
@@ -329,6 +331,7 @@ g1_spe-max_vs_barcode:
   xmax: null
   ymin: 2
   ymax: 5
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 3211002000]"
   ytitle: "Single p.e. charge [pC]"
   gridx: True
@@ -378,6 +381,7 @@ g1_src-chg-avg_vs_barcode:
   xmax: null
   ymin: 0
   ymax: 4
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 3211002000]"
   ytitle: "Integrated charge [pC/keV]"
   gridx: True
@@ -427,6 +431,7 @@ g1_lo-avg_vs_barcode:
   xmax: null
   ymin: 1.5
   ymax: 5.5
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 3211002000]"
   ytitle: "10^{-3}#times  Light output [p.e./MeV]"
   gridx: True
@@ -470,6 +475,7 @@ g1_lo-min_vs_barcode:
   xmax: null
   ymin: 1.5
   ymax: 5.5
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 3211002000]"
   ytitle: "10^{-3}#times  Light output [p.e./MeV]"
   gridx: True
@@ -513,6 +519,7 @@ g1_lo-max_vs_barcode:
   xmax: null
   ymin: 1.5
   ymax: 5.5
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 3211002000]"
   ytitle: "10^{-3}#times  Light output [p.e./MeV]"
   gridx: True
@@ -562,6 +569,7 @@ g1_peak-res-avg_vs_barcode:
   xmax: null
   ymin: 0
   ymax: 10
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 3211002000]"
   ytitle: "Peak energy resolution [%]"
   gridx: True
@@ -605,6 +613,7 @@ g1_peak-res-max_vs_barcode:
   xmax: null
   ymin: 0
   ymax: 10
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 3211002000]"
   ytitle: "Peak energy resolution [%]"
   gridx: True
@@ -649,6 +658,7 @@ g1_cat_vs_barcode:
   xmax: null
   ymin: -1
   ymax: 5
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 3211002000]"
   ytitle: "Category"
   gridx: True

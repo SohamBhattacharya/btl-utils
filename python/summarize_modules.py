@@ -44,21 +44,16 @@ def main() :
     
     parser.add_argument(
         "--srcs",
-        help = "Source directories.\n",
-        type = str,
-        nargs = "+",
-        required = True,
-    )
-    
-    parser.add_argument(
-        "--regexp",
         help = (
-            "Keyed regular expression to extract run and barcode from the file name.\n"
+            "Source directories and regular expressions for each source: src1:regexp1 src2:regexp2 ...\n"
+            "Only files that match the regular expression will be processed.\n"
+            "regexp is a keyed regular expression, used to extract run and barcode from the file name.\n"
             "SM example (for cases like \"runXXXX/module_YYYY_analysis.root\"): \"run(?P<run>\\d+)/module_(?P<barcode>\\d+)_analysis.root\"\n"
             "DM example (for cases like \"runXXXX_DM-YYYY.root\"): \"run-(?P<run>\\d+)_DM-(?P<barcode>\\d+).root\""
             "\n"
         ),
         type = str,
+        nargs = "+",
         required = True,
     )
     
@@ -170,7 +165,9 @@ def main() :
     
     # Get the list of files with specified pattern
     logging.info(f"Getting list of files from {len(args.srcs)} source(s) ...")
-    l_fnames = utils.get_file_list(l_srcs = args.srcs, regexp = args.regexp)
+    l_srcs = [_src.split(":")[0] for _src in args.srcs]
+    l_regexps = [_src.split(":")[1] for _src in args.srcs]
+    l_fnames, l_regexps = utils.get_file_list(l_srcs = l_srcs, l_regexps = l_regexps)
     
     d_loaded_part_info = {
         constants.SIPM.KIND_OF_PART: {},
@@ -235,11 +232,11 @@ def main() :
             
             l_toskip_modules.append(toskip)
     
-    for fname in tqdm.tqdm(l_fnames) :
+    for fname, regexp in tqdm.tqdm(zip(l_fnames, l_regexps)) :
         
         parsed_result = utils.parse_string_regex(
             s = fname,
-            regexp = args.regexp,
+            regexp = regexp,
         )
         
         run = int(parsed_result["run"]) if ("run" in parsed_result) else -1
@@ -488,8 +485,8 @@ def main() :
                 ytitle = plotcfg["ytitle"],
                 gridx = plotcfg.get("gridx", True),
                 gridy = plotcfg.get("gridy", True),
-                ndivisionsx = None,
-                ndivisionsy = None,
+                ndivisionsx = plotcfg.get("ndivisionsx", None),
+                ndivisionsy = plotcfg.get("ndivisionsy", None),
                 stackdrawopt = "nostack",
                 legendpos = "UR",
                 legendncol = 1,
@@ -574,8 +571,8 @@ def main() :
                 ytitle = plotcfg["ytitle"],
                 gridx = plotcfg.get("gridx", True),
                 gridy = plotcfg.get("gridy", True),
-                ndivisionsx = None,
-                ndivisionsy = None,
+                ndivisionsx = plotcfg.get("ndivisionsx", None),
+                ndivisionsy = plotcfg.get("ndivisionsy", None),
                 stackdrawopt = "nostack",
                 legendpos = "UR",
                 legendncol = 1,
