@@ -45,7 +45,7 @@ def main() :
     parser.add_argument(
         "--srcs",
         help = (
-            "Source directories and regular expressions for each source: src1:regexp1 src2:regexp2 ...\n"
+            "Source directories and regular expressions for each source: dir1:regexp1 dir1:regexp2 ...\n"
             "Only files that match the regular expression will be processed.\n"
             "regexp is a keyed regular expression, used to extract run and barcode from the file name.\n"
             "SM example (for cases like \"runXXXX/module_YYYY_analysis.root\"): \"run(?P<run>\\d+)/module_(?P<barcode>\\d+)_analysis.root\"\n"

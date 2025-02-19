@@ -41,7 +41,7 @@
 * Recommended: get the module and parts information from the databse first
 * Create your module configuration yaml under `configs/<BAC>`
 * Examples can be found under `configs/CIT`
-* For summary plots with barcodes (like light output vs. SM barcode), you may have to change the barcode prefix in the configuration
+* For summary plots with barcodes (for e.g. light output vs. SM barcode), you may have to change the barcode prefix in the configuration
 * Run `/python/summarize_modules.py --help` to see explanations for the arguments
 
 ### SM summary examples
