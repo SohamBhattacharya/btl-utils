@@ -24,7 +24,7 @@ else
     echo "Updating $OUTPUT"
     # The u flag will only update the tar file with new content
     #tar ufv $OUTPUT $DIRNAME
-    tar -cuv -exclude *.pdf -f "${OUTPUT}" "${DIRNAME}"
+    tar -uv --exclude *.pdf -f "${OUTPUT}" "${DIRNAME}"
 fi
 
 
