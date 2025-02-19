@@ -1,7 +1,7 @@
 # Contents
 - [Contents](#contents)
     - [Database tunnel](#database-tunnel)
-    - [Get module and parts info from database](#get-module-and-parts-info-from-database)
+    - [Get module and part information from database](#get-module-and-part-information-from-database)
     - [Module summaries](#module-summaries)
         - [SM summary examples](#sm-summary-examples)
             - [Plot](#plot)
@@ -15,32 +15,32 @@
 ## Database tunnel
 `./scripts/start_db_tunnel.sh <lxplus username>`
 
-## Get module and parts info from database
+## Get module and part information from database
 
-* Create the script for your BAC (under `scripts/<bac>`) if not already there. For e.g.
-  - `./scripts/cit/get_sipm_info.py`
-  - `./scripts/cit/get_sm_info.py`
-  - `./scripts/cit/get_dm_info.py`
-
+* Create the script for your BAC (under `scripts/<BAC>`) if not already there. For e.g.
+  - `./scripts/CIT/get_sipm_info.py`
+  - `./scripts/CIT/get_sm_info.py`
+  - `./scripts/CIT/get_dm_info.py`
+  
 * Make BAC specific changes, for example:
   ```python
   utils.save_all_part_info(
     parttype = constants.SM.KIND_OF_PART,
-    outyamlfile = "info/cit/sm_info.yaml",
-    inyamlfile = "info/cit/sm_info.yaml",
+    outyamlfile = "info/CIT/sm_info.yaml",
+    inyamlfile = "info/CIT/sm_info.yaml",
     location_id = constants.LOCATION.CIT,
     ret = False
   )
   ```
-  `<bac> = cit, uva, mib, pku`<br>
-  `<BAC> = CIT, UVA, MIB, PKU`
+  
+* `<BAC> = CIT, UVA, MIB, PKU`
 * Run the scripts to get the information from the database
 
 ## Module summaries
 
-* Recommended: get the module and parts info from the databse first
-* Create your module configuration yaml under `configs/<bac>`
-* Examples can be found under `configs/cit`
+* Recommended: get the module and parts information from the databse first
+* Create your module configuration yaml under `configs/<BAC>`
+* Examples can be found under `configs/CIT`
 
 ### SM summary examples
 
@@ -48,26 +48,25 @@
 ```bash
 ./python/summarize_modules.py \
 --srcs /path/to/dir/with/runs \
---regexp "run(?P<run>\d+)/module_(?P<barcode>\d+)_analysis_both_calibs.root" \
+--regexp "run(?P<run>\d+)/module_(?P<barcode>\d+)_analysis.root" \
 --moduletype SensorModule \
---plotcfg configs/cit/config_sm_summary.yaml \
---catcfg configs/cit/config_sm_categorization.yaml \
+--plotcfg configs/CIT/config_sm_summary.yaml \
+--catcfg configs/CIT/config_sm_categorization_na.yaml \
 --outdir results/sm_summary/w-calib \
---skipmodules info/cit/skip_sms.txt \
---sminfo info/cit/sm_info.yaml
+--skipmodules info/CIT/skip_sms.txt \
+--sminfo info/CIT/sm_info.yaml
 ```
 
 #### Pair SMs
 ```bash
 ./python/summarize_modules.py \
 --srcs /path/to/dir/with/runs \
---regexp "run(?P<run>\d+)/module_(?P<barcode>\d+)_analysis_both_calibs.root" \
+--regexp "run(?P<run>\d+)/module_(?P<barcode>\d+)_analysis.root" \
 --moduletype SensorModule \
---catcfg configs/cit/config_sm_categorization.yaml \
+--catcfg configs/CIT/config_sm_categorization_na.yaml \
 --outdir results/sm_summary/w-calib \
---skipmodules info/cit/skip_sms.txt \
---sminfo info/cit/sm_info.yaml \
---dminfo info/cit/dm_info.yaml \
+--sminfo info/CIT/sm_info.yaml \
+--dminfo info/CIT/dm_info.yaml \
 --pairsms \
 --location CIT
 ```
@@ -80,19 +79,18 @@
 --srcs /path/to/dir/with/runs \
 --regexp "run-(?P<run>\d+)_DM-(?P<barcode>\d+).root" \
 --moduletype DetectorModule \
---plotcfg configs/cit/config_dm_summary.yaml \
---catcfg configs/cit/config_dm_categorization.yaml \
+--plotcfg configs/CIT/config_dm_summary.yaml \
+--catcfg configs/CIT/config_dm_categorization.yaml \
 --outdir results/dm_summary \
---sipminfo info/cit/sipm_info.yaml \
---sminfo info/cit/sm_info.yaml \
---dminfo info/cit/dm_info.yaml \
---skipmodules 32110040004215
+--sipminfo info/CIT/sipm_info.yaml \
+--sminfo info/CIT/sm_info.yaml \
+--dminfo info/CIT/dm_info.yaml \
 ```
 
 ## Module progress
 ```bash
 ./python/plot_module_progress.py \
---moduletype SensorModule DetectorModule \
+--moduletypes SensorModule DetectorModule \
 --locations CIT MIB PKU UVA \
 --outdir results/module_progress
 ```

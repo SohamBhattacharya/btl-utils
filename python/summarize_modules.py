@@ -54,8 +54,8 @@ def main() :
         "--regexp",
         help = (
             "Keyed regular expression to extract run and barcode from the file name.\n"
-            "SM example: \"run(?P<run>\\d+)/module_(?P<barcode>\\d+)_analysis_both_calibs.root\"\n"
-            "DM example: \"run-(?P<run>\\d+)_DM-(?P<barcode>\\d+).root\""
+            "SM example (for cases like \"runXXXX/module_YYYY_analysis.root\"): \"run(?P<run>\\d+)/module_(?P<barcode>\\d+)_analysis.root\"\n"
+            "DM example (for cases like \"runXXXX_DM-YYYY.root\"): \"run-(?P<run>\\d+)_DM-(?P<barcode>\\d+).root\""
             "\n"
         ),
         type = str,

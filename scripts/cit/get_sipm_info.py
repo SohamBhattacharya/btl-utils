@@ -8,8 +8,8 @@ import utils
 
 utils.save_all_part_info(
     parttype = constants.SIPM.KIND_OF_PART,
-    outyamlfile = "info/cit/sipm_info.yaml",
-    inyamlfile = "info/cit/sipm_info.yaml",
+    outyamlfile = "info/CIT/sipm_info.yaml",
+    inyamlfile = "info/CIT/sipm_info.yaml",
     location_id = constants.LOCATION.CIT,
     ret = False
 )
