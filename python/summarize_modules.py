@@ -355,6 +355,7 @@ def main() :
                 nelements = None
                 
                 d_fmt = {**module.dict()}
+                d_fmt.update(d_module_cat["metrics"])
                 
                 d_read_info = {}
                 
@@ -379,6 +380,7 @@ def main() :
                         hist_tmp.SetOption("hist")
                         hist_tmp.SetLineWidth(2)
                         hist_tmp.SetLineColor(entrycfg["color"])
+                        hist_tmp.SetLineStyle(entrycfg.get("linestyle", 1))
                         hist_tmp.SetFillColor(entrycfg["color"])
                         hist_tmp.SetFillStyle(entrycfg["fillstyle"])
                         
@@ -386,7 +388,7 @@ def main() :
                         d_plotcfgs[plotname]["entries"][entryname]["hist"] = hist_tmp
                     
                     plot_str = entrycfg["plot"].format(**d_fmt)
-                    plot_arr = numpy.array(eval(plot_str)).flatten()
+                    plot_arr = numpy.array(eval(plot_str), dtype = float).flatten()
                     
                     nelements = len(plot_arr)
                     
@@ -472,7 +474,15 @@ def main() :
                 mean_str = f"{round(mean)}" if mean > 100 else f"{mean:0.2f}"
                 stddev = hist.GetStdDev()
                 
-                hist.SetTitle(f"{hist.GetTitle()} [#mu: {mean_str}, #sigma/#mu: {stddev/abs(mean)*100:0.2f}%]")
+                labelmode = plotcfg.get("labelmode", None)
+                
+                if (labelmode == "stddev") :
+                    
+                    hist.SetTitle(f"{hist.GetTitle()} [#mu: {mean_str}, #sigma: {stddev:0.2f}]")
+                
+                elif (labelmode == "stddev_by_mean") :
+                    
+                    hist.SetTitle(f"{hist.GetTitle()} [#mu: {mean_str}, #sigma/#mu: {stddev/abs(mean)*100:0.2f}%]")
             
             utils.root_plot1D(
                 l_hist = l_hists,
@@ -487,6 +497,8 @@ def main() :
                 gridy = plotcfg.get("gridy", True),
                 ndivisionsx = plotcfg.get("ndivisionsx", None),
                 ndivisionsy = plotcfg.get("ndivisionsy", None),
+                centerlabelx = plotcfg.get("centerlabelx", False),
+                centerlabely = plotcfg.get("centerlabely", False),
                 stackdrawopt = "nostack",
                 legendpos = "UR",
                 legendncol = 1,
@@ -573,6 +585,8 @@ def main() :
                 gridy = plotcfg.get("gridy", True),
                 ndivisionsx = plotcfg.get("ndivisionsx", None),
                 ndivisionsy = plotcfg.get("ndivisionsy", None),
+                centerlabelx = plotcfg.get("centerlabelx", False),
+                centerlabely = plotcfg.get("centerlabely", False),
                 stackdrawopt = "nostack",
                 legendpos = "UR",
                 legendncol = 1,

@@ -2,17 +2,10 @@
 # Python expressions will be evaluated
 # For e.g.: a metric {key} needs to be defined under the "metrics" block as key: expression
 categories:
-  #A: "{lo_low_nbar}==0 and {lo_low_nch}==0 and {spe_high_nch}==0 and {spe_low_nch}==0 and {res_high_nbar}==0"
-  #B: "{lo_low_nbar}==0 and {lo_low_nch}==1 and {spe_high_nch}==0 and {spe_low_nch}==0 and {res_high_nbar}==0"
-  #C: "({lo_low_nbar}>0 or  {lo_low_nch}>1  or  {spe_high_nch}>0  or  {spe_low_nch}>0) and {res_high_nbar}==0"
-  #X: "{res_high_nbar}>0"
   A: "({spe_high_nch} + {spe_low_nch}) == 0 and {lo_low_nbar} == 0 and ({lo_low_nch} + {lo_asymm_nbar} + {res_high_nbar}) == 0"
   B: "({spe_high_nch} + {spe_low_nch}) == 0 and {lo_low_nbar} == 0 and ({lo_low_nch} + {lo_asymm_nbar} + {res_high_nbar}) == 1"
   C: "({spe_high_nch} + {spe_low_nch}) == 0 and {lo_low_nbar} == 0 and ({lo_low_nch} + {lo_asymm_nbar} + {res_high_nbar}) == 2"
   R: "not ({A} or {B} or {C})"
-
-# The metric {key} defined under the "metrics" block, that is to be used for pairing
-#pairing: "{lo_bar_mean}"
 
 # Define metrics in terms of objects (like tgraphs) read from files
 # Python expressions will be evaluated
