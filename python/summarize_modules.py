@@ -605,6 +605,8 @@ def main() :
     outfname = f"{args.outdir}/module_categorization.yaml"
     logging.info(f"Writing categorizations to: {outfname}")
     
+    d_cat_results["counts"]["total"] = sum(d_cat_results["counts"].values())
+    
     with open(outfname, "w") as fopen:
         
         yaml.dump(d_cat_results, fopen)
