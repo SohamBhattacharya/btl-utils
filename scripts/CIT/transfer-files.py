@@ -222,7 +222,7 @@ def main() :
         for src in args.srcs :
             
             l_cmd = [
-                f"/bin/bash -c \'sftp -r {args.dest} <<< \"put {src} .\"\'"
+                f"/bin/bash -c \'sftp -a -r {args.dest} <<< \"put {src} .\"\'"
             ]
             
             utils.run_cmd_list(l_cmd, debug = True)

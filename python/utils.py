@@ -1045,3 +1045,10 @@ def pdf_to_png(infilename, outfilename = None) :
     retval = os.system(f"pdftoppm -cropbox -r 300 -png -singlefile {infilename} {outfilename}")
     
     return retval
+
+
+def get_cms_colors(idx, hex = False) :
+    # https://cms-analysis.docs.cern.ch/guidelines/plotting/colors/
+    colors = ["#3f90da", "#ffa90e", "#bd1f01", "#94a4a2", "#832db6", "#a96b59", "#e76300", "#b9ac70", "#717581", "#92dadd"]
+    
+    return colors[idx] if hex else ROOT.TColor.GetColor(colors[idx])

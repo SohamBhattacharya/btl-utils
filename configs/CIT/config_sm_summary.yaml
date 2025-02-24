@@ -215,24 +215,24 @@ h1_peak-res-avg_bar:
   labelmode: "stddev_by_mean"
 
 
-#h1_lo_fom_bar:
-#  type: "hist1"
-#  entries:
-#    lo_fom_vs_bar:
-#      plot: "100*((numpy.array({loL}.GetY())**(2*-0.7)) + (numpy.array({loR}.GetY())**(2*-0.7)))**0.5"
-#      read:
-#        loL: "g_L_light_yield_vs_bar"
-#        loR: "g_R_light_yield_vs_bar"
-#      label: "#alpha = -0.7"
-#      color: 1
-#      fillstyle: 3002
-#  xmin: 0
-#  xmax: 1
-#  nbins: 100
-#  xtitle: "Bar LO FOM [100(LO^{2#alpha}_{L}+LO^{2#alpha}_{R})^{1/2}]"
-#  ytitle: "Entries"
-#  gridx: True
-#  gridy: False
+h1_lo_fom_bar:
+  type: "hist1"
+  entries:
+    lo_fom_vs_bar:
+      plot: "100*((numpy.array({loL}.GetY())**(2*-0.7)) + (numpy.array({loR}.GetY())**(2*-0.7)))**0.5"
+      read:
+        loL: "g_L_light_yield_vs_bar"
+        loR: "g_R_light_yield_vs_bar"
+      label: "#alpha = -0.7"
+      color: 1
+      fillstyle: 3002
+  xmin: 0
+  xmax: 1
+  nbins: 100
+  xtitle: "Bar LO FOM [100(LO^{2#alpha}_{L}+LO^{2#alpha}_{R})^{1/2}]"
+  ytitle: "Entries"
+  gridx: True
+  gridy: False
 
 
 h1_metric_counts:
@@ -241,27 +241,31 @@ h1_metric_counts:
     lo_low_nch:
       plot: "{lo_low_nch}"
       label: "n_{ch}(low LO)"
-      color: 1
+      color: "#3f90da"
       fillstyle: 0
       linestyle: 7
+      linewidth: 3
     lo_low_nbar:
       plot: "{lo_low_nbar}"
       label: "n_{bar}(low LO)"
-      color: 2
+      color: "#f89c20"
       fillstyle: 0
       linestyle: 7
+      linewidth: 3
     lo_asymm_nbar:
       plot: "{lo_asymm_nbar}"
       label: "n_{bar}(asymm. LO)"
-      color: 3
+      color: "#832db6"
       fillstyle: 0
       linestyle: 7
+      linewidth: 3
     res_high_nbar:
       plot: "{res_high_nbar}"
       label: "n_{bar}(high res.)"
-      color: 4
+      color: "#e42536"
       fillstyle: 0
       linestyle: 7
+      linewidth: 3
     #spe_high_nch: 
     #  plot: "{spe_high_nch}"
     #  label: "n_{bar}(high s.p.e.)"

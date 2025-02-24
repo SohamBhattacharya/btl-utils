@@ -351,6 +351,10 @@ def main() :
             
             for entryname, entrycfg in plotcfg["entries"].items() :
                 
+                if (isinstance(entrycfg["color"], str) and entrycfg["color"].startswith("#")) :
+                    
+                    entrycfg["color"] = ROOT.TColor.GetColor(entrycfg["color"])
+                
                 plot_arr = None
                 nelements = None
                 
@@ -366,7 +370,7 @@ def main() :
                 
                 if (plotcfg["type"] == "hist1") :
                     
-                    if "hist" not in entrycfg :
+                    if ("hist" not in entrycfg) :
                         
                         hist_tmp = ROOT.TH1F(
                             entryname,
@@ -378,7 +382,7 @@ def main() :
                         
                         hist_tmp.SetDirectory(0)
                         hist_tmp.SetOption("hist")
-                        hist_tmp.SetLineWidth(2)
+                        hist_tmp.SetLineWidth(entrycfg.get("linewidth", 2))
                         hist_tmp.SetLineColor(entrycfg["color"])
                         hist_tmp.SetLineStyle(entrycfg.get("linestyle", 1))
                         hist_tmp.SetFillColor(entrycfg["color"])
