@@ -18,6 +18,7 @@ import constants
 import utils
 from utils import logging
 from utils import yaml
+from utils import get_gry
 
 
 @dataclasses.dataclass(init = True)
@@ -74,7 +75,7 @@ def main() :
     
     parser.add_argument(
         "--modules",
-        help = "Only process this list of modules (or files with a barcode per line) to, unless it is in the skipmodules list.\n",
+        help = "Only process this space delimited list of modules (or files with a barcode per line), unless it is in the skipmodules list.\n",
         type = str,
         nargs = "+",
         required = False,
@@ -82,8 +83,17 @@ def main() :
     )
     
     parser.add_argument(
+        "--runs",
+        help = "Only process this space delimited list of runs (or files with a barcode per line), unless it is in the skipmodules list.\n",
+        type = int,
+        nargs = "+",
+        required = False,
+        default = [],
+    )
+    
+    parser.add_argument(
         "--skipmodules",
-        help = "List of modules (or files with a barcode per line) to skip.\n",
+        help = "Space delimited list of modules (or files with a barcode per line) to skip.\n",
         type = str,
         nargs = "+",
         required = False,
@@ -92,7 +102,7 @@ def main() :
     
     parser.add_argument(
         "--skipruns",
-        help = "List of runs to skip.\n",
+        help = "Space delimited list of runs (or files with a run per line) to skip.\n",
         type = int,
         nargs = "+",
         required = False,
@@ -204,11 +214,36 @@ def main() :
     # Get list of modules
     logging.info(f"Parsing {len(l_fnames)} files to get modules to process ...")
     
+    l_toproc_runs = []
+    l_toskip_runs = []
+    
     l_toproc_modules = []
     l_toskip_modules = []
     l_skipped_modules = []
     l_duplicate_modules = []
     d_modules = sortedcontainers.SortedDict()
+    
+    for toproc in args.runs :
+        
+        if (os.path.isfile(toproc)) :
+            
+            l_tmp = numpy.loadtxt(toproc, dtype = int).flatten()
+            l_toproc_runs.extend(l_tmp)
+        
+        else :
+            
+            l_toproc_runs.append(toproc)
+    
+    for toskip in args.skipruns :
+        
+        if (os.path.isfile(toskip)) :
+            
+            l_tmp = numpy.loadtxt(toskip, dtype = int).flatten()
+            l_toskip_runs.extend(l_tmp)
+        
+        else :
+            
+            l_toskip_runs.append(toskip)
     
     for toproc in args.modules :
         
@@ -242,7 +277,11 @@ def main() :
         run = int(parsed_result["run"]) if ("run" in parsed_result) else -1
         barcode = parsed_result["barcode"].strip()
         
-        if (run in args.skipruns or barcode in l_toskip_modules) :
+        if (run in l_toskip_runs or (l_toproc_runs and run not in l_toproc_runs)) :
+            
+            continue
+        
+        if (barcode in l_toskip_modules) :
             
             #print(f"Skipping module {barcode}")
             l_skipped_modules.append(barcode)

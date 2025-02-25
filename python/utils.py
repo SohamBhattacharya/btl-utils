@@ -1052,3 +1052,17 @@ def get_cms_colors(idx, hex = False) :
     colors = ["#3f90da", "#ffa90e", "#bd1f01", "#94a4a2", "#832db6", "#a96b59", "#e76300", "#b9ac70", "#717581", "#92dadd"]
     
     return colors[idx] if hex else ROOT.TColor.GetColor(colors[idx])
+
+
+def get_grx(gr) :
+    
+    arr = numpy.array(gr.GetX(), dtype = float)
+    
+    return arr
+
+
+def get_gry(gr) :
+    
+    arr = numpy.array(gr.GetY(), dtype = float)
+    
+    return arr

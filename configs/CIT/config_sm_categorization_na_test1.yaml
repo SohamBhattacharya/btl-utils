@@ -1,0 +1,53 @@
+# Define categories in terms of metrics and values
+# Python expressions will be evaluated
+# For e.g.: a metric {key} needs to be defined under the "metrics" block as key: expression
+categories:
+  A: ({spe_high_nch} + {spe_low_nch}) == 0 and {bad_nbar} == 0
+  B: ({spe_high_nch} + {spe_low_nch}) == 0 and {bad_nbar} == 1
+  C: ({spe_high_nch} + {spe_low_nch}) == 0 and {bad_nbar} == 2
+  R: not ({A} or {B} or {C})
+
+# Define metrics in terms of objects (like tgraphs) read from files
+# Python expressions will be evaluated
+# For e.g.: an object {key} needs to be defined under "read" block as key: object_name
+# The "pairing" key needs to be defined if modules are to be paired
+metrics:
+  lo_low_nbar: "numpy.count_nonzero(get_gry({lo_bar}) < {lo_bar_min})"
+  lo_low_nch: "numpy.count_nonzero(get_gry({lo_ch}) < {lo_ch_min})"
+  lo_asymm_nbar: "numpy.count_nonzero(numpy.abs(get_gry({lo_asymm_bar})) > {lo_asymm_bar_max})"
+  res_high_nbar: "numpy.count_nonzero(get_gry({res_bar}) > {res_bar_max})"
+  spe_high_nch: "numpy.count_nonzero(get_gry({spe_ch}) > {spe_ch_max})"
+  spe_low_nch: "numpy.count_nonzero(get_gry({spe_ch}) < {spe_ch_min})"
+  
+  bad_nbar: >-
+    numpy.count_nonzero(
+      (get_gry({lo_barL}) < {lo_ch_min})
+    + (get_gry({lo_barR}) < {lo_ch_min})
+    + (get_gry({lo_bar}) < {lo_bar_min})
+    + (numpy.abs(get_gry({lo_asymm_bar})) > {lo_asymm_bar_max})
+    + (get_gry({res_bar}) > {res_bar_max})
+    )
+  
+  pairing: "float(numpy.mean(get_gry({lo_bar})))"
+
+# Define the objects to be read from files
+read:
+  lo_bar: "g_avg_light_yield_vs_bar"
+  lo_barL: "g_L_light_yield_vs_bar"
+  lo_barR: "g_R_light_yield_vs_bar"
+  lo_ch: "g_light_yield_vs_ch"
+  lo_asymm_bar: "g_light_yield_asymm_vs_bar"
+  res_bar: "g_avg_lyso_res_vs_bar"
+  spe_ch: "g_spe_vs_ch"
+  spe_barL: "g_spe_L_vs_bar"
+  spe_barR: "g_spe_R_vs_bar"
+
+# Define values
+# Python expressions will be evaluated
+values:
+  lo_bar_min: "(0.90*3350)"
+  lo_ch_min: "(0.85*3350)"
+  lo_asymm_bar_max: 0.2
+  res_bar_max: 0.07
+  spe_ch_max: "(1.1*3.5)"
+  spe_ch_min: "(0.9*3.5)"
