@@ -154,6 +154,7 @@ def main() :
         type = str,
         required = False,
         choices = [_loc for _loc in dir(constants.LOCATION) if not _loc.startswith("__")],
+        default = ""
     )
     
     parser.add_argument(
@@ -548,7 +549,7 @@ def main() :
                 legendfillstyle = 0,
                 legendfillcolor = 0,
                 legendtextsize = 0.045,
-                legendtitle = "",
+                legendtitle = args.location,
                 legendheightscale = 1.0,
                 legendwidthscale = 2.0,
                 CMSextraText = "BTL Internal",
@@ -638,7 +639,7 @@ def main() :
                 legendfillstyle = 0,
                 legendfillcolor = 0,
                 legendtextsize = 0.045,
-                legendtitle = "",
+                legendtitle = args.location,
                 legendheightscale = 1.0,
                 legendwidthscale = 2.0,
                 CMSextraText = "BTL Internal",
