@@ -591,6 +591,8 @@ def main() :
                     #fn_fitted.SetLineStyle(7)
                     #fn_fitted.SetMarkerSize(0)
                     #print("Fitted")
+                    
+                    gr.SetTitle(f"{gr.GetTitle()} #scale[0.7]{{[{f1.GetExpFormula('P')}]}}")
                 
                 gr.GetHistogram().SetOption(entrycfg["drawopt"])
                 l_graphs.append(gr)

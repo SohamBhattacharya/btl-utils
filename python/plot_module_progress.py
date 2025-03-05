@@ -117,9 +117,12 @@ def main() :
                 numpy.ones(len(arr_time))
             )
             
+            d_module_hist[mtype][loc]["total"] = int(d_module_hist[mtype][loc]["hist"].Integral())
+            
             d_module_hist[mtype][LOC_ALL]["hist"].Add(d_module_hist[mtype][loc]["hist"])
             d_module_hist[mtype][loc]["hist_cumu"] = d_module_hist[mtype][loc]["hist"].GetCumulative()
             
+            d_module_hist[mtype][loc]["hist_cumu"].SetTitle(f"{loc} (total {d_module_hist[mtype][loc]['total']})")
             d_module_hist[mtype][loc]["hist_cumu"].SetLineStyle(7)
             d_module_hist[mtype][loc]["hist_cumu"].SetLineWidth(2)
             d_module_hist[mtype][loc]["hist_cumu"].SetLineColor(getattr(constants.COLORS, loc))
@@ -127,7 +130,10 @@ def main() :
             d_module_hist[mtype][loc]["hist_cumu"].SetMarkerSize(0)
             d_module_hist[mtype][loc]["hist_cumu"].SetFillStyle(0)
         
+        d_module_hist[mtype][LOC_ALL]["total"] = int(d_module_hist[mtype][LOC_ALL]["hist"].Integral())
+        
         d_module_hist[mtype][LOC_ALL]["hist_cumu"] = d_module_hist[mtype][LOC_ALL]["hist"].GetCumulative()
+        d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetTitle(f"{LOC_ALL} (total {d_module_hist[mtype][LOC_ALL]['total']})")
         #d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetLineStyle(7)
         d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetLineWidth(2)
         d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetLineColor(getattr(constants.COLORS, LOC_ALL))
