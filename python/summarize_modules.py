@@ -85,7 +85,7 @@ def main() :
     parser.add_argument(
         "--runs",
         help = "Only process this space delimited list of runs (or files with a barcode per line), unless it is in the skipmodules list.\n",
-        type = int,
+        type = str,
         nargs = "+",
         required = False,
         default = [],
@@ -233,7 +233,7 @@ def main() :
         
         else :
             
-            l_toproc_runs.append(toproc)
+            l_toproc_runs.append(int(toproc))
     
     for toskip in args.skipruns :
         
