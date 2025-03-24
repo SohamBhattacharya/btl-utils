@@ -103,7 +103,7 @@ def main() :
     parser.add_argument(
         "--skipruns",
         help = "Space delimited list of runs (or files with a run per line) to skip.\n",
-        type = int,
+        type = str,
         nargs = "+",
         required = False,
         default = [],
@@ -152,9 +152,8 @@ def main() :
         "--location",
         help = "Location \n",
         type = str,
-        required = False,
+        required = True,
         choices = [_loc for _loc in dir(constants.LOCATION) if not _loc.startswith("__")],
-        default = ""
     )
     
     parser.add_argument(
@@ -244,7 +243,7 @@ def main() :
         
         else :
             
-            l_toskip_runs.append(toskip)
+            l_toskip_runs.append(int(toskip))
     
     for toproc in args.modules :
         
@@ -296,8 +295,8 @@ def main() :
         # Update: use the file with the latest timestamp
         if (barcode in d_modules) :
             
-            #if (run < d_modules[barcode].run) :
-            if (os.path.getmtime(fname) < os.path.getmtime(d_modules[barcode].fname)) :
+            if (run < d_modules[barcode].run) :
+            #if (os.path.getmtime(fname) < os.path.getmtime(d_modules[barcode].fname)) :
                 
                 l_duplicate_modules.append({"run": run, "barcode": barcode, "fname": fname})
                 continue
@@ -367,16 +366,21 @@ def main() :
     
     d_ones = {}
     l_modules_nodata = []
+    l_modules_bad_eval = []
     
     for module in tqdm.tqdm(d_modules.values()) :
         
         rootfile = ROOT.TFile.Open(module.fname)
         
-        d_module_cat = utils.eval_category(
-            rootfile = rootfile,
-            d_catcfgs = d_catcfgs,
-            barcode = module.barcode
-        )
+        try:
+            d_module_cat = utils.eval_category(
+                rootfile = rootfile,
+                d_catcfgs = d_catcfgs,
+                barcode = module.barcode
+            )
+        except ValueError as excpt:
+            l_modules_bad_eval.append((module, "category", "category", excpt))
+            continue
         
         module.category = d_module_cat["category"]
         d_cat_results["counts"][module.category] += 1
@@ -432,7 +436,12 @@ def main() :
                         d_plotcfgs[plotname]["entries"][entryname]["hist"] = hist_tmp
                     
                     plot_str = entrycfg["plot"].format(**d_fmt)
-                    plot_arr = numpy.array(eval(plot_str), dtype = float).flatten()
+                    
+                    try:
+                        plot_arr = numpy.array(eval(plot_str), dtype = float).flatten()
+                    except ValueError as excpt:
+                        l_modules_bad_eval.append((module, plotname, entryname, excpt))
+                        continue
                     
                     nelements = len(plot_arr)
                     
@@ -475,8 +484,12 @@ def main() :
                     plotx_str = entrycfg["plotx"].format(**d_fmt)
                     ploty_str = entrycfg["ploty"].format(**d_fmt)
                     
-                    plotx_arr = numpy.array(eval(plotx_str)).flatten()
-                    ploty_arr = numpy.array(eval(ploty_str)).flatten()
+                    try:
+                        plotx_arr = numpy.array(eval(plotx_str)).flatten()
+                        ploty_arr = numpy.array(eval(ploty_str)).flatten()
+                    except ValueError as excpt:
+                        l_modules_bad_eval.append((module, plotname, entryname, excpt))
+                        continue
                     
                     if (len(plotx_arr) != len(ploty_arr)) :
                         
@@ -491,7 +504,7 @@ def main() :
                     
                     for plotx, ploty in numpy.dstack((plotx_arr, ploty_arr))[0] :
                         
-                        # Fix the outliers to the outer range
+                        # Move the outliers to the outer range
                         ploty = max(plotcfg["ymin"], ploty)
                         ploty = min(plotcfg["ymax"], ploty)
                         
@@ -532,7 +545,10 @@ def main() :
                 l_hist = l_hists,
                 outfile = f"{args.outdir}/{plotname}.pdf",
                 xrange = (plotcfg["xmin"], plotcfg["xmax"]),
-                yrange = (0.5, 10 * max([_hist.GetMaximum() for _hist in l_hists])),
+                yrange = (
+                    plotcfg.get("ymin", 0.5),
+                    plotcfg.get("ymax", 100 * max([_hist.GetMaximum() for _hist in l_hists]))
+                ),
                 logx = plotcfg.get("logx", False),
                 logy = plotcfg.get("logy", True),
                 xtitle = plotcfg["xtitle"],
@@ -544,14 +560,14 @@ def main() :
                 centerlabelx = plotcfg.get("centerlabelx", False),
                 centerlabely = plotcfg.get("centerlabely", False),
                 stackdrawopt = "nostack",
-                legendpos = "UR",
+                legendpos = plotcfg.get("legendpos", "UR"),
                 legendncol = 1,
                 legendfillstyle = 0,
                 legendfillcolor = 0,
                 legendtextsize = 0.045,
                 legendtitle = args.location,
                 legendheightscale = 1.0,
-                legendwidthscale = 2.0,
+                legendwidthscale = 1.8,
                 CMSextraText = "BTL Internal",
                 lumiText = "Phase-2"
             )
@@ -634,14 +650,14 @@ def main() :
                 centerlabelx = plotcfg.get("centerlabelx", False),
                 centerlabely = plotcfg.get("centerlabely", False),
                 stackdrawopt = "nostack",
-                legendpos = "UR",
+                legendpos = plotcfg.get("legendpos", "UR"),
                 legendncol = 1,
                 legendfillstyle = 0,
                 legendfillcolor = 0,
                 legendtextsize = 0.045,
                 legendtitle = args.location,
                 legendheightscale = 1.0,
-                legendwidthscale = 2.0,
+                legendwidthscale = 1.8,
                 CMSextraText = "BTL Internal",
                 lumiText = "Phase-2"
             )
@@ -734,6 +750,14 @@ def main() :
         for module, plotname, entryname in l_modules_nodata:
             
             print(f"[barcode {module.barcode}] [plot {plotname}] [entry {entryname}]")
+    
+    if len(l_modules_bad_eval) :
+        
+        logging.info(f"Bad data for the following {len(l_modules_bad_eval)} entries:")
+        for module, plotname, entryname, excpt in l_modules_bad_eval:
+            
+            print(f"[barcode {module.barcode}] [plot {plotname}] [entry {entryname}]")
+            print(f"    Error: {excpt}")
 
 
 if __name__ == "__main__" :

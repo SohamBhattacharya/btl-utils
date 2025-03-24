@@ -2,7 +2,7 @@ categories:
   A: "1"
 
 metrics:
-  dummy: "1"
+  deltaT_avg: "float(numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)]))"
 
 read:
   tL: "g_DeltaTTopL"

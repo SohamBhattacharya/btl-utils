@@ -43,13 +43,14 @@ h1_deltaT_4min:
       label: "Avg."
       color: 1
       fillstyle: 0
-  xmin: -25
+  xmin: -23
   xmax: -15
-  nbins: 50
+  nbins: 80
   xtitle: "#DeltaT at 4 min. [#circC]"
   ytitle: "Entries"
   gridx: True
   gridy: False
+  labelmode: "stddev_by_mean"
 
 
 h1_deltaT-std_4min:
@@ -72,6 +73,7 @@ h1_deltaT-std_4min:
   ytitle: "Entries"
   gridx: True
   gridy: False
+  labelmode: "stddev_by_mean"
 
 
 ##################################################
@@ -90,6 +92,8 @@ g1_deltaT_vs_barcode:
         tR: "g_DeltaTTopR"
         bL: "g_DeltaTBottomL"
         bR: "g_DeltaTBottomR"
+      fit:
+        pol0: "[0]+([1]*x)"
       label: "Avg."
       color: 1
       marker: 4
@@ -97,7 +101,7 @@ g1_deltaT_vs_barcode:
       drawopt: "P"
   xmin: 4100
   xmax: 4500
-  ymin: -25
+  ymin: -23
   ymax: -15
   xtitle: "DM barcode [prefix 3211004000]"
   ytitle: "#DeltaT at 4 min. [#circC]"
@@ -116,6 +120,8 @@ g1_deltaT-std_vs_barcode:
         tR: "g_DeltaTTopR"
         bL: "g_DeltaTBottomL"
         bR: "g_DeltaTBottomR"
+      fit:
+        pol0: "[0]+([1]*x)"
       label: "At 4 min."
       color: 1
       marker: 4
@@ -124,7 +130,7 @@ g1_deltaT-std_vs_barcode:
   xmin: 4100
   xmax: 4500
   ymin: 0
-  ymax: 1
+  ymax: 2
   xtitle: "DM barcode [prefix 3211004000]"
   ytitle: "#sigma(#DeltaT) [#circC]"
   gridx: True
@@ -142,8 +148,8 @@ g1_deltaT-std_vs_tec-std:
         tR: "g_DeltaTTopR"
         bL: "g_DeltaTBottomL"
         bR: "g_DeltaTBottomR"
-      #fit: 
-      #  pol0: "[0]+([1]*x)"
+      fit:
+        pol0: "[0]+([1]*x)"
       label: "At 4 min."
       color: 1
       marker: 4
@@ -152,8 +158,35 @@ g1_deltaT-std_vs_tec-std:
   xmin: 0
   xmax: 0.5
   ymin: 0
-  ymax: 1
+  ymax: 2
   xtitle: "#sigma(R_{TEC}) [#Omega]"
   ytitle: "#sigma(#DeltaT) [#circC]"
+  gridx: True
+  gridy: True
+
+g1_deltaT-avg_vs_tec-sum:
+  type: "graph"
+  entries:
+    deltaT-avg_vs_tec-std:
+      plotx: "numpy.sum([{sm1}['sipm1']['tec_res'], {sm1}['sipm2']['tec_res'], {sm2}['sipm1']['tec_res'], {sm2}['sipm2']['tec_res']])"
+      ploty: "numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
+      read:
+        tL: "g_DeltaTTopL"
+        tR: "g_DeltaTTopR"
+        bL: "g_DeltaTBottomL"
+        bR: "g_DeltaTBottomR"
+      fit:
+        pol0: "[0]+([1]*x)"
+      label: "At 4 min."
+      color: 1
+      marker: 4
+      size: 1
+      drawopt: "P"
+  xmin: 45
+  xmax: 55
+  ymin: -23
+  ymax: -15
+  xtitle: "#Sigma(R_{TEC}) [#Omega]"
+  ytitle: "Avg. #DeltaT [#circC]"
   gridx: True
   gridy: True
