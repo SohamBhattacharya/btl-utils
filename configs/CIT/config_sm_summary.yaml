@@ -292,28 +292,28 @@ h1_metric_barcodes:
   type: "hist1"
   entries:
     lo_low_nch:
-      plot: "numpy.repeat(int('{barcode}'.split('3211002000')[1]), {lo_low_nch})"
+      plot: "numpy.repeat(int('{barcode}'.split('3211002000')[1]), {lo_low_nch}) if {lo_low_nch} > 0 else numpy.array([-1])"
       label: "n_{ch}(low LO)"
       color: "#3f90da"
       fillstyle: 0
       linestyle: 7
       linewidth: 3
     lo_low_nbar:
-      plot: "numpy.repeat(int('{barcode}'.split('3211002000')[1]), {lo_low_nbar})"
+      plot: "numpy.repeat(int('{barcode}'.split('3211002000')[1]), {lo_low_nbar}) if {lo_low_nbar} > 0 else numpy.array([-1])"
       label: "n_{bar}(low LO)"
       color: "#f89c20"
       fillstyle: 0
       linestyle: 7
       linewidth: 3
     lo_asymm_nbar:
-      plot: "numpy.repeat(int('{barcode}'.split('3211002000')[1]), {lo_asymm_nbar})"
+      plot: "numpy.repeat(int('{barcode}'.split('3211002000')[1]), {lo_asymm_nbar}) if {lo_asymm_nbar} > 0 else numpy.array([-1])"
       label: "n_{bar}(asymm. LO)"
       color: "#832db6"
       fillstyle: 0
       linestyle: 7
       linewidth: 3
     res_high_nbar:
-      plot: "numpy.repeat(int('{barcode}'.split('3211002000')[1]), {res_high_nbar})"
+      plot: "numpy.repeat(int('{barcode}'.split('3211002000')[1]), {res_high_nbar}) if {res_high_nbar} > 0 else numpy.array([-1])"
       label: "n_{bar}(high res.)"
       color: "#e42536"
       fillstyle: 0

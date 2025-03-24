@@ -749,14 +749,14 @@ def main() :
         logging.info(f"No data found for the following {len(l_modules_nodata)} entries:")
         for module, plotname, entryname in l_modules_nodata:
             
-            print(f"[barcode {module.barcode}] [plot {plotname}] [entry {entryname}]")
+            print(f"[barcode {module.barcode}] [plot {plotname}] [entry {entryname}] [file {module.fname}]")
     
     if len(l_modules_bad_eval) :
         
         logging.info(f"Bad data for the following {len(l_modules_bad_eval)} entries:")
         for module, plotname, entryname, excpt in l_modules_bad_eval:
             
-            print(f"[barcode {module.barcode}] [plot {plotname}] [entry {entryname}]")
+            print(f"[barcode {module.barcode}] [plot {plotname}] [entry {entryname}] [file {module.fname}]")
             print(f"    Error: {excpt}")
 
 
