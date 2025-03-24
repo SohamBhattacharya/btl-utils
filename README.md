@@ -55,7 +55,8 @@
 --catcfg configs/CIT/config_sm_categorization_na.yaml \
 --outdir results/sm_summary/w-calib \
 --skipmodules info/CIT/skip_sms.txt \
---sminfo info/CIT/sm_info.yaml
+--sminfo info/CIT/sm_info.yaml \
+--location <BAC>
 ```
 
 #### Pair SMs
@@ -68,7 +69,7 @@
 --sminfo info/CIT/sm_info.yaml \
 --dminfo info/CIT/dm_info.yaml \
 --pairsms \
---location CIT
+--location <BAC>
 ```
 
 ### DM summary examples
@@ -84,6 +85,7 @@
 --sipminfo info/CIT/sipm_info.yaml \
 --sminfo info/CIT/sm_info.yaml \
 --dminfo info/CIT/dm_info.yaml \
+--location <BAC>
 ```
 
 ## Module progress
