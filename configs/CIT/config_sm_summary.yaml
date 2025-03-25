@@ -3,6 +3,7 @@
 ##################################################
 
 # Define plot quantity in terms of objects (like tgraphs) read from files
+# The top level key will be used as the output file name
 # Python expressions will be evaluated
 # For e.g.: an object {key} needs to be defined under "read" block as key: object_name
 
@@ -255,7 +256,7 @@ h1_metric_counts:
     lo_asymm_nbar:
       plot: "{lo_asymm_nbar}"
       label: "n_{bar}(asymm. LO)"
-      color: "#832db6"
+      color: 8
       fillstyle: 0
       linestyle: 7
       linewidth: 3
@@ -308,7 +309,7 @@ h1_metric_barcodes:
     lo_asymm_nbar:
       plot: "numpy.repeat(int('{barcode}'.split('3211002000')[1]), {lo_asymm_nbar}) if {lo_asymm_nbar} > 0 else numpy.array([-1])"
       label: "n_{bar}(asymm. LO)"
-      color: "#832db6"
+      color: 8
       fillstyle: 0
       linestyle: 7
       linewidth: 3
@@ -795,7 +796,7 @@ g1_metrics_vs_barcode:
       plotx: "int('{barcode}'.split('3211002000')[1])"
       ploty: "{lo_asymm_nbar}"
       label: "n_{bar}(asymm. LO)"
-      color: "#832db6"
+      color: 8
       marker: 4
       size: 1
       drawopt: "P"
