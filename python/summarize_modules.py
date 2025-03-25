@@ -438,7 +438,14 @@ def main() :
                     plot_str = entrycfg["plot"].format(**d_fmt)
                     
                     try:
-                        plot_arr = numpy.array(eval(plot_str), dtype = float).flatten()
+                        eval_res = eval(plot_str)
+                        
+                        # Skip filling the histogram if the evaluation result is None
+                        # This can be used in the plot configuration to skip filling the histogram
+                        if eval_res is None :
+                            continue
+                        
+                        plot_arr = numpy.array(eval_res, dtype = float).flatten()
                     except ValueError as excpt:
                         l_modules_bad_eval.append((module, plotname, entryname, excpt))
                         continue

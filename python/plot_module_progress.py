@@ -95,6 +95,7 @@ def main() :
     nsecs_day = 3600*24
     time_min = nsecs_day * numpy.floor(time_min/nsecs_day)
     time_max = nsecs_day * numpy.ceil(time_max/nsecs_day)
+    #time_max = time_min + (365*nsecs_day)
     nbins = int((time_max - time_min)/nsecs_day)
     
     for mtype in args.moduletypes :
@@ -139,7 +140,9 @@ def main() :
         d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetLineColor(getattr(constants.COLORS, LOC_ALL))
         d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetOption("hist")
         d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetMarkerSize(0)
-        d_module_hist[mtype][loc]["hist_cumu"].SetFillStyle(0)
+        d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetFillStyle(0)
+        d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetMarkerSize(0)
+        d_module_hist[mtype][LOC_ALL]["hist_cumu"].Fit("pol1")
         
         l_hists = [d_module_hist[mtype][_loc]["hist_cumu"] for _loc in args.locations+[LOC_ALL]]
         
