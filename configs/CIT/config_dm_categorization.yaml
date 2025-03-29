@@ -1,8 +1,20 @@
 categories:
-  A: "1"
+  A: "(not {deltaT_avg_high}) and ('{sm_cat}' in ['AA'])"
+  B: "(not {deltaT_avg_high}) and ('{sm_cat}' in ['AB', 'BA', 'AC', 'CA', 'BB', 'BC', 'CB', 'CC'])"
+  C: "(not {deltaT_avg_high}) and ('{sm_cat}' in ['AR', 'RA', 'BR', 'RB', 'CR', 'RC', 'RR'])"
+  R: not ({A} or {B} or {C})
 
 metrics:
+  
+  deltaT_avg_high: "int(numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)]) > {deltaT_avg_max})"
+  sm_cat: "str({sm1}['results']['category']+{sm2}['results']['category'])"
+  
   deltaT_avg: "float(numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)]))"
+  tec_sum: "float(numpy.sum([{sm1}['sipm1']['tec_res'], {sm1}['sipm2']['tec_res'], {sm2}['sipm1']['tec_res'], {sm2}['sipm2']['tec_res']]))"
+  tec_std: "float(numpy.std([{sm1}['sipm1']['tec_res'], {sm1}['sipm2']['tec_res'], {sm2}['sipm1']['tec_res'], {sm2}['sipm2']['tec_res']]))"
+  
+  # Negative for reverse sorting
+  grouping: "-0.5*({sm1}['results']['lo_bar_avg'] + {sm2}['results']['lo_bar_avg'])"
 
 read:
   tL: "g_DeltaTTopL"
@@ -10,5 +22,6 @@ read:
   bL: "g_DeltaTBottomL"
   bR: "g_DeltaTBottomR"
 
+
 values:
-  dummy: 1
+  deltaT_avg_max: -17

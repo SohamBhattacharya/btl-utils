@@ -27,6 +27,7 @@ class SensorModule(utils.SensorModule) :
     run: int = None
     fname: str = None
     category: str = None
+    #results: dict = None
 
 @dataclasses.dataclass(init = True)
 class DetectorModule(utils.DetectorModule) :
@@ -34,6 +35,7 @@ class DetectorModule(utils.DetectorModule) :
     run: int = None
     fname: str = None
     category: str = None
+    #results: dict = None
 
 def main() :
     
@@ -63,6 +65,13 @@ def main() :
         help = "YAML file with plot configurations.\n",
         type = str,
         required = False,
+    )
+    
+    parser.add_argument(
+        "--catcfg",
+        help = "YAML file with module categorization configuration.\n",
+        type = str,
+        required = True,
     )
     
     parser.add_argument(
@@ -128,22 +137,43 @@ def main() :
         help = (
             "YAML file with DM information.\n"
             "Will update the file with additional DMs on the database, if --pairsms is passed.\n"
-            "This is needed if one wants to omit the already used SMs from the pairing.\n"
+            "This is needed if one wants to omit the used (in DMs) SMs from the pairing.\n"
         ),
         type = str,
         required = False,
     )
     
     parser.add_argument(
-        "--catcfg",
-        help = "YAML file with module categorization configuration.\n",
+        "--ruinfo",
+        help = (
+            "YAML file with RU information.\n"
+            "Will update the file with additional RUs on the database, if --groupdms is passed.\n"
+            "This is needed if one wants to omit the already used (in RUs) DMs from the grouping.\n"
+        ),
         type = str,
-        required = True,
+        required = False,
+    )
+    
+    parser.add_argument(
+        "--smresults",
+        help = (
+            "YAML file with the SM results, for example the SM categorization output file.\n"
+            "This is used for reading the results (like category, light output, etc.) for SMs in a DM, when grouping DMs for a tray.\n"
+        ),
+        type = str,
+        required = False,
     )
     
     parser.add_argument(
         "--pairsms",
         help = "Will pair SMs using the \"pairing\" metric in the categorization configuration \n",
+        action = "store_true",
+        default = False
+    )
+    
+    parser.add_argument(
+        "--groupdms",
+        help = "Will pair DMs using the \"grouping\" metric in the categorization configuration \n",
         action = "store_true",
         default = False
     )
@@ -187,21 +217,15 @@ def main() :
     
     if (args.sipminfo) :
         
-        #print(f"Loading SiPM information from {args.sipminfo} ...")
         d_loaded_part_info[constants.SIPM.KIND_OF_PART] = utils.load_part_info(parttype = constants.SIPM.KIND_OF_PART, yamlfile = args.sipminfo)
-        #print(f"Loaded information for {len(d_loaded_part_info[constants.SIPM.KIND_OF_PART])} SiPMs.")
     
     if (args.sminfo) :
         
-        #print(f"Loading SM information from {args.sminfo} ...")
-        d_loaded_part_info[constants.SM.KIND_OF_PART] = utils.load_part_info(parttype = constants.SM.KIND_OF_PART, yamlfile = args.sminfo)
-        #print(f"Loaded information for {len(d_loaded_part_info[constants.SM.KIND_OF_PART])} SMs.")
-    
+        d_loaded_part_info[constants.SM.KIND_OF_PART] = utils.load_part_info(parttype = constants.SM.KIND_OF_PART, yamlfile = args.sminfo, resultsyaml = args.smresults)
+        
     if (args.dminfo) :
         
-        #print(f"Loading DM information from {args.dminfo} ...")
         d_loaded_part_info[constants.DM.KIND_OF_PART] = utils.load_part_info(parttype = constants.DM.KIND_OF_PART, yamlfile = args.dminfo)
-        #print(f"Loaded information for {len(d_loaded_part_info[constants.DM.KIND_OF_PART])} DMs.")
     
     logging.info("Combining parts ...")
     utils.combine_parts(
@@ -210,6 +234,18 @@ def main() :
         d_dms = d_loaded_part_info[constants.DM.KIND_OF_PART],
     )
     logging.info("Combined parts.")
+    
+    ## Load SM results if provided
+    #d_loaded_sm_results = {}
+    #
+    #if (args.smresults) :
+    #    
+    #    with open(args.smresults, "r") as fopen :
+    #        
+    #        d_loaded_sm_results = yaml.load(fopen.read())["results"]
+    #    
+    #    #for barcode, results in d_loaded_part_info[constants.SM.KIND_OF_PART].items() :
+            
     
     # Get list of modules
     logging.info(f"Parsing {len(l_fnames)} files to get modules to process ...")
@@ -361,6 +397,7 @@ def main() :
         "results": {}
     }
     
+    
     # Process the files
     logging.info(f"Processing {len(d_modules)} modules ...")
     
@@ -376,7 +413,8 @@ def main() :
             d_module_cat = utils.eval_category(
                 rootfile = rootfile,
                 d_catcfgs = d_catcfgs,
-                barcode = module.barcode
+                barcode = module.barcode,
+                d_fmt = {**module.dict()},
             )
         except ValueError as excpt:
             l_modules_bad_eval.append((module, "category", "category", excpt))
@@ -704,12 +742,10 @@ def main() :
                 "barcode": _sm,
                 "pairing": d_cat_results["results"][_sm]["pairing"],
             } for _sm in d_cat_results["modules"][cat] if _sm not in l_used_sms]
-            #l_sms = [_sm for _sm in l_sms if _sm not in l_used_sms]
-            n_sms = len(l_sms)
             
+            n_sms = len(l_sms)
             l_sms_sorted = sorted(l_sms, key = lambda _sm: _sm["pairing"])
             
-            #print()
             logging.info(f"Finding pairs in {n_sms} category {cat} SMs ...")
             
             l_sm_groups = [l_sms_sorted[_i: _i+2] if (_i < n_sms-1) else l_sms_sorted[_i: _i+1] for _i in range(0, n_sms, 2)]
@@ -726,6 +762,66 @@ def main() :
                     
                     print(f"{pair[0]['barcode']} , {pair[1]['barcode']} , {pair[0]['pairing']:.2f} , {pair[1]['pairing']:.2f}", file = fopen)
     
+    
+    # Group DMs
+    if (args.groupdms) :
+        
+        d_cat_groups = {}
+        
+        d_produced_rus = utils.save_all_part_info(
+            parttype = constants.RU.KIND_OF_PART,
+            outyamlfile = args.ruinfo,
+            inyamlfile = args.ruinfo,
+            location_id = vars(constants.LOCATION)[args.location],
+            ret = True,
+            nodb = args.nodb
+        )
+        
+        l_used_dms = list(itertools.chain(*[_ru.dms for _ru in d_produced_rus.values()]))
+        
+        for cat in d_cat_results["categories"].keys() :
+            
+            #l_sms = [{_sm: d_cat_results["results"][_sm]} for _sm in d_cat_results["modules"][cat] if _sm not in l_used_sms]
+            l_dms = [{
+                "barcode": _dm,
+                "grouping": d_cat_results["results"][_dm]["grouping"],
+            } for _dm in d_cat_results["modules"][cat] if _dm not in l_used_dms]
+            
+            n_dms = len(l_dms)
+            n_dms_ru = int(n_dms/12)*12
+            l_dms_sorted = sorted(l_dms, key = lambda _dm: _dm["grouping"])[0: n_dms_ru]
+            
+            logging.info(f"Finding groups in {n_dms} category {cat} SMs ...")
+            
+            l_dm_groups = [l_dms_sorted[_i: _i+12] for _i in range(0, n_dms_ru, 12)]
+            
+            l_dm_ru_groups = [numpy.reshape(_group, (4, 3)).transpose() for _group in l_dm_groups]
+            
+            l_dmidx_ru = numpy.reshape(range(0, 12), (3, 4))[::-1]
+            
+            for iru, ru_group in enumerate(l_dm_ru_groups) :
+                
+                print(f"cat {cat}, RU {iru}:")
+                
+                for irow, dm_row in enumerate(ru_group) :
+                    
+                    print(" ".join([f"[{l_dmidx_ru[irow][_idm]:2d} {_dm['barcode']} {int(_dm['grouping'])}]" for _idm, _dm in enumerate(dm_row)]))
+                
+                print("\n")
+            
+            #d_cat_results["results"]['32110040004310']
+            
+            d_cat_groups[cat] = l_dm_ru_groups
+            
+            #outfname = f"{args.outdir}/sm-pairs_cat-{cat}.csv"
+            #logging.info(f"Writing grouping results to: {outfname} ...")
+            #with open(outfname, "w") as fopen :
+            #    
+            #    print("#sm1 barcode , sm2 barcode , sm1 metric , sm2 metric", file = fopen)
+            #    for pair in l_dm_pairs :
+            #        
+            #        print(f"{pair[0]['barcode']} , {pair[1]['barcode']} , {pair[0]['grouping']:.2f} , {pair[1]['grouping']:.2f}", file = fopen)
+        
     
     # Save arguments
     outfname = f"{args.outdir}/arguments.yaml"

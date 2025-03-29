@@ -27,7 +27,33 @@ class FE:
     LABEL = "FEB"
 
 @dataclasses.dataclass(frozen = True)
+class CC:
+    KIND_OF_PART = "CC"
+    LABEL = "CC"
+
+@dataclasses.dataclass(frozen = True)
+class PCC1P2:
+    KIND_OF_PART = "PCCIv1.2"
+    LABEL = "PCCi 1.2 V"
+
+@dataclasses.dataclass(frozen = True)
+class PCC2P5:
+    KIND_OF_PART = "PCCIv2.5"
+    LABEL = "PCCi 2.5 V"
+
+@dataclasses.dataclass(frozen = True)
+class RU:
+    KIND_OF_PART = "RU"
+    LABEL = "RU"
+
+@dataclasses.dataclass(frozen = True)
+class TRAY:
+    KIND_OF_PART = "Tray"
+    LABEL = "Tray"
+
+@dataclasses.dataclass(frozen = True)
 class LOCATION:
+    CERN = 1005
     CIT = 5023
     MIB = 5380
     PKU = 3800
