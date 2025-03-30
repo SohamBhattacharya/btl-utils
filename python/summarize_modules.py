@@ -18,6 +18,7 @@ import constants
 import utils
 from utils import logging
 from utils import yaml
+from utils import get_grx
 from utils import get_gry
 
 
@@ -612,7 +613,7 @@ def main() :
                 legendtextsize = 0.045,
                 legendtitle = args.location,
                 legendheightscale = 1.0,
-                legendwidthscale = 1.8,
+                legendwidthscale = 1.9,
                 CMSextraText = "BTL Internal",
                 lumiText = "Phase-2"
             )
@@ -628,6 +629,14 @@ def main() :
             for entrycfg in plotcfg["entries"].values() :
                 
                 gr = entrycfg["graph"]
+                
+                labelmode = plotcfg.get("labelmode", None)
+                
+                if (labelmode == "corr") :
+                    
+                    corr = numpy.corrcoef(get_grx(gr), get_gry(gr))[0, 1]*100
+                    #corr_str = f"{corr:0.2g}"
+                    gr.SetTitle(f"{gr.GetTitle()} [#rho: {corr:0.2g}%]")
                 
                 for fnname, fnstr in entrycfg.get("fit", {}).items() :
                     
@@ -654,7 +663,8 @@ def main() :
                     #fn_fitted.SetMarkerSize(0)
                     #print("Fitted")
                     
-                    gr.SetTitle(f"{gr.GetTitle()} #scale[0.7]{{[{f1.GetExpFormula('P')}]}}")
+                    fn_expr_str = utils.root_get_fn_expr(f1, "0.2g")
+                    gr.SetTitle(f"{gr.GetTitle()} #scale[0.7]{{[y={fn_expr_str}]}}")
                 
                 gr.GetHistogram().SetOption(entrycfg["drawopt"])
                 l_graphs.append(gr)
@@ -702,7 +712,7 @@ def main() :
                 legendtextsize = 0.045,
                 legendtitle = args.location,
                 legendheightscale = 1.0,
-                legendwidthscale = 1.8,
+                legendwidthscale = 1.9,
                 CMSextraText = "BTL Internal",
                 lumiText = "Phase-2"
             )
@@ -791,7 +801,7 @@ def main() :
             n_dms_ru = int(n_dms/12)*12
             l_dms_sorted = sorted(l_dms, key = lambda _dm: _dm["grouping"])[0: n_dms_ru]
             
-            logging.info(f"Finding groups in {n_dms} category {cat} SMs ...")
+            logging.info(f"Finding groups in {n_dms} category {cat} DMs ...")
             
             l_dm_groups = [l_dms_sorted[_i: _i+12] for _i in range(0, n_dms_ru, 12)]
             

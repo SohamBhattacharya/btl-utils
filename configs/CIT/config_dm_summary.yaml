@@ -155,6 +155,7 @@ g1_deltaT-std_vs_tec-std:
       marker: 4
       size: 1
       drawopt: "P"
+      labelmode: "corr"
   xmin: 0
   xmax: 0.5
   ymin: 0
@@ -163,6 +164,7 @@ g1_deltaT-std_vs_tec-std:
   ytitle: "#sigma(#DeltaT) [#circC]"
   gridx: True
   gridy: True
+  labelmode: "corr"
 
 g1_deltaT-avg_vs_tec-sum:
   type: "graph"
@@ -190,3 +192,4 @@ g1_deltaT-avg_vs_tec-sum:
   ytitle: "Avg. #DeltaT [#circC]"
   gridx: True
   gridy: True
+  labelmode: "corr"

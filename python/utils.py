@@ -859,6 +859,7 @@ def get_canvas(ratio = False) :
     
     #ROOT.gROOT.SetStyle("tdrStyle")
     ROOT.gROOT.ForceStyle(True)
+    ROOT.gStyle.SetPaintTextFormat("0.2g")
     
     ROOT.gStyle.SetPadTickX(0)
     ROOT.gStyle.SetHatchesSpacing(7*ROOT.gStyle.GetHatchesSpacing())
@@ -1300,3 +1301,39 @@ def get_gry(gr) :
     arr = numpy.array(gr.GetY(), dtype = float)
     
     return arr
+
+
+def root_get_fn_expr(
+    fn,
+    formats = None,
+) :
+    """
+    Get the function expression (substituting parameter names with their values) from a ROOT TF1 object
+    If formats is a string (e.g. "0.2f"), will apply it to all parameters
+    If formats is a dict (e.g. {"par1": "0.2f"}), will apply the format to the parameter name
+    """
+    
+    npars = fn.GetNpar()
+    expr = str(fn.GetExpFormula())
+    
+    for ipar in range(npars) :
+        
+        parname = str(fn.GetParName(ipar))
+        parval = fn.GetParameter(parname)
+        
+        if isinstance(formats, str) :
+            
+            parval_str = f"{parval:{formats}}"
+        
+        elif isinstance(formats, dict) and parname in formats :
+            
+            parval_fmt = formats[parname]
+            parval_str = f"{parval:{parval_fmt}}"
+        
+        else :
+            
+            parval_str = str(parval)
+        
+        expr = expr.replace(f"[{parname}]", parval_str)
+    
+    return expr

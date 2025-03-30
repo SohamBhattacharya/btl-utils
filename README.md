@@ -8,6 +8,7 @@
             - [Pair SMs](#pair-sms)
         - [DM summary examples](#dm-summary-examples)
             - [Plot](#plot-1)
+            - [Group DMs](#group-dms)
     - [Module progress](#module-progress)
     - [Create tar file with results](#create-tar-file-with-results)
 
@@ -85,8 +86,24 @@
 --sipminfo info/CIT/sipm_info.yaml \
 --sminfo info/CIT/sm_info.yaml \
 --dminfo info/CIT/dm_info.yaml \
+--smresults <path/to/your/sm_summary/module_categorization.yaml> \
 --location <BAC>
 ```
+
+#### Group DMs
+```bash
+--srcs "/path/to/dir/with/runs:run-(?P<run>\d+)_DM-(?P<barcode>\d+).root" \
+--moduletype DetectorModule \
+--catcfg configs/CIT/config_dm_categorization.yaml \
+--outdir results/CIT/dm_summary \
+--sipminfo info/CIT/sipm_info.yaml \
+--sminfo info/CIT/sm_info.yaml \
+--dminfo info/CIT/dm_info.yaml \
+--smresults <path/to/your/sm_summary/module_categorization.yaml> \
+--groupdms \
+--location <BAC>
+```
+
 
 ## Module progress
 ```bash
