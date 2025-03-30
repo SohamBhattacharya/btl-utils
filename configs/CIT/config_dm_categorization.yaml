@@ -16,6 +16,15 @@ metrics:
   # Negative for reverse sorting
   grouping: "-0.5*({sm1}['results']['lo_bar_avg'] + {sm2}['results']['lo_bar_avg'])"
 
+# Will print the metrics for each group
+# To be defined in terms of above metrics
+group_metrics:
+  deltaT_avg_ru: "numpy.mean([_dm.results['deltaT_avg'] for _dm in ru.dms])"
+  deltaT_std_ru: "numpy.std([_dm.results['deltaT_avg'] for _dm in ru.dms])"
+  
+  tec_avg_ru: "numpy.mean([_dm.results['tec_sum'] for _dm in ru.dms])"
+  tec_std_ru: "numpy.std([_dm.results['tec_sum'] for _dm in ru.dms])"
+
 read:
   tL: "g_DeltaTTopL"
   tR: "g_DeltaTTopR"

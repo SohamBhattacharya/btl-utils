@@ -430,6 +430,8 @@ def main() :
             "fname": DoubleQuotedScalarString(module.fname),
         }
         
+        module.results = d_cat_results["results"][module.barcode]
+        
         for plotname, plotcfg in d_plotcfgs.items() :
             
             for entryname, entrycfg in plotcfg["entries"].items() :
@@ -767,7 +769,7 @@ def main() :
             logging.info(f"Writing pairing results to: {outfname} ...")
             with open(outfname, "w") as fopen :
                 
-                print("#sm1 barcode , sm2 barcode , sm1 metric , sm2 metric", file = fopen)
+                print("#sm1 barcode , sm2 barcode , sm1 pairing metric , sm2 pairing metric", file = fopen)
                 for pair in l_sm_pairs :
                     
                     print(f"{pair[0]['barcode']} , {pair[1]['barcode']} , {pair[0]['pairing']:.2f} , {pair[1]['pairing']:.2f}", file = fopen)
@@ -804,34 +806,52 @@ def main() :
             logging.info(f"Finding groups in {n_dms} category {cat} DMs ...")
             
             l_dm_groups = [l_dms_sorted[_i: _i+12] for _i in range(0, n_dms_ru, 12)]
+            # Reverse each group so that DM position on RU matches array index
+            l_dm_ru_groups = [numpy.reshape(_group, (4, 3)).transpose()[::-1] for _group in l_dm_groups]
             
-            l_dm_ru_groups = [numpy.reshape(_group, (4, 3)).transpose() for _group in l_dm_groups]
-            
+            # DM positions in RU
             l_dmidx_ru = numpy.reshape(range(0, 12), (3, 4))[::-1]
-            
-            for iru, ru_group in enumerate(l_dm_ru_groups) :
-                
-                print(f"cat {cat}, RU {iru}:")
-                
-                for irow, dm_row in enumerate(ru_group) :
-                    
-                    print(" ".join([f"[{l_dmidx_ru[irow][_idm]:2d} {_dm['barcode']} {int(_dm['grouping'])}]" for _idm, _dm in enumerate(dm_row)]))
-                
-                print("\n")
             
             #d_cat_results["results"]['32110040004310']
             
             d_cat_groups[cat] = l_dm_ru_groups
             
-            #outfname = f"{args.outdir}/sm-pairs_cat-{cat}.csv"
-            #logging.info(f"Writing grouping results to: {outfname} ...")
-            #with open(outfname, "w") as fopen :
-            #    
-            #    print("#sm1 barcode , sm2 barcode , sm1 metric , sm2 metric", file = fopen)
-            #    for pair in l_dm_pairs :
-            #        
-            #        print(f"{pair[0]['barcode']} , {pair[1]['barcode']} , {pair[0]['grouping']:.2f} , {pair[1]['grouping']:.2f}", file = fopen)
-        
+            outfname = f"{args.outdir}/dm-groups_cat-{cat}.txt"
+            logging.info(f"Writing grouping results to: {outfname} ...")
+            
+            with open(outfname, "w") as fopen :
+                
+                print("[<DM position in RU> <DM barcode> <DM grouping metric>]\n\n", file = fopen)
+                
+                for igr, ru_group in enumerate(l_dm_ru_groups) :
+                    
+                    print("="*100, file = fopen)
+                    print(f"cat {cat}, group {igr+1}:", file = fopen)
+                    
+                    # Create a dummy RU
+                    ru = utils.ReadoutUnit(
+                        dms = [d_modules[_dm["barcode"]] for _dm in ru_group.flatten()],
+                    )
+                    
+                    #d_group_metrics = {_key: eval(_val) for _key, _val in d_catcfgs["group_metrics"].items()}
+                    
+                    d_group_metrics = {}
+                    for metric_name, metric_str in d_catcfgs["group_metrics"].items() :
+                        
+                        d_group_metrics[metric_name] = eval(metric_str)
+                    
+                    for irow, dm_row in enumerate(ru_group) :
+                        
+                        print(" ".join([f"[{l_dmidx_ru[irow][_idm]:2d} {_dm['barcode']} {int(_dm['grouping'])}]" for _idm, _dm in enumerate(dm_row)]), file = fopen)
+                    
+                    print("\nGroup metrics:", file = fopen)
+                    for metric_name, metric_val in d_group_metrics.items() :
+                        
+                        print(f"  {metric_name}: {metric_val:0.2f}", file = fopen)
+                    
+                    print("="*100, file = fopen)
+                    print("\n", file = fopen)
+    
     
     # Save arguments
     outfname = f"{args.outdir}/arguments.yaml"
