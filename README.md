@@ -99,6 +99,7 @@
 --sipminfo info/CIT/sipm_info.yaml \
 --sminfo info/CIT/sm_info.yaml \
 --dminfo info/CIT/dm_info.yaml \
+--ruinfo info/CIT/ru_info.yaml \
 --smresults <path/to/your/sm_summary/module_categorization.yaml> \
 --groupdms \
 --location <BAC>
