@@ -21,7 +21,7 @@ metrics:
   spe_high_nch: "numpy.count_nonzero(get_gry({spe_ch}) > {spe_ch_max})"
   spe_low_nch: "numpy.count_nonzero(get_gry({spe_ch}) < {spe_ch_min})"
   
-  lo_asymm_avg_high: "int(numpy.mean(get_gry({lo_asymm_bar})) > {lo_asymm_avg_max})"
+  lo_asymm_avg_high: "bool(numpy.mean(get_gry({lo_asymm_bar})) > {lo_asymm_avg_max})"
   
   bad_nbar: >-
     numpy.count_nonzero(

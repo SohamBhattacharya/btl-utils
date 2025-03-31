@@ -6,6 +6,7 @@ import glob
 import itertools
 import numpy
 import os
+import random
 import re
 import ROOT
 import sortedcontainers
@@ -793,7 +794,6 @@ def main() :
         
         for cat in d_cat_results["categories"].keys() :
             
-            #l_sms = [{_sm: d_cat_results["results"][_sm]} for _sm in d_cat_results["modules"][cat] if _sm not in l_used_sms]
             l_dms = [{
                 "barcode": _dm,
                 "grouping": d_cat_results["results"][_dm]["grouping"],
@@ -801,56 +801,90 @@ def main() :
             
             n_dms = len(l_dms)
             n_dms_ru = int(n_dms/12)*12
-            l_dms_sorted = sorted(l_dms, key = lambda _dm: _dm["grouping"])[0: n_dms_ru]
-            
+            n_dms_tray = int(n_dms/72)*72
             logging.info(f"Finding groups in {n_dms} category {cat} DMs ...")
             
-            l_dm_groups = [l_dms_sorted[_i: _i+12] for _i in range(0, n_dms_ru, 12)]
-            # Reverse each group so that DM position on RU matches array index
-            l_dm_ru_groups = [numpy.reshape(_group, (4, 3)).transpose()[::-1] for _group in l_dm_groups]
+            l_dms = l_dms[0: n_dms_tray]
+            # Shuffle DMs
+            random.shuffle(l_dms)
+            # Within each tray, sirt DMs by the grouping metric
+            l_dm_tray_groups = [
+                sorted(l_dms[_i: _i+72], key = lambda _dm: _dm["grouping"])
+            for _i in range(0, n_dms_tray, 72)]
             
             # DM positions in RU
             l_dmidx_ru = numpy.reshape(range(0, 12), (3, 4))[::-1]
             
-            #d_cat_results["results"]['32110040004310']
+            d_cat_groups[cat] = l_dm_tray_groups
             
-            d_cat_groups[cat] = l_dm_ru_groups
-            
-            outfname = f"{args.outdir}/dm-groups_cat-{cat}.txt"
-            logging.info(f"Writing grouping results to: {outfname} ...")
-            
-            with open(outfname, "w") as fopen :
+            for itray, l_dms_tray in enumerate(l_dm_tray_groups) :
                 
-                print("[<DM position in RU> <DM barcode> <DM grouping metric>]\n\n", file = fopen)
+                outfname = f"{args.outdir}/dm-groups_cat-{cat}_tray-{itray+1}.txt"
+                logging.info(f"Writing grouping results to: {outfname} ...")
                 
-                for igr, ru_group in enumerate(l_dm_ru_groups) :
+                l_dm_ru_groups = [l_dms_tray[_i: _i+12] for _i in range(0, len(l_dms_tray), 12)]
+                
+                l_lines = []
+                l_lines.append("[<DM position in RU> <DM barcode> <DM grouping metric>]\n\n")
+                l_rus = []
+                
+                for iru, l_dms_ru in enumerate(l_dm_ru_groups) :
                     
-                    print("="*100, file = fopen)
-                    print(f"cat {cat}, group {igr+1}:", file = fopen)
+                    # Shape into DM arrangement on an RU
+                    l_dms_ru_shaped = numpy.reshape(l_dms_ru, (4, 3)).transpose()[::-1]
+                    
+                    l_lines.append("="*100)
+                    l_lines.append(f"RU {iru}:")
                     
                     # Create a dummy RU
+                    # Required if one wants to compute RU metrics in the categorization yaml
                     ru = utils.ReadoutUnit(
-                        dms = [d_modules[_dm["barcode"]] for _dm in ru_group.flatten()],
+                        dms = [d_modules[_dm["barcode"]] for _dm in l_dms_ru],
                     )
                     
-                    #d_group_metrics = {_key: eval(_val) for _key, _val in d_catcfgs["group_metrics"].items()}
-                    
-                    d_group_metrics = {}
-                    for metric_name, metric_str in d_catcfgs["group_metrics"].items() :
+                    d_ru_metrics = {}
+                    for metric_name, metric_str in d_catcfgs["ru_metrics"].items() :
                         
-                        d_group_metrics[metric_name] = eval(metric_str)
+                        d_ru_metrics[metric_name] = eval(metric_str.format(**d_ru_metrics))
                     
-                    for irow, dm_row in enumerate(ru_group) :
+                    ru.results = d_ru_metrics
+                    l_rus.append(ru)
+                    
+                    for irow, dm_row in enumerate(l_dms_ru_shaped) :
                         
-                        print(" ".join([f"[{l_dmidx_ru[irow][_idm]:2d} {_dm['barcode']} {int(_dm['grouping'])}]" for _idm, _dm in enumerate(dm_row)]), file = fopen)
+                        l_lines.append(" ".join([f"[{l_dmidx_ru[irow][_idm]:2d} {_dm['barcode']} {_dm['grouping']:0.2f}]" for _idm, _dm in enumerate(dm_row)]))
                     
-                    print("\nGroup metrics:", file = fopen)
-                    for metric_name, metric_val in d_group_metrics.items() :
+                    l_lines.append("\nRU metrics:")
+                    for metric_name, metric_val in d_ru_metrics.items() :
                         
-                        print(f"  {metric_name}: {metric_val:0.2f}", file = fopen)
+                        l_lines.append(f"  {metric_name}: {metric_val:0.2f}")
                     
-                    print("="*100, file = fopen)
-                    print("\n", file = fopen)
+                    l_lines.append("="*100)
+                    l_lines.append("\n")
+                
+                # Create a dummy Tray
+                # Required if one wants to compute Tray metrics in the categorization yaml
+                tray = utils.Tray(
+                    rus = l_rus
+                )
+                
+                l_lines_prefix = []
+                l_lines_prefix.append(f"Category {cat}, Tray {itray+1}")
+                l_lines_prefix.append("\nTray metrics:")
+                
+                d_tray_metrics = {}
+                for metric_name, metric_str in d_catcfgs["tray_metrics"].items() :
+                    
+                    metric_val = eval(metric_str.format(**d_tray_metrics))
+                    d_tray_metrics[metric_name] = metric_val
+                    l_lines_prefix.append(f"  {metric_name}: {metric_val:0.2f}")
+                
+                l_lines_prefix.append("\n")
+                l_lines = l_lines_prefix + l_lines
+                
+                with open(outfname, "w") as fopen :
+                    
+                    fopen.write("\n".join(l_lines)+"\n")
     
     
     # Save arguments

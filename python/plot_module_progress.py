@@ -7,6 +7,7 @@ import ROOT
 
 from datetime import datetime
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString
+from statsmodels.tsa.statespace.sarimax import SARIMAX
 
 import constants
 import utils
@@ -192,7 +193,15 @@ def main() :
         #ROOT.TGaxis.SetMaxDigits(2)
         mtype_label = "SM" if mtype == constants.SM.KIND_OF_PART else "DM"
         
-        # Forcast: https://builtin.com/data-science/time-series-forecasting-python
+        # Forcast
+        # https://builtin.com/data-science/time-series-forecasting-python
+        # https://www.statsmodels.org/stable/examples/notebooks/generated/statespace_forecasting.html
+        
+        arr_data_train = numpy.array([
+            d_module_hist[mtype][LOC_ALL]["hist_cumu"].GetBinContent(_ibin+1)
+        for _ibin in range(nbins)])
+        
+        mod = SARIMAX(arr_data_train, order=(5, 4, 2), trend='c')
         
         utils.root_plot1D(
             l_hist = l_hists,

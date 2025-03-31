@@ -19,6 +19,7 @@ from ruamel.yaml import YAML
 yaml = YAML()
 yaml.preserve_quotes = True
 yaml.width = 1024
+yaml.boolean_representation = ["False", "True"]
 
 import ROOT
 ROOT.gROOT.SetBatch(1)
@@ -101,6 +102,7 @@ class ReadoutUnit :
     dms: list = None
     prod_datime: str = None
     location_id: int = None
+    results: dict = None
     
     def dict(self) :
         
@@ -115,6 +117,7 @@ class Tray :
     rus: list = None
     prod_datime: str = None
     location_id: int = None
+    results: dict = None
     
     def dict(self) :
         
@@ -752,11 +755,19 @@ def load_part_info(parttype, yamlfile, resultsyaml = None) :
         
         elif (parttype == constants.RU.KIND_OF_PART) :
             
-            d_parts = {_key: ReadoutUnit(**_val) for _key, _val in d_parts.items()}
+            #d_parts = {_key: ReadoutUnit(**_val) for _key, _val in d_parts.items()}
+            d_parts = {_key: ReadoutUnit(**{
+                **_val,
+                **{"results": d_results.get(_key, {})}
+            }) for _key, _val in d_parts.items()}
         
         elif (parttype == constants.TRAY.KIND_OF_PART) :
             
-            d_parts = {_key: Tray(**_val) for _key, _val in d_parts.items()}
+            #d_parts = {_key: Tray(**_val) for _key, _val in d_parts.items()}
+            d_parts = {_key: Tray(**{
+                **_val,
+                **{"results": d_results.get(_key, {})}
+            }) for _key, _val in d_parts.items()}
         
         print(f"Loaded information for {len(d_parts)} {parttype}(s).")
     
