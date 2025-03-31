@@ -193,3 +193,57 @@ g1_deltaT-avg_vs_tec-sum:
   gridx: True
   gridy: True
   labelmode: "corr"
+
+g1_deltaT-avg_vs_power:
+  type: "graph"
+  entries:
+    deltaT-avg_vs_tec-std:
+      plotx: "{pwr}.Eval(4)"
+      ploty: "numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
+      read:
+        tL: "g_DeltaTTopL"
+        tR: "g_DeltaTTopR"
+        bL: "g_DeltaTBottomL"
+        bR: "g_DeltaTBottomR"
+        pwr: "g_power"
+      fit:
+        pol0: "[0]+([1]*x)"
+      label: "At 4 min."
+      color: 1
+      marker: 4
+      size: 1
+      drawopt: "P"
+  xmin: 4
+  xmax: 5.5
+  ymin: -23
+  ymax: -15
+  xtitle: "Power drawn [W]"
+  ytitle: "Avg. #DeltaT [#circC]"
+  gridx: True
+  gridy: True
+  labelmode: "corr"
+
+g1_power_vs_tec-sum:
+  type: "graph"
+  entries:
+    deltaT-avg_vs_tec-std:
+      plotx: "numpy.sum([{sm1}['sipm1']['tec_res'], {sm1}['sipm2']['tec_res'], {sm2}['sipm1']['tec_res'], {sm2}['sipm2']['tec_res']])"
+      ploty: "{pwr}.Eval(4)"
+      read:
+        pwr: "g_power"
+      fit:
+        pol0: "[0]+([1]*x)"
+      label: "At 4 min."
+      color: 1
+      marker: 4
+      size: 1
+      drawopt: "P"
+  xmin: 45
+  xmax: 55
+  ymin: 4
+  ymax: 5.5
+  xtitle: "#Sigma(R_{TEC}) [#Omega]"
+  ytitle: "Power drawn [W]"
+  gridx: True
+  gridy: True
+  labelmode: "corr"
