@@ -15,6 +15,22 @@ from utils import yaml
 
 LOC_ALL = "ALL"
 
+TOTALS = {
+    constants.SM.KIND_OF_PART: {
+        "CIT": 18*144,
+        "MIB": 18*144,
+        "PKU": 18*144,
+        "UVA": 18*144,
+        LOC_ALL: 72*144,
+    },
+    constants.DM.KIND_OF_PART: {
+        "CIT": 18*72,
+        "MIB": 18*72,
+        "PKU": 18*72,
+        "UVA": 18*72,
+        LOC_ALL: 72*72,
+    },
+}
 
 def main() :
     
@@ -86,7 +102,9 @@ def main() :
             )
             
             d_module_time[mtype][loc] = numpy.array([
-                ROOT.TDatime(_module.prod_datime).Convert(toGMT = True) for _module in d_module_info[mtype][loc].values() if _module and _module.prod_datime
+                ROOT.TDatime(_module.prod_datime).Convert(toGMT = True)
+                for _module in d_module_info[mtype][loc].values()
+                if _module and _module.prod_datime and _module.barcode.startswith("321100")
             ], dtype = float)
             
             time_min = min(time_min, min(d_module_time[mtype][loc]))
@@ -95,8 +113,10 @@ def main() :
     nsecs_day = 3600*24
     time_min = nsecs_day * numpy.floor(time_min/nsecs_day)
     time_max = nsecs_day * numpy.ceil(time_max/nsecs_day)
-    #time_max = time_min + (365*nsecs_day)
     nbins = int((time_max - time_min)/nsecs_day)
+    
+    time_start = time_min
+    time_end = time_start + (365*nsecs_day)
     
     for mtype in args.moduletypes :
         
@@ -122,8 +142,9 @@ def main() :
             
             d_module_hist[mtype][LOC_ALL]["hist"].Add(d_module_hist[mtype][loc]["hist"])
             d_module_hist[mtype][loc]["hist_cumu"] = d_module_hist[mtype][loc]["hist"].GetCumulative()
+            #d_module_hist[mtype][loc]["hist_cumu"].Scale(1.0/TOTALS[mtype][loc])
             
-            d_module_hist[mtype][loc]["hist_cumu"].SetTitle(f"{loc} (total {d_module_hist[mtype][loc]['total']})")
+            d_module_hist[mtype][loc]["hist_cumu"].SetTitle(f"{loc} ({d_module_hist[mtype][loc]['total']}/{TOTALS[mtype][loc]})")
             d_module_hist[mtype][loc]["hist_cumu"].SetLineStyle(7)
             d_module_hist[mtype][loc]["hist_cumu"].SetLineWidth(2)
             d_module_hist[mtype][loc]["hist_cumu"].SetLineColor(getattr(constants.COLORS, loc))
@@ -134,7 +155,9 @@ def main() :
         d_module_hist[mtype][LOC_ALL]["total"] = int(d_module_hist[mtype][LOC_ALL]["hist"].Integral())
         
         d_module_hist[mtype][LOC_ALL]["hist_cumu"] = d_module_hist[mtype][LOC_ALL]["hist"].GetCumulative()
-        d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetTitle(f"{LOC_ALL} (total {d_module_hist[mtype][LOC_ALL]['total']})")
+        #d_module_hist[mtype][LOC_ALL]["hist_cumu"].Scale(1.0/TOTALS[mtype][LOC_ALL])
+        
+        d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetTitle(f"{LOC_ALL} ({d_module_hist[mtype][LOC_ALL]['total']}/{TOTALS[mtype][LOC_ALL]})")
         #d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetLineStyle(7)
         d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetLineWidth(2)
         d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetLineColor(getattr(constants.COLORS, LOC_ALL))
@@ -142,7 +165,7 @@ def main() :
         d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetMarkerSize(0)
         d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetFillStyle(0)
         d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetMarkerSize(0)
-        d_module_hist[mtype][LOC_ALL]["hist_cumu"].Fit("pol1")
+        d_module_hist[mtype][LOC_ALL]["hist_cumu"].Fit("pol1", option = "SEM", goption = "L")
         
         l_hists = [d_module_hist[mtype][_loc]["hist_cumu"] for _loc in args.locations+[LOC_ALL]]
         
@@ -158,22 +181,30 @@ def main() :
         print(f"Saving data to: {outfile_csv}")
         numpy.savetxt(outfile_csv, arr_data, fmt = "%s", delimiter = " , ", header = " , ".join(["Date"] + l_locations))
         
-        for hist in l_hists :
+        #for hist in l_hists :
+        #    
+        #    hist.Scale(1.0/1000)
+        
+        for loc in l_locations :
             
-            hist.Scale(1.0/1000)
+            d_module_hist[mtype][loc]["hist_cumu"].Scale(1.0/TOTALS[mtype][loc])
         
         #ROOT.TGaxis.SetMaxDigits(2)
         mtype_label = "SM" if mtype == constants.SM.KIND_OF_PART else "DM"
+        
+        # Forcast: https://builtin.com/data-science/time-series-forecasting-python
         
         utils.root_plot1D(
             l_hist = l_hists,
             outfile = f"{args.outdir}/progress_{mtype}.pdf",
             xrange = (time_min, time_max),
-            yrange = (0, 1.2 * max([_hist.GetMaximum() for _hist in l_hists])),
+            #xrange = (time_start, time_end),
+            #yrange = (0, 1.2 * max([_hist.GetMaximum() for _hist in l_hists])),
+            yrange = (0, 1.1),
             logx = False,
             logy = False,
             xtitle = "Date",
-            ytitle = f"Cumulative {mtype_label} count / 1000",
+            ytitle = f"Cumulative {mtype_label} fraction",
             timeformatx = "#lower[0.3]{#splitline{%Y}{%d/%m}}",
             gridx = True,
             gridy = True,

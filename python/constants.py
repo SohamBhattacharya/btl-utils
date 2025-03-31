@@ -65,4 +65,5 @@ class COLORS:
     MIB = ROOT.TColor.GetColor("#3f90da")
     PKU = ROOT.TColor.GetColor("#bd1f01")
     UVA = ROOT.TColor.GetColor("#964a8b")
+    CERN = 4
     ALL = ROOT.TColor.GetColor("#e42536")
