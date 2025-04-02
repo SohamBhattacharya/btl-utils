@@ -182,8 +182,9 @@ def main() :
     
     parser.add_argument(
         "--location",
-        help = "Location \n",
+        help = "List of locations \n",
         type = str,
+        nargs = "+",
         required = True,
         choices = [_loc for _loc in dir(constants.LOCATION) if not _loc.startswith("__")],
     )
@@ -478,16 +479,20 @@ def main() :
                         d_plotcfgs[plotname]["entries"][entryname]["hist"] = hist_tmp
                     
                     plot_str = entrycfg["plot"].format(**d_fmt)
+                    weight_str = entrycfg.get("weight", "None").format(**d_fmt)
                     
                     try:
-                        eval_res = eval(plot_str)
+                        plot_eval_res = eval(plot_str)
+                        weight_eval_res = eval(weight_str)
                         
                         # Skip filling the histogram if the evaluation result is None
                         # This can be used in the plot configuration to skip filling the histogram
-                        if eval_res is None :
+                        if plot_eval_res is None :
                             continue
                         
-                        plot_arr = numpy.array(eval_res, dtype = float).flatten()
+                        plot_arr = numpy.array(plot_eval_res, dtype = float).flatten()
+                        weight_arr = numpy.array(weight_eval_res, dtype = float).flatten() if weight_eval_res is not None else None
+                    
                     except ValueError as excpt:
                         l_modules_bad_eval.append((module, plotname, entryname, excpt))
                         continue
@@ -496,17 +501,21 @@ def main() :
                     
                     if nelements :
                         
-                        # Create and store arrays of ones of specific lengths; no need to recreate them everytime
-                        if nelements not in d_ones :
+                        if weight_arr is None :
                             
-                            d_ones[nelements] = numpy.ones(nelements)
-                        
+                            # Create and store arrays of ones of specific lengths; no need to recreate them everytime
+                            if nelements not in d_ones :
+                                
+                                d_ones[nelements] = numpy.ones(nelements)
+                            
+                            weight_arr = d_ones[nelements]
+                            
                         #print(module.barcode, plot_arr)
                         
                         entrycfg["hist"].FillN(
                             nelements,
                             plot_arr,
-                            d_ones[nelements]
+                            weight_arr,
                         )
                     
                     else :
@@ -614,7 +623,7 @@ def main() :
                 legendfillstyle = 0,
                 legendfillcolor = 0,
                 legendtextsize = 0.045,
-                legendtitle = args.location,
+                legendtitle = "+".join(args.location),
                 legendheightscale = 1.0,
                 legendwidthscale = 1.9,
                 CMSextraText = "BTL Internal",
@@ -713,7 +722,7 @@ def main() :
                 legendfillstyle = 0,
                 legendfillcolor = 0,
                 legendtextsize = 0.045,
-                legendtitle = args.location,
+                legendtitle = "+".join(args.location),
                 legendheightscale = 1.0,
                 legendwidthscale = 1.9,
                 CMSextraText = "BTL Internal",
@@ -741,7 +750,7 @@ def main() :
             parttype = constants.DM.KIND_OF_PART,
             outyamlfile = args.dminfo,
             inyamlfile = args.dminfo,
-            location_id = vars(constants.LOCATION)[args.location],
+            location_id = [vars(constants.LOCATION)[_loc] for _loc in args.location],
             ret = True,
             nodb = args.nodb
         )
@@ -785,7 +794,7 @@ def main() :
             parttype = constants.RU.KIND_OF_PART,
             outyamlfile = args.ruinfo,
             inyamlfile = args.ruinfo,
-            location_id = vars(constants.LOCATION)[args.location],
+            location_id = [vars(constants.LOCATION)[_loc] for _loc in args.location],
             ret = True,
             nodb = args.nodb
         )

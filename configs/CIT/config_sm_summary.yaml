@@ -267,23 +267,150 @@ h1_metric_counts:
       fillstyle: 0
       linestyle: 7
       linewidth: 3
-    #spe_high_nch: 
-    #  plot: "{spe_high_nch}"
-    #  label: "n_{bar}(high s.p.e.)"
-    #  color: 1
-    #  fillstyle: 3002
-    #spe_low_nch:
-    #  plot: "{spe_low_nch}"
-    #  label: "n_{bar}(low s.p.e.)"
-    #  color: 1
-    #  fillstyle: 3002
   xmin: 0
   xmax: 32
   nbins: 32
   ndivisionsx: [4, 8, 0]
-  #centerlabelx: True
   xtitle: "n_{bar} or n_{ch}"
   ytitle: "Number of SMs"
+  gridx: True
+  gridy: False
+  legendpos: UR
+
+
+h1_metric_counts_cat-B:
+  type: "hist1"
+  entries:
+    lo_low_nch:
+      plot: "{lo_low_nch}"
+      weight: "'{category}' == 'B'"
+      label: "n_{ch}(low LO)"
+      color: "#3f90da"
+      fillstyle: 0
+      linestyle: 7
+      linewidth: 3
+    lo_low_nbar:
+      plot: "{lo_low_nbar}"
+      weight: "'{category}' == 'B'"
+      label: "n_{bar}(low LO)"
+      color: "#f89c20"
+      fillstyle: 0
+      linestyle: 7
+      linewidth: 3
+    lo_asymm_nbar:
+      plot: "{lo_asymm_nbar}"
+      label: "n_{bar}(asymm. LO)"
+      weight: "'{category}' == 'B'"
+      color: 8
+      fillstyle: 0
+      linestyle: 7
+      linewidth: 3
+    res_high_nbar:
+      plot: "{res_high_nbar}"
+      weight: "'{category}' == 'B'"
+      label: "n_{bar}(high res.)"
+      color: "#e42536"
+      fillstyle: 0
+      linestyle: 7
+      linewidth: 3
+  xmin: 0
+  xmax: 32
+  nbins: 32
+  ndivisionsx: [4, 8, 0]
+  xtitle: "n_{bar} or n_{ch}"
+  ytitle: "Number of category B SMs"
+  gridx: True
+  gridy: False
+  legendpos: UR
+
+
+h1_metric_counts_cat-C:
+  type: "hist1"
+  entries:
+    lo_low_nch:
+      plot: "{lo_low_nch}"
+      weight: "'{category}' == 'C'"
+      label: "n_{ch}(low LO)"
+      color: "#3f90da"
+      fillstyle: 0
+      linestyle: 7
+      linewidth: 3
+    lo_low_nbar:
+      plot: "{lo_low_nbar}"
+      weight: "'{category}' == 'C'"
+      label: "n_{bar}(low LO)"
+      color: "#f89c20"
+      fillstyle: 0
+      linestyle: 7
+      linewidth: 3
+    lo_asymm_nbar:
+      plot: "{lo_asymm_nbar}"
+      label: "n_{bar}(asymm. LO)"
+      weight: "'{category}' == 'C'"
+      color: 8
+      fillstyle: 0
+      linestyle: 7
+      linewidth: 3
+    res_high_nbar:
+      plot: "{res_high_nbar}"
+      weight: "'{category}' == 'C'"
+      label: "n_{bar}(high res.)"
+      color: "#e42536"
+      fillstyle: 0
+      linestyle: 7
+      linewidth: 3
+  xmin: 0
+  xmax: 32
+  nbins: 32
+  ndivisionsx: [4, 8, 0]
+  xtitle: "n_{bar} or n_{ch}"
+  ytitle: "Number of category C SMs"
+  gridx: True
+  gridy: False
+  legendpos: UR
+
+
+h1_metric_counts_cat-R:
+  type: "hist1"
+  entries:
+    lo_low_nch:
+      plot: "{lo_low_nch}"
+      weight: "'{category}' == 'R'"
+      label: "n_{ch}(low LO)"
+      color: "#3f90da"
+      fillstyle: 0
+      linestyle: 7
+      linewidth: 3
+    lo_low_nbar:
+      plot: "{lo_low_nbar}"
+      weight: "'{category}' == 'R'"
+      label: "n_{bar}(low LO)"
+      color: "#f89c20"
+      fillstyle: 0
+      linestyle: 7
+      linewidth: 3
+    lo_asymm_nbar:
+      plot: "{lo_asymm_nbar}"
+      label: "n_{bar}(asymm. LO)"
+      weight: "'{category}' == 'R'"
+      color: 8
+      fillstyle: 0
+      linestyle: 7
+      linewidth: 3
+    res_high_nbar:
+      plot: "{res_high_nbar}"
+      weight: "'{category}' == 'R'"
+      label: "n_{bar}(high res.)"
+      color: "#e42536"
+      fillstyle: 0
+      linestyle: 7
+      linewidth: 3
+  xmin: 0
+  xmax: 32
+  nbins: 32
+  ndivisionsx: [4, 8, 0]
+  xtitle: "n_{bar} or n_{ch}"
+  ytitle: "Number of category R SMs"
   gridx: True
   gridy: False
   legendpos: UR
@@ -321,10 +448,10 @@ h1_metric_barcodes:
       linestyle: 7
       linewidth: 3
   xmin: 8400
-  xmax: 9100
+  xmax: 9500
   ymin: 0
   ymax: 50
-  nbins: 70
+  nbins: 110
   #nbins: 700
   ndivisionsx: [4, 8, 0]
   #centerlabelx: True
@@ -756,7 +883,8 @@ g1_cat_vs_barcode:
   entries:
     cat_vs_barcode:
       plotx: "int('{barcode}'.split('3211002000')[1])"
-      ploty: "ord('{category}')-65" # Converts to A, B, C, ... to 0, 1, 2, ...
+      #ploty: "ord('{category}')-65" # Converts to A, B, C, ... to 0, 1, 2, ...
+      ploty: "['A', 'B', 'C', 'R'].index('{category}')"
       label: "Category"
       color: 1
       marker: 4

@@ -3,11 +3,13 @@
 import argparse
 import numpy
 import os
+import pandas
 import ROOT
 
 from datetime import datetime
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString
 from statsmodels.tsa.statespace.sarimax import SARIMAX
+from statsmodels.tsa.ar_model import AutoReg, ar_select_order
 
 import constants
 import utils
@@ -15,6 +17,7 @@ from utils import yaml
 
 
 LOC_ALL = "ALL"
+LOC_ALL_LABEL = "All"
 
 TOTALS = {
     constants.SM.KIND_OF_PART: {
@@ -22,6 +25,7 @@ TOTALS = {
         "MIB": 18*144,
         "PKU": 18*144,
         "UVA": 18*144,
+        "CERN": 18*144,
         LOC_ALL: 72*144,
     },
     constants.DM.KIND_OF_PART: {
@@ -29,6 +33,7 @@ TOTALS = {
         "MIB": 18*72,
         "PKU": 18*72,
         "UVA": 18*72,
+        "CERN": 18*72,
         LOC_ALL: 72*72,
     },
 }
@@ -117,7 +122,10 @@ def main() :
     nbins = int((time_max - time_min)/nsecs_day)
     
     time_start = time_min
-    time_end = time_start + (365*nsecs_day)
+    #time_end = time_start + (365*nsecs_day)
+    time_pred_start = time_max - (30*nsecs_day)
+    time_end_str = "2025-10-31  00:00:00"
+    time_end = ROOT.TDatime(time_end_str).Convert(toGMT = True)
     
     for mtype in args.moduletypes :
         
@@ -149,7 +157,7 @@ def main() :
             d_module_hist[mtype][loc]["hist_cumu"].SetLineStyle(7)
             d_module_hist[mtype][loc]["hist_cumu"].SetLineWidth(2)
             d_module_hist[mtype][loc]["hist_cumu"].SetLineColor(getattr(constants.COLORS, loc))
-            d_module_hist[mtype][loc]["hist_cumu"].SetOption("hist")
+            d_module_hist[mtype][loc]["hist_cumu"].SetOption("hist ][")
             d_module_hist[mtype][loc]["hist_cumu"].SetMarkerSize(0)
             d_module_hist[mtype][loc]["hist_cumu"].SetFillStyle(0)
         
@@ -158,15 +166,15 @@ def main() :
         d_module_hist[mtype][LOC_ALL]["hist_cumu"] = d_module_hist[mtype][LOC_ALL]["hist"].GetCumulative()
         #d_module_hist[mtype][LOC_ALL]["hist_cumu"].Scale(1.0/TOTALS[mtype][LOC_ALL])
         
-        d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetTitle(f"{LOC_ALL} ({d_module_hist[mtype][LOC_ALL]['total']}/{TOTALS[mtype][LOC_ALL]})")
+        d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetTitle(f"{LOC_ALL_LABEL} ({d_module_hist[mtype][LOC_ALL]['total']}/{TOTALS[mtype][LOC_ALL]})")
         #d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetLineStyle(7)
         d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetLineWidth(2)
         d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetLineColor(getattr(constants.COLORS, LOC_ALL))
-        d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetOption("hist")
+        d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetOption("hist ][")
         d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetMarkerSize(0)
         d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetFillStyle(0)
         d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetMarkerSize(0)
-        d_module_hist[mtype][LOC_ALL]["hist_cumu"].Fit("pol1", option = "SEM", goption = "L")
+        #d_module_hist[mtype][LOC_ALL]["hist_cumu"].Fit("pol1", option = "SEM", goption = "L")
         
         l_hists = [d_module_hist[mtype][_loc]["hist_cumu"] for _loc in args.locations+[LOC_ALL]]
         
@@ -193,31 +201,65 @@ def main() :
         #ROOT.TGaxis.SetMaxDigits(2)
         mtype_label = "SM" if mtype == constants.SM.KIND_OF_PART else "DM"
         
-        # Forcast
+        # Forecast
         # https://builtin.com/data-science/time-series-forecasting-python
         # https://www.statsmodels.org/stable/examples/notebooks/generated/statespace_forecasting.html
+        # https://www.statsmodels.org/stable/examples/notebooks/generated/tsa_dates.html
         
-        arr_data_train = numpy.array([
-            d_module_hist[mtype][LOC_ALL]["hist_cumu"].GetBinContent(_ibin+1)
-        for _ibin in range(nbins)])
+        #arr_data_train = numpy.array([
+        #    d_module_hist[mtype][LOC_ALL]["hist_cumu"].GetBinContent(_ibin+1)
+        #for _ibin in range(nbins)])
         
-        mod = SARIMAX(arr_data_train, order=(5, 4, 2), trend='c')
+        #mod = SARIMAX(arr_data_train, order=(5, 4, 2), trend='c')
+        
+        
+        pseries_data = pandas.Series(
+            data = numpy.array([d_module_hist[mtype][LOC_ALL]["hist_cumu"].GetBinContent(_ibin+1) for _ibin in range(nbins)]),
+            index = pandas.to_datetime(arr_data[:, 0]),
+            copy = True
+        )
+        
+        date_range = pandas.date_range(start = pseries_data.index.min(), end = pseries_data.index.max(), freq = "D")
+        pseries_data = pseries_data.reindex(date_range, fill_value = 0)
+        
+        selection_res = ar_select_order(pseries_data, maxlag = 15, seasonal = False, trend = "ct")
+        pandas_ar_res = selection_res.model.fit()
+        
+        pred_res = pandas_ar_res.predict(
+            start = datetime.fromtimestamp(time_pred_start).strftime("%Y-%m-%d"),
+            end = datetime.fromtimestamp(time_end).strftime("%Y-%m-%d")
+        )
+        arr_pred_time = numpy.array([ROOT.TDatime(str(_dt)).Convert(toGMT = True) for _dt in pred_res.index], dtype = float)
+        arr_pred_val = numpy.array(pred_res.values, dtype = float)
+        
+        # Used to set the xrange
+        h1_dummy = ROOT.TH1F(f"h1_dummy_{mtype}", "", 1, time_start, time_end)
+        
+        g1_projection = ROOT.TGraph(len(arr_pred_time), arr_pred_time, arr_pred_val)
+        g1_projection.SetName(f"g1_projection_{mtype}")
+        g1_projection.SetTitle("Projection")
+        g1_projection.SetFillStyle(0)
+        g1_projection.SetLineColor(1)
+        g1_projection.SetLineWidth(2)
+        g1_projection.SetLineStyle(7)
+        g1_projection.GetHistogram().SetOption("L")
         
         utils.root_plot1D(
-            l_hist = l_hists,
+            l_hist = [h1_dummy] + l_hists,
+            l_graph_overlay = [g1_projection],
             outfile = f"{args.outdir}/progress_{mtype}.pdf",
-            xrange = (time_min, time_max),
-            #xrange = (time_start, time_end),
+            #xrange = (time_min, time_max),
+            xrange = (time_start, time_end),
             #yrange = (0, 1.2 * max([_hist.GetMaximum() for _hist in l_hists])),
             yrange = (0, 1.1),
             logx = False,
             logy = False,
             xtitle = "Date",
             ytitle = f"Cumulative {mtype_label} fraction",
-            timeformatx = "#lower[0.3]{#splitline{%Y}{%d/%m}}",
+            timeformatx = "#lower[0.3]{#scale[0.9]{#splitline{%Y}{%b-%d}}}",
             gridx = True,
             gridy = True,
-            ndivisionsx = (4, 1, 0),
+            ndivisionsx = (8, 1, 0),
             ndivisionsy = None,
             stackdrawopt = "nostack",
             legendpos = "UR",
