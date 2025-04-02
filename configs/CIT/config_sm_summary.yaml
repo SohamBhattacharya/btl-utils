@@ -448,13 +448,11 @@ h1_metric_barcodes:
       linestyle: 7
       linewidth: 3
   xmin: 8400
-  xmax: 9500
+  xmax: 10000
   ymin: 0
-  ymax: 50
-  nbins: 110
-  #nbins: 700
+  ymax: 70
+  nbins: 60
   ndivisionsx: [4, 8, 0]
-  #centerlabelx: True
   xtitle: "SM barcode [prefix 3211002000]"
   ytitle: "n_{bar} or n_{ch}"
   gridx: True
