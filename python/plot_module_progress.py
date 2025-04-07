@@ -123,8 +123,9 @@ def main() :
     
     time_start = time_min
     #time_end = time_start + (365*nsecs_day)
-    time_pred_start = time_max - (30*nsecs_day)
-    time_end_str = "2025-10-31  00:00:00"
+    # Start prediction from N months before the latest data
+    time_pred_start = time_max - (60*nsecs_day)
+    time_end_str = "2025-12-31  00:00:00"
     time_end = ROOT.TDatime(time_end_str).Convert(toGMT = True)
     
     for mtype in args.moduletypes :
@@ -178,8 +179,6 @@ def main() :
         
         l_hists = [d_module_hist[mtype][_loc]["hist_cumu"] for _loc in args.locations+[LOC_ALL]]
         
-        outfile_csv = f"{args.outdir}/progress_{mtype}.csv"
-        
         l_locations = args.locations+[LOC_ALL]
         
         arr_data = numpy.array([[
@@ -187,16 +186,34 @@ def main() :
             *[str(d_module_hist[mtype][_loc]["hist"].GetBinContent(_ibin+1)) for _loc in l_locations]
         ] for _ibin in range(nbins)], dtype = str)
         
+        outfile_csv = f"{args.outdir}/progress_{mtype}.csv"
         print(f"Saving data to: {outfile_csv}")
         numpy.savetxt(outfile_csv, arr_data, fmt = "%s", delimiter = " , ", header = " , ".join(["Date"] + l_locations))
-        
-        #for hist in l_hists :
-        #    
-        #    hist.Scale(1.0/1000)
         
         for loc in l_locations :
             
             d_module_hist[mtype][loc]["hist_cumu"].Scale(1.0/TOTALS[mtype][loc])
+        
+        
+        f1 = ROOT.TF1(f"pol1_{mtype}", "pol1", time_pred_start, time_end)
+        
+        fit_res = d_module_hist[mtype][LOC_ALL]["hist_cumu"].Fit(
+            f1,
+            option = "SW",
+            goption = "LSAME",
+            xmin = time_pred_start,
+            xmax = time_max
+        )
+        f1.SetTitle("Projection (linear)")
+        f1.SetFillStyle(0)
+        f1.SetLineColor(12)
+        f1.SetLineWidth(2)
+        f1.SetLineStyle(2)
+        f1.SetMarkerSize(0)
+        f1.SetMarkerColor(0)
+        f1.GetHistogram().SetMarkerSize(0)
+        f1.GetHistogram().SetMarkerColor(0)
+        f1.GetHistogram().SetOption("LSAME")
         
         #ROOT.TGaxis.SetMaxDigits(2)
         mtype_label = "SM" if mtype == constants.SM.KIND_OF_PART else "DM"
@@ -205,13 +222,6 @@ def main() :
         # https://builtin.com/data-science/time-series-forecasting-python
         # https://www.statsmodels.org/stable/examples/notebooks/generated/statespace_forecasting.html
         # https://www.statsmodels.org/stable/examples/notebooks/generated/tsa_dates.html
-        
-        #arr_data_train = numpy.array([
-        #    d_module_hist[mtype][LOC_ALL]["hist_cumu"].GetBinContent(_ibin+1)
-        #for _ibin in range(nbins)])
-        
-        #mod = SARIMAX(arr_data_train, order=(5, 4, 2), trend='c')
-        
         
         pseries_data = pandas.Series(
             data = numpy.array([d_module_hist[mtype][LOC_ALL]["hist_cumu"].GetBinContent(_ibin+1) for _ibin in range(nbins)]),
@@ -237,21 +247,24 @@ def main() :
         
         g1_projection = ROOT.TGraph(len(arr_pred_time), arr_pred_time, arr_pred_val)
         g1_projection.SetName(f"g1_projection_{mtype}")
-        g1_projection.SetTitle("Projection")
+        g1_projection.SetTitle("Projection (autoreg.)")
         g1_projection.SetFillStyle(0)
         g1_projection.SetLineColor(1)
         g1_projection.SetLineWidth(2)
-        g1_projection.SetLineStyle(7)
+        g1_projection.SetLineStyle(4)
         g1_projection.GetHistogram().SetOption("L")
         
         utils.root_plot1D(
             l_hist = [h1_dummy] + l_hists,
-            l_graph_overlay = [g1_projection],
+            l_graph_overlay = [
+                g1_projection,
+                f1,
+            ],
             outfile = f"{args.outdir}/progress_{mtype}.pdf",
             #xrange = (time_min, time_max),
             xrange = (time_start, time_end),
             #yrange = (0, 1.2 * max([_hist.GetMaximum() for _hist in l_hists])),
-            yrange = (0, 1.1),
+            yrange = (0, 1.5),
             logx = False,
             logy = False,
             xtitle = "Date",

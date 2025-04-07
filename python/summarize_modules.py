@@ -206,6 +206,9 @@ def main() :
     # Parse arguments
     args = parser.parse_args()
     
+    # Create output directory
+    os.system(f"mkdir -p {args.outdir}")
+    
     # Get the list of files with specified pattern
     logging.info(f"Getting list of files from {len(args.srcs)} source(s) ...")
     l_srcs = [_src.split(":")[0] for _src in args.srcs]
