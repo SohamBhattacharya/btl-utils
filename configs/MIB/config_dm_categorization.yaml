@@ -1,0 +1,75 @@
+categories:
+  #A: "(not {deltaT_high}) and (not {deltaT_avg_high}) and ('{sm_cat}' in ['AA'])"
+  #B: "(not {deltaT_high}) and (not {deltaT_avg_high}) and ('{sm_cat}' in ['AB', 'BA', 'AC', 'CA', 'BB', 'BC', 'CB', 'CC'])"
+  #C: "(not {deltaT_high}) and (not {deltaT_avg_high}) and ('{sm_cat}' in ['AR', 'RA', 'BR', 'RB', 'CR', 'RC', 'RR'])"
+  #R: "not ({A} or {B} or {C})"
+  
+  A: "(not {deltaT_high}) and (not {deltaT_avg_high}) and ('{sm_cat}' in ['AA', 'AB', 'BA', 'AC', 'CA', 'BB', 'BC', 'CB', 'CC'])"
+  R: "not {A}"
+
+
+metrics:
+  
+  deltaT_high: "bool(max([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)]) > {deltaT_avg_max})"
+  deltaT_avg_high: "bool(numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)]) > {deltaT_avg_max})"
+  
+  sm_cat: "str({sm1}['results']['category']+{sm2}['results']['category'])"
+  
+  deltaT_avg: "float(numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)]))"
+  tec_sum: "float(numpy.sum([{sm1}['sipm1']['tec_res'], {sm1}['sipm2']['tec_res'], {sm2}['sipm1']['tec_res'], {sm2}['sipm2']['tec_res']]))"
+  tec_std: "float(numpy.std([{sm1}['sipm1']['tec_res'], {sm1}['sipm2']['tec_res'], {sm2}['sipm1']['tec_res'], {sm2}['sipm2']['tec_res']]))"
+  
+  lo_avg: "-0.5*({sm1}['results']['lo_bar_avg'] + {sm2}['results']['lo_bar_avg'])"
+  
+  # Negative for reverse sorting
+  grouping: "-0.5*({sm1}['results']['lo_bar_avg'] + {sm2}['results']['lo_bar_avg'])"
+
+
+# Will print the metrics for each RU
+# The RU DMs can be accessed as ru.dms
+# The above metrics can be accessed here as dm.results['metric_name'], where dm is an element of ru.dms
+# Results/metrics of the constituent SMs can be accessed here as dm.sm<1/2>.results['metric_name'] 
+ru_metrics:
+  
+  #lo_avg_ru: "numpy.mean([_dm.results['lo_avg'] for _dm in ru.dms])"
+  #lo_std_ru: "numpy.std([_dm.results['lo_avg'] for _dm in ru.dms])"
+  
+  lo_avg_ru: "numpy.mean([[_sm.results['lo_bar_avg'] for _sm in [_dm.sm1, _dm.sm2]] for _dm in ru.dms])"
+  lo_std_ru: "numpy.std([[_sm.results['lo_bar_avg'] for _sm in [_dm.sm1, _dm.sm2]] for _dm in ru.dms])"
+  lo_min_ru: "numpy.min([[_sm.results['lo_bar_avg'] for _sm in [_dm.sm1, _dm.sm2]] for _dm in ru.dms])"
+  lo_max_ru: "numpy.max([[_sm.results['lo_bar_avg'] for _sm in [_dm.sm1, _dm.sm2]] for _dm in ru.dms])"
+  
+  lo_std_rel_ru: "100*{lo_std_ru}/{lo_avg_ru}"
+  lo_delta_rel_ru: "100*({lo_max_ru}-{lo_min_ru})/{lo_avg_ru}"
+  
+  deltaT_avg_ru: "numpy.mean([_dm.results['deltaT_avg'] for _dm in ru.dms])"
+  deltaT_std_ru: "numpy.std([_dm.results['deltaT_avg'] for _dm in ru.dms])"
+  
+  tec_avg_ru: "numpy.mean([_dm.results['tec_sum'] for _dm in ru.dms])"
+  tec_std_ru: "numpy.std([_dm.results['tec_sum'] for _dm in ru.dms])"
+
+
+# Will print the metrics for each Tray
+# The Tray RUs can be accessed as tray.rus
+# The RU metrics can be accessed here as ru.results['metric_name'], where ru is an element of tray.rus
+tray_metrics:
+  
+  lo_avg_tray: "numpy.mean([_ru.results['lo_avg_ru'] for _ru in tray.rus])"
+  lo_ru_std_tray: "numpy.std([_ru.results['lo_avg_ru'] for _ru in tray.rus])"
+  lo_ru_min_tray: "numpy.min([_ru.results['lo_avg_ru'] for _ru in tray.rus])"
+  lo_ru_max_tray: "numpy.max([_ru.results['lo_avg_ru'] for _ru in tray.rus])"
+  
+  lo_ru_std_rel_tray: "100*{lo_ru_std_tray}/{lo_avg_tray}"
+  lo_ru_delta_rel_tray: "100*({lo_ru_max_tray}-{lo_ru_min_tray})/{lo_avg_tray}"
+
+
+read:
+  tL: "g_DeltaTTopL"
+  tR: "g_DeltaTTopR"
+  bL: "g_DeltaTBottomL"
+  bR: "g_DeltaTBottomR"
+
+
+values:
+  deltaT_max: -17
+  deltaT_avg_max: -17
