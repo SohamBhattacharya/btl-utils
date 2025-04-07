@@ -455,6 +455,7 @@ def main() :
                 
                 for varkey, varname in entrycfg.get("read", {}).items() :
                     
+                    #varname = varname if rootfile.GetListOfKeys().Contains(varname) else f"{varname}_{module.barcode}"
                     d_read_info[varkey] = rootfile.Get(varname)
                     d_fmt[varkey] = f"d_read_info['{varkey}']"
                 

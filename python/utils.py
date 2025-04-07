@@ -1231,14 +1231,26 @@ def eval_category(rootfile, d_catcfgs, barcode = "", d_fmt = {}) :
     for metric, metric_str in d_cat_result["metrics"].items() :
         
         metric_str = metric_str.format(**d_fmt)
-        d_cat_result["metrics"][metric] = eval(metric_str)
+        
+        try:
+            d_cat_result["metrics"][metric] = eval(metric_str)
+        except Exception as excpt:
+            logger.error(f"Error evaluating metric \"{metric}\" for {barcode}: \n    {metric_str}")
+            print(excpt)
+            sys.exit(1)
     
     cat = None
     
     for catname, cat_str in d_cat_result["categories"].items() :
         
         cat_str = cat_str.format(**{**d_cat_result["metrics"], **d_cat_result["categories"], **d_fmt})
-        d_cat_result["categories"][catname] = eval(cat_str)
+        
+        try:
+            d_cat_result["categories"][catname] = eval(cat_str)
+        except Exception as excpt:
+            logger.error(f"Error evaluating category \"{catname}\" for {barcode}: \n    {cat_str}")
+            print(excpt)
+            sys.exit(1)
         
         if d_cat_result["categories"][catname] :
             
