@@ -29,7 +29,6 @@ class SensorModule(utils.SensorModule) :
     run: int = None
     fname: str = None
     category: str = None
-    #results: dict = None
 
 @dataclasses.dataclass(init = True)
 class DetectorModule(utils.DetectorModule) :
@@ -37,7 +36,6 @@ class DetectorModule(utils.DetectorModule) :
     run: int = None
     fname: str = None
     category: str = None
-    #results: dict = None
 
 def main() :
     
@@ -146,6 +144,25 @@ def main() :
     )
     
     parser.add_argument(
+        "--dminfoextra",
+        help = (
+            "Extra DM informatation as csv file.\n"
+            "Syntax: <filename> <name>:<column index>:<dtype> <name>:<column index>:<dtype> ...\n"
+            "N.B.\n"
+            "  The first line will be treated as header and will be skipped\n"
+            "  Barcode must be the first column\n"
+            "  Column index starts from 0\n"
+            "  \"name\" must be a valid python attribute name\n"
+            "Example: path/to/AssemblesDMs.csv tec_sum_bac:7:float\n"
+            "Then one can access DM.extra['tec_sum_bac'].\n"
+        ),
+        type = str,
+        nargs = "+",
+        required = False,
+        default = None,
+    )
+    
+    parser.add_argument(
         "--ruinfo",
         help = (
             "YAML file with RU information.\n"
@@ -231,7 +248,9 @@ def main() :
         
     if (args.dminfo) :
         
-        d_loaded_part_info[constants.DM.KIND_OF_PART] = utils.load_part_info(parttype = constants.DM.KIND_OF_PART, yamlfile = args.dminfo)
+        assert (args.dminfoextra is None or len(args.dminfoextra) >= 2), "Invalid --dminfoextra argument."
+        
+        d_loaded_part_info[constants.DM.KIND_OF_PART] = utils.load_part_info(parttype = constants.DM.KIND_OF_PART, yamlfile = args.dminfo, extrainfo = args.dminfoextra)
     
     logging.info("Combining parts ...")
     utils.combine_parts(
@@ -349,24 +368,34 @@ def main() :
         
         if (args.moduletype == constants.SM.KIND_OF_PART) :
             
-            d_modules[barcode] = SensorModule(
-                barcode = barcode,
-                lyso = d_loaded_part_info[constants.SM.KIND_OF_PART][barcode].lyso if barcode in d_loaded_part_info[constants.SM.KIND_OF_PART] else "0",
-                sipm1 = d_loaded_part_info[constants.SM.KIND_OF_PART][barcode].sipm1 if barcode in d_loaded_part_info[constants.SM.KIND_OF_PART] else "0",
-                sipm2 = d_loaded_part_info[constants.SM.KIND_OF_PART][barcode].sipm2 if barcode in d_loaded_part_info[constants.SM.KIND_OF_PART] else "0",
-                run = run,
-                fname = fname
-            )
+            #d_modules[barcode] = SensorModule(
+            #    barcode = barcode,
+            #    lyso = d_loaded_part_info[constants.SM.KIND_OF_PART][barcode].lyso if barcode in d_loaded_part_info[constants.SM.KIND_OF_PART] else "0",
+            #    sipm1 = d_loaded_part_info[constants.SM.KIND_OF_PART][barcode].sipm1 if barcode in d_loaded_part_info[constants.SM.KIND_OF_PART] else "0",
+            #    sipm2 = d_loaded_part_info[constants.SM.KIND_OF_PART][barcode].sipm2 if barcode in d_loaded_part_info[constants.SM.KIND_OF_PART] else "0",
+            #    run = run,
+            #    fname = fname
+            #)
+            d_modules[barcode] = SensorModule(**{"run": run, "fname": fname, **d_loaded_part_info[constants.SM.KIND_OF_PART][barcode].__dict__})
         
         elif (args.moduletype == constants.DM.KIND_OF_PART) :
             
-            d_modules[barcode] = DetectorModule(
-                barcode = barcode,
-                sm1 = d_loaded_part_info[constants.DM.KIND_OF_PART][barcode].sm1 if barcode in d_loaded_part_info[constants.DM.KIND_OF_PART] else "0",
-                sm2 = d_loaded_part_info[constants.DM.KIND_OF_PART][barcode].sm2 if barcode in d_loaded_part_info[constants.DM.KIND_OF_PART] else "0",
-                run = run,
-                fname = fname
-            )
+            #d_modules[barcode] = DetectorModule(
+            #    barcode = barcode,
+            #    sm1 = d_loaded_part_info[constants.DM.KIND_OF_PART][barcode].sm1 if barcode in d_loaded_part_info[constants.DM.KIND_OF_PART] else "0",
+            #    sm2 = d_loaded_part_info[constants.DM.KIND_OF_PART][barcode].sm2 if barcode in d_loaded_part_info[constants.DM.KIND_OF_PART] else "0",
+            #    run = run,
+            #    fname = fname
+            #)
+            
+            #d_modules[barcode] = d_loaded_part_info[constants.DM.KIND_OF_PART][barcode]
+            #d_modules[barcode].run = run
+            #d_modules[barcode].fname = fname
+            #d_modules[barcode].category = None
+            
+            #d_modules[barcode] = DetectorModule(**{"run": run, "fname": fname, **d_loaded_part_info[constants.DM.KIND_OF_PART][barcode].dict()})
+            d_modules[barcode] = DetectorModule(**{"run": run, "fname": fname, **d_loaded_part_info[constants.DM.KIND_OF_PART][barcode].__dict__})
+            
     
     logging.info(f"Skipped {len(l_skipped_modules)} modules:")
     print("\n".join(l_skipped_modules))
@@ -735,7 +764,7 @@ def main() :
     
     
     # Save the categorization
-    outfname = f"{args.outdir}/module_categorization.yaml"
+    outfname = f"{args.outdir}/{args.moduletype}_categorization.yaml"
     logging.info(f"Writing categorizations to: {outfname}")
     
     d_cat_results["counts"]["total"] = sum(d_cat_results["counts"].values())
@@ -915,6 +944,9 @@ def main() :
         args.sipminfo,
         args.sminfo,
         args.dminfo,
+        args.dminfoextra[0] if args.dminfoextra else None,
+        args.ruinfo,
+        args.smresults,
     ]
     
     l_files_to_copy = [_f for _f in l_files_to_copy if _f and os.path.isfile(_f)]
@@ -922,7 +954,7 @@ def main() :
     for fname in l_files_to_copy :
         
         logging.info(f"Copying {fname} to {args.outdir} ...")
-        os.system(f"cp {fname} {args.outdir}/")
+        os.system(f"cp \"{fname}\" {args.outdir}/")
     
     if len(l_modules_nodata) :
         

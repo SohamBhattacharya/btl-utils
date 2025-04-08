@@ -9,6 +9,7 @@ import logging
 import more_itertools
 import numpy
 import os
+import pandas
 import re
 import socket
 import subprocess
@@ -67,7 +68,7 @@ class SensorModule :
     sipm2: str = None
     prod_datime: str = None
     location_id: int = None
-    results: dict = None
+    results: dict = dataclasses.field(default_factory = dict)
     
     def dict(self) :
         
@@ -84,11 +85,28 @@ class DetectorModule :
     sm2: str = None
     prod_datime: str = None
     location_id: int = None
-    results: dict = None
+    results: dict = dataclasses.field(default_factory = dict)
+    extra: dict = dataclasses.field(default_factory = dict)
     
     def dict(self) :
         
         return dataclasses.asdict(self)
+        #return self.__dict__
+
+#class DetectorModule :
+#    
+#    barcode: str = None
+#    id: str = None
+#    feb: str = None
+#    sm1: str = None
+#    sm2: str = None
+#    prod_datime: str = None
+#    location_id: int = None
+#    results: dict = None
+#    
+#    def dict(self) :
+#        
+#        return self.__dict__
 
 
 @dataclasses.dataclass(init = True)
@@ -102,7 +120,7 @@ class ReadoutUnit :
     dms: list = None
     prod_datime: str = None
     location_id: int = None
-    results: dict = None
+    results: dict = dataclasses.field(default_factory = dict)
     
     def dict(self) :
         
@@ -117,7 +135,7 @@ class Tray :
     rus: list = None
     prod_datime: str = None
     location_id: int = None
-    results: dict = None
+    results: dict = dataclasses.field(default_factory = dict)
     
     def dict(self) :
         
@@ -699,7 +717,7 @@ def get_all_part_info(parttype, location_id = None, yamlfile = None, nodb = Fals
     return d_parts
 
 
-def load_part_info(parttype, yamlfile, resultsyaml = None) :
+def load_part_info(parttype, yamlfile, resultsyaml = None, extrainfo = None) :
     """
     Load part info from yamlfile
     Will load results if resultsyaml filename is provided; resultsyaml must have the results as:
@@ -707,6 +725,7 @@ def load_part_info(parttype, yamlfile, resultsyaml = None) :
         barcode1: {results dict},
         barcode2: {results dict},
         ...
+    Will also load additional information if extrainfo is provided; see help of summarize_modules.py for details
     """
     
     check_parttype(parttype)
@@ -736,15 +755,11 @@ def load_part_info(parttype, yamlfile, resultsyaml = None) :
         
         elif (parttype == constants.SM.KIND_OF_PART) :
             
-            #d_parts = {_key: SensorModule(results = d_results.get(_key, {}), **_val) for _key, _val in d_parts.items()}
-            
             # Will use the results from the yaml file if provided
             d_parts = {_key: SensorModule(**{
                 **_val,
                 **{"results": d_results.get(_key, {})}
             }) for _key, _val in d_parts.items()}
-            
-            #d_parts = {_key: SensorModule(**_val) for _key, _val in d_parts.items()}
         
         elif (parttype == constants.DM.KIND_OF_PART) :
             
@@ -755,7 +770,6 @@ def load_part_info(parttype, yamlfile, resultsyaml = None) :
         
         elif (parttype == constants.RU.KIND_OF_PART) :
             
-            #d_parts = {_key: ReadoutUnit(**_val) for _key, _val in d_parts.items()}
             d_parts = {_key: ReadoutUnit(**{
                 **_val,
                 **{"results": d_results.get(_key, {})}
@@ -763,13 +777,54 @@ def load_part_info(parttype, yamlfile, resultsyaml = None) :
         
         elif (parttype == constants.TRAY.KIND_OF_PART) :
             
-            #d_parts = {_key: Tray(**_val) for _key, _val in d_parts.items()}
             d_parts = {_key: Tray(**{
                 **_val,
                 **{"results": d_results.get(_key, {})}
             }) for _key, _val in d_parts.items()}
         
         print(f"Loaded information for {len(d_parts)} {parttype}(s).")
+        
+        if extrainfo :
+            
+            l_col_idx = [0]
+            l_col_names = ["barcode"]
+            d_col_dtypes = {0: str}
+            
+            for infotoken in extrainfo[1:] :
+                
+                col_name, col_idx, col_dtype = infotoken.split(":")
+                
+                l_col_idx.append(int(col_idx))
+                l_col_names.append(col_name)
+                d_col_dtypes[int(col_idx)] = eval(col_dtype)
+            
+            extrafname = extrainfo[0]
+            
+            df_extrainfo = pandas.read_csv(
+                extrafname,
+                header = 0,
+                usecols = l_col_idx,
+                dtype = d_col_dtypes,
+                names = l_col_names
+            )
+            
+            for barcode in d_parts.keys() :
+                
+                for col_name in l_col_names[1:] :
+                    
+                    col_val = df_extrainfo.loc[df_extrainfo["barcode"] == barcode][col_name]
+                    
+                    if len(col_val) == 1:
+                        
+                        col_val = col_val.iloc[0]
+                    
+                    else :
+                        
+                        logger.error(f"Found {len(len(col_val))} occurences of barcode {barcode} in {extrafname}; needs to exactly one occurence.")
+                        sys.exit(1)
+                        
+                    #setattr(d_parts[barcode], col_name, col_val)
+                    d_parts[barcode].extra[col_name] = col_val
     
     else :
         

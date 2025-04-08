@@ -495,7 +495,7 @@ g1_spe-avg_vs_barcode:
   xmin: 8400
   xmax: null
   ymin: 2
-  ymax: 5
+  ymax: 6
   ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 3211002000]"
   ytitle: "Single p.e. charge [pC]"
@@ -529,7 +529,7 @@ g1_spe-min_vs_barcode:
   xmin: 8400
   xmax: null
   ymin: 2
-  ymax: 5
+  ymax: 6
   ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 3211002000]"
   ytitle: "Single p.e. charge [pC]"
@@ -563,7 +563,7 @@ g1_spe-max_vs_barcode:
   xmin: 8400
   xmax: null
   ymin: 2
-  ymax: 5
+  ymax: 6
   ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 3211002000]"
   ytitle: "Single p.e. charge [pC]"

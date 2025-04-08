@@ -225,6 +225,7 @@ g1_deltaT-avg_vs_tec-sum:
   gridy: True
   labelmode: "corr"
 
+
 g1_deltaT-avg_vs_power:
   type: "graph"
   entries:
@@ -254,6 +255,7 @@ g1_deltaT-avg_vs_power:
   gridy: True
   labelmode: "corr"
 
+
 g1_power_vs_tec-sum:
   type: "graph"
   entries:
@@ -275,6 +277,30 @@ g1_power_vs_tec-sum:
   ymax: 5.5
   xtitle: "#Sigma(R_{TEC}) [#Omega]"
   ytitle: "Power drawn [W]"
+  gridx: True
+  gridy: True
+  labelmode: "corr"
+
+
+g1_tec-sum-bac_vs_tec-sum:
+  type: "graph"
+  entries:
+    deltaT-avg_vs_tec-std:
+      plotx: "numpy.sum([{sm1}['sipm1']['tec_res'], {sm1}['sipm2']['tec_res'], {sm2}['sipm1']['tec_res'], {sm2}['sipm2']['tec_res']])"
+      ploty: "{extra}['tec_sum_bac']"
+      fit:
+        pol0: "[0]+([1]*x)"
+      label: "xxx"
+      color: 1
+      marker: 4
+      size: 1
+      drawopt: "P"
+  xmin: 45
+  xmax: 55
+  ymin: 45
+  ymax: 60
+  xtitle: "#Sigma(R_{TEC}) [#Omega]"
+  ytitle: "#Sigma(R_{TEC}) at BAC [#Omega]"
   gridx: True
   gridy: True
   labelmode: "corr"
