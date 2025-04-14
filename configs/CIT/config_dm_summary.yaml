@@ -290,7 +290,7 @@ g1_tec-sum-bac_vs_tec-sum:
       ploty: "{extra}['tec_sum_bac']"
       fit:
         pol0: "[0]+([1]*x)"
-      label: "xxx"
+      label: ""
       color: 1
       marker: 4
       size: 1

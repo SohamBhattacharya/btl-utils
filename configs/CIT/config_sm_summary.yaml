@@ -613,7 +613,7 @@ g1_src-chg-avg_vs_barcode:
   xmin: 8400
   xmax: null
   ymin: 0
-  ymax: 4
+  ymax: 5
   ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 3211002000]"
   ytitle: "Integrated charge [pC/keV]"

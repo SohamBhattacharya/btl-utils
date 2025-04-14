@@ -7,6 +7,7 @@
   prod_datime: '2024-10-24 23:54:22'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004202':
   barcode: '32110040004202'
   id: '476930'
@@ -16,6 +17,7 @@
   prod_datime: '2024-10-24 23:56:57'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004203':
   barcode: '32110040004203'
   id: '475170'
@@ -25,6 +27,7 @@
   prod_datime: '2024-10-24 23:57:53'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004204':
   barcode: '32110040004204'
   id: '475150'
@@ -34,6 +37,7 @@
   prod_datime: '2024-10-24 23:42:59'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004205':
   barcode: '32110040004205'
   id: '476890'
@@ -43,6 +47,7 @@
   prod_datime: '2024-10-24 23:52:59'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004206':
   barcode: '32110040004206'
   id: '481810'
@@ -52,6 +57,7 @@
   prod_datime: '2024-10-30 23:13:58'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004207':
   barcode: '32110040004207'
   id: '481430'
@@ -61,6 +67,7 @@
   prod_datime: '2024-10-30 23:13:09'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004208':
   barcode: '32110040004208'
   id: '481450'
@@ -70,6 +77,7 @@
   prod_datime: '2024-10-31 02:48:17'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004209':
   barcode: '32110040004209'
   id: '481830'
@@ -79,6 +87,7 @@
   prod_datime: '2024-10-30 23:40:46'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004210':
   barcode: '32110040004210'
   id: '482630'
@@ -88,6 +97,7 @@
   prod_datime: '2024-11-01 23:29:22'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004211':
   barcode: '32110040004211'
   id: '483010'
@@ -97,6 +107,7 @@
   prod_datime: '2024-11-01 23:31:59'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004212':
   barcode: '32110040004212'
   id: '483430'
@@ -106,6 +117,7 @@
   prod_datime: '2024-11-01 23:54:48'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004213':
   barcode: '32110040004213'
   id: '483410'
@@ -115,6 +127,7 @@
   prod_datime: '2024-11-01 23:53:36'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004214':
   barcode: '32110040004214'
   id: '484710'
@@ -124,6 +137,7 @@
   prod_datime: '2024-11-06 00:32:19'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004216':
   barcode: '32110040004216'
   id: '485150'
@@ -133,6 +147,7 @@
   prod_datime: '2024-11-06 00:41:38'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004217':
   barcode: '32110040004217'
   id: '484730'
@@ -142,6 +157,7 @@
   prod_datime: '2024-11-06 00:48:07'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004218':
   barcode: '32110040004218'
   id: '484750'
@@ -151,6 +167,7 @@
   prod_datime: '2024-11-06 00:59:42'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004219':
   barcode: '32110040004219'
   id: '485790'
@@ -160,6 +177,7 @@
   prod_datime: '2024-11-08 00:35:31'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004220':
   barcode: '32110040004220'
   id: '485850'
@@ -169,6 +187,7 @@
   prod_datime: '2024-11-08 00:38:17'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004221':
   barcode: '32110040004221'
   id: '486210'
@@ -178,6 +197,7 @@
   prod_datime: '2024-11-08 00:37:36'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004222':
   barcode: '32110040004222'
   id: '486610'
@@ -187,6 +207,7 @@
   prod_datime: '2024-11-09 00:55:05'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004223':
   barcode: '32110040004223'
   id: '492250'
@@ -196,6 +217,7 @@
   prod_datime: '2024-11-16 00:18:11'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004224':
   barcode: '32110040004224'
   id: '492090'
@@ -205,6 +227,7 @@
   prod_datime: '2024-11-16 00:19:09'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004225':
   barcode: '32110040004225'
   id: '492270'
@@ -214,6 +237,7 @@
   prod_datime: '2024-11-16 00:20:17'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004226':
   barcode: '32110040004226'
   id: '492290'
@@ -223,6 +247,7 @@
   prod_datime: '2024-11-16 00:20:52'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004227':
   barcode: '32110040004227'
   id: '496250'
@@ -232,6 +257,7 @@
   prod_datime: '2024-11-22 00:03:55'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004228':
   barcode: '32110040004228'
   id: '496010'
@@ -241,6 +267,7 @@
   prod_datime: '2024-11-22 00:05:25'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004229':
   barcode: '32110040004229'
   id: '496030'
@@ -250,6 +277,7 @@
   prod_datime: '2024-11-22 00:07:54'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004230':
   barcode: '32110040004230'
   id: '496050'
@@ -259,6 +287,7 @@
   prod_datime: '2024-11-22 00:38:14'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004231':
   barcode: '32110040004231'
   id: '496070'
@@ -268,6 +297,7 @@
   prod_datime: '2024-11-22 00:40:09'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004232':
   barcode: '32110040004232'
   id: '496090'
@@ -277,6 +307,7 @@
   prod_datime: '2024-11-22 00:42:25'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004233':
   barcode: '32110040004233'
   id: '496270'
@@ -286,6 +317,7 @@
   prod_datime: '2024-11-22 00:59:07'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004234':
   barcode: '32110040004234'
   id: '496110'
@@ -295,6 +327,7 @@
   prod_datime: '2024-11-22 01:44:33'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004235':
   barcode: '32110040004235'
   id: '497130'
@@ -304,6 +337,7 @@
   prod_datime: '2024-11-22 23:52:05'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004236':
   barcode: '32110040004236'
   id: '497590'
@@ -313,6 +347,7 @@
   prod_datime: '2024-11-23 00:08:51'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004237':
   barcode: '32110040004237'
   id: '497150'
@@ -322,6 +357,7 @@
   prod_datime: '2024-11-23 00:10:34'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004238':
   barcode: '32110040004238'
   id: '497170'
@@ -331,6 +367,7 @@
   prod_datime: '2024-11-23 00:17:22'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004239':
   barcode: '32110040004239'
   id: '497690'
@@ -340,6 +377,7 @@
   prod_datime: '2024-11-23 02:01:27'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004240':
   barcode: '32110040004240'
   id: '497610'
@@ -349,6 +387,7 @@
   prod_datime: '2024-11-23 00:54:59'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004241':
   barcode: '32110040004241'
   id: '497630'
@@ -358,6 +397,7 @@
   prod_datime: '2024-11-23 01:31:56'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004242':
   barcode: '32110040004242'
   id: '497650'
@@ -367,6 +407,7 @@
   prod_datime: '2024-11-23 01:44:09'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004244':
   barcode: '32110040004244'
   id: '497710'
@@ -376,6 +417,7 @@
   prod_datime: '2024-11-23 02:03:11'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004245':
   barcode: '32110040004245'
   id: '502130'
@@ -385,6 +427,7 @@
   prod_datime: '2024-12-05 21:54:12'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004247':
   barcode: '32110040004247'
   id: '502610'
@@ -394,6 +437,7 @@
   prod_datime: '2024-12-06 01:02:55'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004248':
   barcode: '32110040004248'
   id: '509670'
@@ -403,6 +447,7 @@
   prod_datime: '2024-12-12 01:10:36'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004249':
   barcode: '32110040004249'
   id: '515810'
@@ -412,6 +457,7 @@
   prod_datime: '2024-12-13 00:24:26'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004250':
   barcode: '32110040004250'
   id: '515830'
@@ -421,6 +467,7 @@
   prod_datime: '2024-12-13 00:59:45'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004251':
   barcode: '32110040004251'
   id: '515850'
@@ -430,6 +477,7 @@
   prod_datime: '2024-12-13 19:49:23'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004252':
   barcode: '32110040004252'
   id: '515490'
@@ -439,6 +487,7 @@
   prod_datime: '2024-12-13 21:15:12'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004253':
   barcode: '32110040004253'
   id: '516610'
@@ -448,6 +497,7 @@
   prod_datime: '2024-12-16 21:15:21'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004254':
   barcode: '32110040004254'
   id: '516210'
@@ -457,6 +507,7 @@
   prod_datime: '2024-12-16 20:25:13'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004255':
   barcode: '32110040004255'
   id: '516230'
@@ -466,6 +517,7 @@
   prod_datime: '2024-12-17 22:11:37'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004256':
   barcode: '32110040004256'
   id: '516630'
@@ -475,6 +527,7 @@
   prod_datime: '2024-12-18 01:05:28'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004257':
   barcode: '32110040004257'
   id: '523010'
@@ -484,6 +537,7 @@
   prod_datime: '2025-01-08 01:03:47'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004258':
   barcode: '32110040004258'
   id: '523490'
@@ -493,6 +547,7 @@
   prod_datime: '2025-01-16 00:00:10'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004259':
   barcode: '32110040004259'
   id: '523510'
@@ -502,6 +557,7 @@
   prod_datime: '2025-01-16 00:19:18'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004260':
   barcode: '32110040004260'
   id: '523970'
@@ -511,6 +567,7 @@
   prod_datime: '2025-01-16 00:22:35'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004261':
   barcode: '32110040004261'
   id: '523990'
@@ -520,6 +577,7 @@
   prod_datime: '2025-01-16 00:34:57'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004262':
   barcode: '32110040004262'
   id: '524010'
@@ -529,6 +587,7 @@
   prod_datime: '2025-01-16 01:11:47'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004263':
   barcode: '32110040004263'
   id: '563430'
@@ -538,6 +597,7 @@
   prod_datime: '2025-02-11 08:57:54'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004264':
   barcode: '32110040004264'
   id: '524030'
@@ -547,6 +607,7 @@
   prod_datime: '2025-01-16 01:38:01'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004265':
   barcode: '32110040004265'
   id: '524050'
@@ -556,6 +617,7 @@
   prod_datime: '2025-01-16 02:10:20'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004266':
   barcode: '32110040004266'
   id: '524710'
@@ -565,6 +627,7 @@
   prod_datime: '2025-01-16 23:02:59'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004267':
   barcode: '32110040004267'
   id: '524310'
@@ -574,6 +637,7 @@
   prod_datime: '2025-01-16 22:56:29'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004269':
   barcode: '32110040004269'
   id: '524350'
@@ -583,6 +647,7 @@
   prod_datime: '2025-01-16 23:45:27'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004270':
   barcode: '32110040004270'
   id: '524370'
@@ -592,6 +657,7 @@
   prod_datime: '2025-01-17 01:31:04'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004271':
   barcode: '32110040004271'
   id: '524730'
@@ -601,6 +667,7 @@
   prod_datime: '2025-01-17 01:56:31'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004272':
   barcode: '32110040004272'
   id: '525250'
@@ -610,6 +677,7 @@
   prod_datime: '2025-01-18 00:37:06'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004273':
   barcode: '32110040004273'
   id: '530830'
@@ -619,6 +687,7 @@
   prod_datime: '2025-01-23 10:54:05'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004274':
   barcode: '32110040004274'
   id: '531530'
@@ -628,6 +697,7 @@
   prod_datime: '2025-01-23 22:28:17'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004275':
   barcode: '32110040004275'
   id: '528370'
@@ -637,6 +707,7 @@
   prod_datime: '2025-01-23 22:33:14'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004276':
   barcode: '32110040004276'
   id: '528390'
@@ -646,6 +717,7 @@
   prod_datime: '2025-01-23 22:33:33'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004277':
   barcode: '32110040004277'
   id: '543530'
@@ -655,6 +727,7 @@
   prod_datime: '2025-01-29 02:21:58'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004278':
   barcode: '32110040004278'
   id: '546570'
@@ -664,6 +737,7 @@
   prod_datime: '2025-01-30 11:45:40'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004279':
   barcode: '32110040004279'
   id: '557430'
@@ -673,6 +747,7 @@
   prod_datime: '2025-02-05 01:14:43'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004280':
   barcode: '32110040004280'
   id: '557850'
@@ -682,6 +757,7 @@
   prod_datime: '2025-02-05 01:14:58'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004281':
   barcode: '32110040004281'
   id: '557870'
@@ -691,6 +767,7 @@
   prod_datime: '2025-02-05 01:15:16'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004282':
   barcode: '32110040004282'
   id: '557710'
@@ -700,6 +777,7 @@
   prod_datime: '2025-02-05 01:15:35'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004283':
   barcode: '32110040004283'
   id: '557730'
@@ -709,6 +787,7 @@
   prod_datime: '2025-02-05 01:16:02'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004284':
   barcode: '32110040004284'
   id: '557750'
@@ -718,6 +797,7 @@
   prod_datime: '2025-02-05 01:16:20'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004285':
   barcode: '32110040004285'
   id: '557770'
@@ -727,6 +807,7 @@
   prod_datime: '2025-02-05 01:19:54'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004286':
   barcode: '32110040004286'
   id: '557890'
@@ -736,6 +817,7 @@
   prod_datime: '2025-02-05 01:20:10'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004287':
   barcode: '32110040004287'
   id: '557910'
@@ -745,6 +827,7 @@
   prod_datime: '2025-02-05 01:20:26'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004288':
   barcode: '32110040004288'
   id: '557790'
@@ -754,6 +837,7 @@
   prod_datime: '2025-02-05 01:22:04'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004289':
   barcode: '32110040004289'
   id: '557810'
@@ -763,6 +847,7 @@
   prod_datime: '2025-02-05 01:22:22'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004290':
   barcode: '32110040004290'
   id: '557830'
@@ -772,6 +857,7 @@
   prod_datime: '2025-02-05 01:22:44'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004291':
   barcode: '32110040004291'
   id: '557930'
@@ -781,6 +867,7 @@
   prod_datime: '2025-02-05 01:23:03'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004292':
   barcode: '32110040004292'
   id: '549710'
@@ -790,6 +877,7 @@
   prod_datime: '2025-01-31 14:25:26'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004293':
   barcode: '32110040004293'
   id: '551610'
@@ -799,6 +887,7 @@
   prod_datime: '2025-02-01 02:03:38'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004294':
   barcode: '32110040004294'
   id: '551870'
@@ -808,6 +897,7 @@
   prod_datime: '2025-02-01 02:05:47'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004295':
   barcode: '32110040004295'
   id: '551630'
@@ -817,6 +907,7 @@
   prod_datime: '2025-02-01 02:06:51'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004296':
   barcode: '32110040004296'
   id: '551650'
@@ -826,6 +917,7 @@
   prod_datime: '2025-02-01 02:07:56'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004297':
   barcode: '32110040004297'
   id: '551890'
@@ -835,6 +927,7 @@
   prod_datime: '2025-02-01 02:08:58'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004298':
   barcode: '32110040004298'
   id: '551670'
@@ -844,6 +937,7 @@
   prod_datime: '2025-02-01 02:09:49'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004299':
   barcode: '32110040004299'
   id: '557950'
@@ -853,6 +947,7 @@
   prod_datime: '2025-02-05 01:24:38'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004300':
   barcode: '32110040004300'
   id: '557970'
@@ -862,6 +957,7 @@
   prod_datime: '2025-02-05 01:24:57'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004301':
   barcode: '32110040004301'
   id: '558470'
@@ -871,6 +967,7 @@
   prod_datime: '2025-02-05 02:41:25'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004302':
   barcode: '32110040004302'
   id: '559030'
@@ -880,6 +977,7 @@
   prod_datime: '2025-02-05 23:29:01'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004303':
   barcode: '32110040004303'
   id: '560830'
@@ -889,6 +987,7 @@
   prod_datime: '2025-02-07 00:48:21'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004304':
   barcode: '32110040004304'
   id: '560850'
@@ -898,6 +997,7 @@
   prod_datime: '2025-02-07 01:06:43'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004305':
   barcode: '32110040004305'
   id: '560870'
@@ -907,6 +1007,7 @@
   prod_datime: '2025-02-07 02:56:33'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004308':
   barcode: '32110040004308'
   id: '560450'
@@ -916,6 +1017,7 @@
   prod_datime: '2025-02-07 03:42:10'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004309':
   barcode: '32110040004309'
   id: '563290'
@@ -925,6 +1027,7 @@
   prod_datime: '2025-02-11 00:28:51'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004310':
   barcode: '32110040004310'
   id: '563450'
@@ -934,6 +1037,7 @@
   prod_datime: '2025-02-11 09:02:48'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004312':
   barcode: '32110040004312'
   id: '565010'
@@ -943,6 +1047,7 @@
   prod_datime: '2025-02-12 01:45:30'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004313':
   barcode: '32110040004313'
   id: '589770'
@@ -952,6 +1057,7 @@
   prod_datime: '2025-02-28 23:34:49'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004314':
   barcode: '32110040004314'
   id: '589270'
@@ -961,6 +1067,7 @@
   prod_datime: '2025-02-28 23:35:17'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004315':
   barcode: '32110040004315'
   id: '589290'
@@ -970,6 +1077,7 @@
   prod_datime: '2025-02-28 23:35:39'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004316':
   barcode: '32110040004316'
   id: '589310'
@@ -979,6 +1087,7 @@
   prod_datime: '2025-02-28 23:36:03'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004319':
   barcode: '32110040004319'
   id: '587590'
@@ -988,6 +1097,7 @@
   prod_datime: '2025-02-27 22:25:17'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004320':
   barcode: '32110040004320'
   id: '577410'
@@ -997,6 +1107,7 @@
   prod_datime: '2025-02-20 04:49:09'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004321':
   barcode: '32110040004321'
   id: '577430'
@@ -1006,6 +1117,7 @@
   prod_datime: '2025-02-20 04:49:50'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004322':
   barcode: '32110040004322'
   id: '589790'
@@ -1015,6 +1127,7 @@
   prod_datime: '2025-02-28 23:39:22'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004323':
   barcode: '32110040004323'
   id: '580550'
@@ -1024,6 +1137,7 @@
   prod_datime: '2025-02-21 23:28:13'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004324':
   barcode: '32110040004324'
   id: '580570'
@@ -1033,6 +1147,7 @@
   prod_datime: '2025-02-21 23:40:50'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004325':
   barcode: '32110040004325'
   id: '580350'
@@ -1042,6 +1157,7 @@
   prod_datime: '2025-02-22 00:19:31'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004326':
   barcode: '32110040004326'
   id: '580590'
@@ -1051,6 +1167,7 @@
   prod_datime: '2025-02-22 00:19:58'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004327':
   barcode: '32110040004327'
   id: '580370'
@@ -1060,6 +1177,7 @@
   prod_datime: '2025-02-22 00:42:44'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004328':
   barcode: '32110040004328'
   id: '583650'
@@ -1069,6 +1187,7 @@
   prod_datime: '2025-02-25 02:07:25'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004329':
   barcode: '32110040004329'
   id: '583290'
@@ -1078,6 +1197,7 @@
   prod_datime: '2025-02-25 02:18:13'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004330':
   barcode: '32110040004330'
   id: '583270'
@@ -1087,6 +1207,7 @@
   prod_datime: '2025-02-25 02:12:20'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004331':
   barcode: '32110040004331'
   id: '583630'
@@ -1096,6 +1217,7 @@
   prod_datime: '2025-02-25 01:59:27'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004332':
   barcode: '32110040004332'
   id: '584670'
@@ -1105,6 +1227,7 @@
   prod_datime: '2025-02-25 23:20:44'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004333':
   barcode: '32110040004333'
   id: '584690'
@@ -1114,6 +1237,7 @@
   prod_datime: '2025-02-25 23:21:09'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004334':
   barcode: '32110040004334'
   id: '584710'
@@ -1123,6 +1247,7 @@
   prod_datime: '2025-02-25 23:21:28'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004335':
   barcode: '32110040004335'
   id: '584050'
@@ -1132,6 +1257,7 @@
   prod_datime: '2025-02-25 23:21:44'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004336':
   barcode: '32110040004336'
   id: '584070'
@@ -1141,6 +1267,7 @@
   prod_datime: '2025-02-25 23:22:03'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004337':
   barcode: '32110040004337'
   id: '584090'
@@ -1150,6 +1277,7 @@
   prod_datime: '2025-02-25 23:22:20'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004338':
   barcode: '32110040004338'
   id: '585690'
@@ -1159,6 +1287,7 @@
   prod_datime: '2025-02-26 22:59:12'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004339':
   barcode: '32110040004339'
   id: '584730'
@@ -1168,6 +1297,7 @@
   prod_datime: '2025-02-26 07:43:20'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004340':
   barcode: '32110040004340'
   id: '585330'
@@ -1177,6 +1307,7 @@
   prod_datime: '2025-02-27 00:28:12'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004341':
   barcode: '32110040004341'
   id: '585750'
@@ -1186,6 +1317,7 @@
   prod_datime: '2025-02-27 00:28:41'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004342':
   barcode: '32110040004342'
   id: '585730'
@@ -1195,6 +1327,7 @@
   prod_datime: '2025-02-27 00:29:04'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004343':
   barcode: '32110040004343'
   id: '585710'
@@ -1204,6 +1337,7 @@
   prod_datime: '2025-02-27 00:08:18'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004344':
   barcode: '32110040004344'
   id: '585310'
@@ -1213,6 +1347,7 @@
   prod_datime: '2025-02-27 00:19:44'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004345':
   barcode: '32110040004345'
   id: '585770'
@@ -1222,6 +1357,7 @@
   prod_datime: '2025-02-27 00:29:36'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004346':
   barcode: '32110040004346'
   id: '587910'
@@ -1231,6 +1367,7 @@
   prod_datime: '2025-02-27 22:24:30'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004347':
   barcode: '32110040004347'
   id: '587890'
@@ -1240,6 +1377,7 @@
   prod_datime: '2025-02-27 22:23:32'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004348':
   barcode: '32110040004348'
   id: '589510'
@@ -1249,6 +1387,7 @@
   prod_datime: '2025-02-28 21:48:46'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004349':
   barcode: '32110040004349'
   id: '589190'
@@ -1258,6 +1397,7 @@
   prod_datime: '2025-02-28 21:49:08'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004350':
   barcode: '32110040004350'
   id: '589210'
@@ -1267,6 +1407,7 @@
   prod_datime: '2025-02-28 21:49:38'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004351':
   barcode: '32110040004351'
   id: '589530'
@@ -1276,6 +1417,7 @@
   prod_datime: '2025-02-28 21:50:10'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004352':
   barcode: '32110040004352'
   id: '589550'
@@ -1285,6 +1427,7 @@
   prod_datime: '2025-02-28 21:50:25'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004353':
   barcode: '32110040004353'
   id: '589570'
@@ -1294,6 +1437,7 @@
   prod_datime: '2025-02-28 21:50:41'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004354':
   barcode: '32110040004354'
   id: '589590'
@@ -1303,6 +1447,7 @@
   prod_datime: '2025-02-28 21:51:01'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004355':
   barcode: '32110040004355'
   id: '589610'
@@ -1312,6 +1457,7 @@
   prod_datime: '2025-02-28 21:51:16'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004356':
   barcode: '32110040004356'
   id: '589630'
@@ -1321,6 +1467,7 @@
   prod_datime: '2025-02-28 21:51:37'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004357':
   barcode: '32110040004357'
   id: '589650'
@@ -1330,6 +1477,7 @@
   prod_datime: '2025-02-28 21:51:54'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004358':
   barcode: '32110040004358'
   id: '589670'
@@ -1339,6 +1487,7 @@
   prod_datime: '2025-02-28 21:52:12'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004359':
   barcode: '32110040004359'
   id: '589690'
@@ -1348,6 +1497,7 @@
   prod_datime: '2025-02-28 21:52:28'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004360':
   barcode: '32110040004360'
   id: '589710'
@@ -1357,6 +1507,7 @@
   prod_datime: '2025-02-28 21:52:45'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004361':
   barcode: '32110040004361'
   id: '589730'
@@ -1366,6 +1517,7 @@
   prod_datime: '2025-02-28 21:53:01'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004362':
   barcode: '32110040004362'
   id: '589230'
@@ -1375,6 +1527,7 @@
   prod_datime: '2025-02-28 21:53:21'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004363':
   barcode: '32110040004363'
   id: '589750'
@@ -1384,6 +1537,7 @@
   prod_datime: '2025-02-28 22:59:08'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004364':
   barcode: '32110040004364'
   id: '589250'
@@ -1393,6 +1547,7 @@
   prod_datime: '2025-02-28 22:59:39'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004365':
   barcode: '32110040004365'
   id: '590310'
@@ -1402,6 +1557,7 @@
   prod_datime: '2025-03-01 02:48:44'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004366':
   barcode: '32110040004366'
   id: '593390'
@@ -1411,6 +1567,7 @@
   prod_datime: '2025-03-04 22:22:17'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004367':
   barcode: '32110040004367'
   id: '593410'
@@ -1420,6 +1577,7 @@
   prod_datime: '2025-03-04 22:23:48'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004368':
   barcode: '32110040004368'
   id: '593110'
@@ -1429,6 +1587,7 @@
   prod_datime: '2025-03-04 22:24:05'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004369':
   barcode: '32110040004369'
   id: '593130'
@@ -1438,6 +1597,7 @@
   prod_datime: '2025-03-04 22:24:22'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004370':
   barcode: '32110040004370'
   id: '593430'
@@ -1447,6 +1607,7 @@
   prod_datime: '2025-03-04 22:25:34'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004371':
   barcode: '32110040004371'
   id: '593450'
@@ -1456,6 +1617,7 @@
   prod_datime: '2025-03-04 22:25:54'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004372':
   barcode: '32110040004372'
   id: '593150'
@@ -1465,6 +1627,7 @@
   prod_datime: '2025-03-04 22:26:11'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004373':
   barcode: '32110040004373'
   id: '593170'
@@ -1474,6 +1637,7 @@
   prod_datime: '2025-03-04 22:26:31'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004374':
   barcode: '32110040004374'
   id: '593210'
@@ -1483,6 +1647,7 @@
   prod_datime: '2025-03-04 22:26:46'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004375':
   barcode: '32110040004375'
   id: '593230'
@@ -1492,6 +1657,7 @@
   prod_datime: '2025-03-04 22:27:03'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004376':
   barcode: '32110040004376'
   id: '593470'
@@ -1501,6 +1667,7 @@
   prod_datime: '2025-03-04 22:27:34'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004377':
   barcode: '32110040004377'
   id: '593250'
@@ -1510,6 +1677,7 @@
   prod_datime: '2025-03-04 22:27:50'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004378':
   barcode: '32110040004378'
   id: '595190'
@@ -1519,6 +1687,7 @@
   prod_datime: '2025-03-06 23:06:17'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004379':
   barcode: '32110040004379'
   id: '594890'
@@ -1528,6 +1697,7 @@
   prod_datime: '2025-03-06 23:06:34'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004380':
   barcode: '32110040004380'
   id: '594930'
@@ -1537,6 +1707,7 @@
   prod_datime: '2025-03-06 23:18:27'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004381':
   barcode: '32110040004381'
   id: '594910'
@@ -1546,6 +1717,7 @@
   prod_datime: '2025-03-06 23:17:53'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004382':
   barcode: '32110040004382'
   id: '595210'
@@ -1555,6 +1727,7 @@
   prod_datime: '2025-03-06 23:19:46'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004383':
   barcode: '32110040004383'
   id: '595350'
@@ -1564,6 +1737,7 @@
   prod_datime: '2025-03-06 23:19:09'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004384':
   barcode: '32110040004384'
   id: '600710'
@@ -1573,6 +1747,7 @@
   prod_datime: '2025-03-14 00:03:47'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004385':
   barcode: '32110040004385'
   id: '597070'
@@ -1582,6 +1757,7 @@
   prod_datime: '2025-03-11 01:54:14'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004386':
   barcode: '32110040004386'
   id: '600730'
@@ -1591,6 +1767,7 @@
   prod_datime: '2025-03-14 00:04:51'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004387':
   barcode: '32110040004387'
   id: '600750'
@@ -1600,6 +1777,7 @@
   prod_datime: '2025-03-14 00:05:07'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004388':
   barcode: '32110040004388'
   id: '600770'
@@ -1609,6 +1787,7 @@
   prod_datime: '2025-03-14 00:05:23'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004389':
   barcode: '32110040004389'
   id: '600370'
@@ -1618,6 +1797,7 @@
   prod_datime: '2025-03-14 00:05:37'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004390':
   barcode: '32110040004390'
   id: '600790'
@@ -1627,6 +1807,7 @@
   prod_datime: '2025-03-14 02:03:47'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004391':
   barcode: '32110040004391'
   id: '600390'
@@ -1636,6 +1817,7 @@
   prod_datime: '2025-03-14 02:04:14'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004392':
   barcode: '32110040004392'
   id: '600810'
@@ -1645,6 +1827,7 @@
   prod_datime: '2025-03-14 02:04:32'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004393':
   barcode: '32110040004393'
   id: '600410'
@@ -1654,6 +1837,7 @@
   prod_datime: '2025-03-14 02:04:45'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004394':
   barcode: '32110040004394'
   id: '600430'
@@ -1663,6 +1847,7 @@
   prod_datime: '2025-03-14 02:04:58'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004395':
   barcode: '32110040004395'
   id: '600830'
@@ -1672,6 +1857,7 @@
   prod_datime: '2025-03-14 02:05:14'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004396':
   barcode: '32110040004396'
   id: '600850'
@@ -1681,6 +1867,7 @@
   prod_datime: '2025-03-14 02:05:29'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004397':
   barcode: '32110040004397'
   id: '600450'
@@ -1690,6 +1877,7 @@
   prod_datime: '2025-03-14 02:05:44'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004401':
   barcode: '32110040004401'
   id: '620690'
@@ -1699,6 +1887,7 @@
   prod_datime: '2025-03-26 19:45:57'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004402':
   barcode: '32110040004402'
   id: '620710'
@@ -1708,6 +1897,7 @@
   prod_datime: '2025-03-26 19:46:14'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004403':
   barcode: '32110040004403'
   id: '620730'
@@ -1717,6 +1907,7 @@
   prod_datime: '2025-03-26 19:46:29'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004404':
   barcode: '32110040004404'
   id: '620750'
@@ -1726,6 +1917,7 @@
   prod_datime: '2025-03-26 19:46:45'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004405':
   barcode: '32110040004405'
   id: '620770'
@@ -1735,6 +1927,7 @@
   prod_datime: '2025-03-26 19:46:58'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004406':
   barcode: '32110040004406'
   id: '615150'
@@ -1744,6 +1937,7 @@
   prod_datime: '2025-03-26 19:47:14'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004407':
   barcode: '32110040004407'
   id: '620790'
@@ -1753,6 +1947,7 @@
   prod_datime: '2025-03-26 19:47:31'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004408':
   barcode: '32110040004408'
   id: '620810'
@@ -1762,6 +1957,7 @@
   prod_datime: '2025-03-26 19:47:44'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004409':
   barcode: '32110040004409'
   id: '620830'
@@ -1771,6 +1967,7 @@
   prod_datime: '2025-03-26 19:47:57'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004410':
   barcode: '32110040004410'
   id: '620950'
@@ -1780,6 +1977,7 @@
   prod_datime: '2025-03-26 21:50:52'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004411':
   barcode: '32110040004411'
   id: '615190'
@@ -1789,6 +1987,7 @@
   prod_datime: '2025-03-26 22:01:02'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004412':
   barcode: '32110040004412'
   id: '615210'
@@ -1798,6 +1997,7 @@
   prod_datime: '2025-03-27 03:07:35'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004413':
   barcode: '32110040004413'
   id: '621950'
@@ -1807,6 +2007,7 @@
   prod_datime: '2025-03-27 22:59:35'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004414':
   barcode: '32110040004414'
   id: '622230'
@@ -1816,6 +2017,7 @@
   prod_datime: '2025-03-27 23:54:01'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004415':
   barcode: '32110040004415'
   id: '622270'
@@ -1825,6 +2027,7 @@
   prod_datime: '2025-03-28 00:05:15'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004416':
   barcode: '32110040004416'
   id: '622290'
@@ -1834,6 +2037,7 @@
   prod_datime: '2025-03-28 00:51:21'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004417':
   barcode: '32110040004417'
   id: '622310'
@@ -1843,6 +2047,7 @@
   prod_datime: '2025-03-28 00:51:40'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004418':
   barcode: '32110040004418'
   id: '621970'
@@ -1852,6 +2057,7 @@
   prod_datime: '2025-03-28 00:52:00'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004419':
   barcode: '32110040004419'
   id: '622250'
@@ -1861,6 +2067,7 @@
   prod_datime: '2025-03-28 00:01:41'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004420':
   barcode: '32110040004420'
   id: '621990'
@@ -1870,6 +2077,7 @@
   prod_datime: '2025-03-28 00:52:38'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004421':
   barcode: '32110040004421'
   id: '622330'
@@ -1879,6 +2087,7 @@
   prod_datime: '2025-03-28 00:52:59'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004398':
   barcode: '32110040004398'
   id: '622890'
@@ -1888,6 +2097,7 @@
   prod_datime: '2025-03-29 01:31:45'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004399':
   barcode: '32110040004399'
   id: '623230'
@@ -1897,6 +2107,7 @@
   prod_datime: '2025-03-29 01:33:34'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004400':
   barcode: '32110040004400'
   id: '626530'
@@ -1906,6 +2117,7 @@
   prod_datime: '2025-04-02 01:13:04'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004422':
   barcode: '32110040004422'
   id: '625350'
@@ -1915,6 +2127,7 @@
   prod_datime: '2025-04-01 01:29:06'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004423':
   barcode: '32110040004423'
   id: '624970'
@@ -1924,6 +2137,7 @@
   prod_datime: '2025-04-01 01:48:18'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004424':
   barcode: '32110040004424'
   id: '626390'
@@ -1933,6 +2147,7 @@
   prod_datime: '2025-04-02 00:56:43'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004425':
   barcode: '32110040004425'
   id: '626110'
@@ -1942,6 +2157,7 @@
   prod_datime: '2025-04-02 00:50:20'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004426':
   barcode: '32110040004426'
   id: '629270'
@@ -1951,6 +2167,7 @@
   prod_datime: '2025-04-04 00:50:38'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004427':
   barcode: '32110040004427'
   id: '629350'
@@ -1960,6 +2177,7 @@
   prod_datime: '2025-04-04 00:50:57'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004428':
   barcode: '32110040004428'
   id: '629290'
@@ -1969,6 +2187,7 @@
   prod_datime: '2025-04-04 00:51:10'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004429':
   barcode: '32110040004429'
   id: '629310'
@@ -1978,6 +2197,7 @@
   prod_datime: '2025-04-04 00:51:28'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004430':
   barcode: '32110040004430'
   id: '629730'
@@ -1987,6 +2207,7 @@
   prod_datime: '2025-04-04 00:51:45'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004431':
   barcode: '32110040004431'
   id: '629370'
@@ -1996,6 +2217,7 @@
   prod_datime: '2025-04-04 00:51:57'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004432':
   barcode: '32110040004432'
   id: '629750'
@@ -2005,6 +2227,7 @@
   prod_datime: '2025-04-04 00:52:10'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004433':
   barcode: '32110040004433'
   id: '629770'
@@ -2014,6 +2237,7 @@
   prod_datime: '2025-04-04 00:52:24'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004434':
   barcode: '32110040004434'
   id: '629390'
@@ -2023,6 +2247,7 @@
   prod_datime: '2025-04-04 00:52:37'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004435':
   barcode: '32110040004435'
   id: '629790'
@@ -2032,6 +2257,7 @@
   prod_datime: '2025-04-04 00:52:56'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004436':
   barcode: '32110040004436'
   id: '629410'
@@ -2041,6 +2267,7 @@
   prod_datime: '2025-04-04 02:22:37'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004437':
   barcode: '32110040004437'
   id: '629430'
@@ -2050,6 +2277,7 @@
   prod_datime: '2025-04-04 02:22:58'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004438':
   barcode: '32110040004438'
   id: '631830'
@@ -2059,6 +2287,7 @@
   prod_datime: '2025-04-04 23:31:03'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004439':
   barcode: '32110040004439'
   id: '631850'
@@ -2068,6 +2297,7 @@
   prod_datime: '2025-04-04 23:31:22'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004440':
   barcode: '32110040004440'
   id: '632130'
@@ -2077,6 +2307,7 @@
   prod_datime: '2025-04-04 23:31:41'
   location_id: 5023
   results: {}
+  extra: {}
 '32110040004441':
   barcode: '32110040004441'
   id: '631870'
@@ -2086,3 +2317,294 @@
   prod_datime: '2025-04-04 23:32:03'
   location_id: 5023
   results: {}
+  extra: {}
+'32110040004444':
+  barcode: '32110040004444'
+  id: '634170'
+  feb: '32110030000537'
+  sm1: '32110020009050'
+  sm2: '32110020009126'
+  prod_datime: '2025-04-09 21:16:23'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004445':
+  barcode: '32110040004445'
+  id: '634190'
+  feb: '32110030000670'
+  sm1: '32110020008971'
+  sm2: '32110020009129'
+  prod_datime: '2025-04-09 21:23:09'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004446':
+  barcode: '32110040004446'
+  id: '634690'
+  feb: '32110030000655'
+  sm1: '32110020008956'
+  sm2: '32110020008977'
+  prod_datime: '2025-04-10 02:17:45'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004447':
+  barcode: '32110040004447'
+  id: '634710'
+  feb: '32110030000692'
+  sm1: '32110020008975'
+  sm2: '32110020009001'
+  prod_datime: '2025-04-10 02:18:02'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004448':
+  barcode: '32110040004448'
+  id: '634250'
+  feb: '32110030000684'
+  sm1: '32110020009042'
+  sm2: '32110020009071'
+  prod_datime: '2025-04-10 02:18:16'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004449':
+  barcode: '32110040004449'
+  id: '634730'
+  feb: '32110030000626'
+  sm1: '32110020009062'
+  sm2: '32110020009084'
+  prod_datime: '2025-04-10 02:18:32'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004450':
+  barcode: '32110040004450'
+  id: '634270'
+  feb: '32110030000683'
+  sm1: '32110020008959'
+  sm2: '32110020009041'
+  prod_datime: '2025-04-10 02:18:50'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004451':
+  barcode: '32110040004451'
+  id: '634750'
+  feb: '32110030000676'
+  sm1: '32110020008981'
+  sm2: '32110020009069'
+  prod_datime: '2025-04-10 02:19:10'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004452':
+  barcode: '32110040004452'
+  id: '634290'
+  feb: '32110030000693'
+  sm1: '32110020009008'
+  sm2: '32110020009024'
+  prod_datime: '2025-04-10 02:21:43'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004453':
+  barcode: '32110040004453'
+  id: '634770'
+  feb: '32110030000583'
+  sm1: '32110020009049'
+  sm2: '32110020009088'
+  prod_datime: '2025-04-10 02:21:58'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004454':
+  barcode: '32110040004454'
+  id: '634310'
+  feb: '32110030000688'
+  sm1: '32110020008987'
+  sm2: '32110020009067'
+  prod_datime: '2025-04-10 02:22:16'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004455':
+  barcode: '32110040004455'
+  id: '634790'
+  feb: '32110030000650'
+  sm1: '32110020008951'
+  sm2: '32110020009040'
+  prod_datime: '2025-04-10 02:22:50'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004456':
+  barcode: '32110040004456'
+  id: '636770'
+  feb: '32110030000687'
+  sm1: '32110020009063'
+  sm2: '32110020009073'
+  prod_datime: '2025-04-11 02:42:20'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004457':
+  barcode: '32110040004457'
+  id: '636790'
+  feb: '32110030000503'
+  sm1: '32110020009027'
+  sm2: '32110020009078'
+  prod_datime: '2025-04-11 02:52:20'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004458':
+  barcode: '32110040004458'
+  id: '637450'
+  feb: '32110030000610'
+  sm1: '32110020008978'
+  sm2: '32110020009003'
+  prod_datime: '2025-04-12 00:49:53'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004459':
+  barcode: '32110040004459'
+  id: '637470'
+  feb: '32110030000617'
+  sm1: '32110020008994'
+  sm2: '32110020009079'
+  prod_datime: '2025-04-12 00:50:09'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004460':
+  barcode: '32110040004460'
+  id: '637490'
+  feb: '32110030000665'
+  sm1: '32110020008603'
+  sm2: '32110020008995'
+  prod_datime: '2025-04-12 00:50:22'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004461':
+  barcode: '32110040004461'
+  id: '637510'
+  feb: '32110030000534'
+  sm1: '32110020008993'
+  sm2: '32110020009053'
+  prod_datime: '2025-04-12 00:50:37'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004462':
+  barcode: '32110040004462'
+  id: '637930'
+  feb: '32110030000578'
+  sm1: '32110020009018'
+  sm2: '32110020009127'
+  prod_datime: '2025-04-12 00:50:51'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004463':
+  barcode: '32110040004463'
+  id: '637950'
+  feb: '32110030000656'
+  sm1: '32110020008999'
+  sm2: '32110020009091'
+  prod_datime: '2025-04-12 00:51:03'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004464':
+  barcode: '32110040004464'
+  id: '637530'
+  feb: '32110030000690'
+  sm1: '32110020009029'
+  sm2: '32110020009065'
+  prod_datime: '2025-04-12 00:51:16'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004465':
+  barcode: '32110040004465'
+  id: '637550'
+  feb: '32110030000694'
+  sm1: '32110020009080'
+  sm2: '32110020009116'
+  prod_datime: '2025-04-12 00:51:57'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004466':
+  barcode: '32110040004466'
+  id: '637970'
+  feb: '32110030000580'
+  sm1: '32110020008970'
+  sm2: '32110020009064'
+  prod_datime: '2025-04-12 00:52:14'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004467':
+  barcode: '32110040004467'
+  id: '637570'
+  feb: '32110030000701'
+  sm1: '32110020008991'
+  sm2: '32110020009102'
+  prod_datime: '2025-04-12 00:52:26'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004468':
+  barcode: '32110040004468'
+  id: '637910'
+  feb: '32110030000569'
+  sm1: '32110020009004'
+  sm2: '32110020009028'
+  prod_datime: '2025-04-12 00:12:53'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004469':
+  barcode: '32110040004469'
+  id: '637430'
+  feb: '32110030000523'
+  sm1: '32110020008950'
+  sm2: '32110020009013'
+  prod_datime: '2025-04-12 00:23:10'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004470':
+  barcode: '32110040004470'
+  id: '637590'
+  feb: '32110030000602'
+  sm1: '32110020008966'
+  sm2: '32110020009046'
+  prod_datime: '2025-04-12 03:15:23'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004442':
+  barcode: '32110040004442'
+  id: '638010'
+  feb: '32110030001661'
+  sm1: '32110020008852'
+  sm2: '32110020009036'
+  prod_datime: '2025-04-14 02:05:53'
+  location_id: 5023
+  results: {}
+  extra: {}
+'32110040004443':
+  barcode: '32110040004443'
+  id: '638030'
+  feb: '32110030001698'
+  sm1: '32110020008954'
+  sm2: '32110020009125'
+  prod_datime: '2025-04-14 02:07:20'
+  location_id: 5023
+  results: {}
+  extra: {}

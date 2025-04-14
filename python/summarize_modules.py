@@ -198,6 +198,13 @@ def main() :
     )
     
     parser.add_argument(
+        "--listmissing",
+        help = "List modules that are in the info yaml but not in the src directories \n",
+        action = "store_true",
+        default = False
+    )
+    
+    parser.add_argument(
         "--location",
         help = "List of locations \n",
         type = str,
@@ -282,6 +289,7 @@ def main() :
     l_toskip_modules = []
     l_skipped_modules = []
     l_duplicate_modules = []
+    l_found_modules = []
     d_modules = sortedcontainers.SortedDict()
     
     for toproc in args.runs :
@@ -337,6 +345,10 @@ def main() :
         
         run = int(parsed_result["run"]) if ("run" in parsed_result) else -1
         barcode = parsed_result["barcode"].strip()
+        
+        if barcode not in l_found_modules :
+            
+            l_found_modules.append(barcode)
         
         if (run in l_toskip_runs or (l_toproc_runs and run not in l_toproc_runs)) :
             
@@ -970,6 +982,17 @@ def main() :
             
             print(f"[barcode {module.barcode}] [plot {plotname}] [entry {entryname}] [file {module.fname}]")
             print(f"    Error: {excpt}")
+    
+    if (args.listmissing) :
+        
+        l_missing_modules = sorted(set(d_loaded_part_info[args.moduletype].keys()) - set(l_found_modules))
+        
+        if (len(l_missing_modules)) :
+            
+            logging.info(f"{len(l_missing_modules)} missing modules:")
+            for barcode in l_missing_modules :
+                
+                print(barcode)
 
 
 if __name__ == "__main__" :

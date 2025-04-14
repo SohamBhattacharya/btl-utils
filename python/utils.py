@@ -820,7 +820,7 @@ def load_part_info(parttype, yamlfile, resultsyaml = None, extrainfo = None) :
                     
                     else :
                         
-                        logger.error(f"Found {len(len(col_val))} occurences of barcode {barcode} in {extrafname}; needs to exactly one occurence.")
+                        logger.error(f"Found {len(col_val)} occurences of barcode {barcode} in {extrafname}; needs to exactly one occurence.")
                         sys.exit(1)
                         
                     #setattr(d_parts[barcode], col_name, col_val)
