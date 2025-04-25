@@ -198,6 +198,14 @@ def main() :
     )
     
     parser.add_argument(
+        "--seed",
+        help = "Will use this to seed the DM shuffling when grouping them \n",
+        type = int,
+        required = False,
+        default = 0
+    )
+    
+    parser.add_argument(
         "--listmissing",
         help = "List modules that are in the info yaml but not in the src directories \n",
         action = "store_true",
@@ -229,6 +237,8 @@ def main() :
     
     # Parse arguments
     args = parser.parse_args()
+    
+    rnd = random.Random(args.seed)
     
     # Create output directory
     os.system(f"mkdir -p {args.outdir}")
@@ -860,7 +870,7 @@ def main() :
             
             l_dms = l_dms[0: n_dms_tray]
             # Shuffle DMs
-            random.shuffle(l_dms)
+            rnd.shuffle(l_dms)
             # Within each tray, sirt DMs by the grouping metric
             l_dm_tray_groups = [
                 sorted(l_dms[_i: _i+72], key = lambda _dm: _dm["grouping"])
