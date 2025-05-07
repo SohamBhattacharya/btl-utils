@@ -240,6 +240,8 @@ def main() :
     
     rnd = random.Random(args.seed)
     
+    l_location_ids = [vars(constants.LOCATION)[_loc] for _loc in args.location]
+    
     # Create output directory
     os.system(f"mkdir -p {args.outdir}")
     
@@ -618,8 +620,8 @@ def main() :
                     for plotx, ploty in numpy.dstack((plotx_arr, ploty_arr))[0] :
                         
                         # Move the outliers to the outer range
-                        ploty = max(plotcfg["ymin"], ploty)
-                        ploty = min(plotcfg["ymax"], ploty)
+                        ploty = max(plotcfg["ymin"], ploty) if (plotcfg["ymin"] is not None) else ploty
+                        ploty = min(plotcfg["ymax"], ploty) if (plotcfg["ymax"] is not None) else ploty
                         
                         entrycfg["graph"].AddPoint(plotx, ploty)
                 
@@ -693,6 +695,9 @@ def main() :
             xmin = plotcfg["xmin"]
             xmax = plotcfg["xmax"]
             
+            ymin = plotcfg["ymin"]
+            ymax = plotcfg["ymax"]
+            
             for entrycfg in plotcfg["entries"].values() :
                 
                 gr = entrycfg["graph"]
@@ -737,6 +742,7 @@ def main() :
                 l_graphs.append(gr)
                 
                 arr_x_tmp = numpy.array(gr.GetX())
+                arr_y_tmp = numpy.array(gr.GetY())
                 
                 if plotcfg["xmin"] is None :
                     
@@ -745,21 +751,37 @@ def main() :
                 if plotcfg["xmax"] is None :
                     
                     xmax = max(xmax, max(arr_x_tmp)) if xmax is not None else max(arr_x_tmp)
+                
+                if plotcfg["ymin"] is None :
+                    
+                    ymin = min(ymin, min(arr_y_tmp)) if ymin is not None else min(arr_y_tmp)
+                
+                if plotcfg["ymax"] is None :
+                    
+                    ymax = max(ymax, max(arr_y_tmp)) if ymax is not None else max(arr_y_tmp)
             
             if plotcfg["xmin"] is None and abs(xmin) > 100:
                 
-                xmin = 100*numpy.floor(xmin/100)
+                xmin = 100*(numpy.floor(xmin/100)-1)
             
-            if plotcfg["xmax"] is None and abs(xmin) > 100:
+            if plotcfg["xmax"] is None and abs(xmax) > 100:
                 
-                xmax = 100*numpy.ceil(xmax/100)
+                xmax = 100*(numpy.ceil(xmax/100)+1)
+            
+            if plotcfg["ymin"] is None and abs(ymin) > 100:
+                
+                ymin = 100*(numpy.floor(ymin/100)-1)
+            
+            if plotcfg["ymax"] is None and abs(ymax) > 100:
+                
+                ymax = 100*(numpy.ceil(ymax/100)+1)
             
             
             utils.root_plot1D(
                 l_hist = [ROOT.TH1F(f"h1_tmp_{plotname}", "", 1, xmin, xmax)],
                 outfile = f"{args.outdir}/{plotname}.pdf",
                 xrange = (xmin, xmax),
-                yrange = (plotcfg["ymin"], plotcfg["ymax"]),
+                yrange = (ymin, ymax),
                 l_graph_overlay = l_graphs,
                 logx = plotcfg.get("logx", False),
                 logy = plotcfg.get("logy", False),
@@ -805,7 +827,7 @@ def main() :
             parttype = constants.DM.KIND_OF_PART,
             outyamlfile = args.dminfo,
             inyamlfile = args.dminfo,
-            location_id = [vars(constants.LOCATION)[_loc] for _loc in args.location],
+            location_id = l_location_ids,
             ret = True,
             nodb = args.nodb
         )
@@ -849,7 +871,7 @@ def main() :
             parttype = constants.RU.KIND_OF_PART,
             outyamlfile = args.ruinfo,
             inyamlfile = args.ruinfo,
-            location_id = [vars(constants.LOCATION)[_loc] for _loc in args.location],
+            location_id = l_location_ids,
             ret = True,
             nodb = args.nodb
         )
@@ -861,7 +883,7 @@ def main() :
             l_dms = [{
                 "barcode": _dm,
                 "grouping": d_cat_results["results"][_dm]["grouping"],
-            } for _dm in d_cat_results["modules"][cat] if _dm not in l_used_dms]
+            } for _dm in d_cat_results["modules"][cat] if _dm not in l_used_dms and d_modules[_dm].location_id in l_location_ids]
             
             n_dms = len(l_dms)
             n_dms_ru = int(n_dms/12)*12

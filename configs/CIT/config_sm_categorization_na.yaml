@@ -5,7 +5,8 @@ categories:
   A: ({spe_high_nch} + {spe_low_nch}) == 0 and (not {lo_asymm_avg_high}) and {bad_nbar} == 0
   B: ({spe_high_nch} + {spe_low_nch}) == 0 and (not {lo_asymm_avg_high}) and {bad_nbar} == 1
   C: ({spe_high_nch} + {spe_low_nch}) == 0 and (not {lo_asymm_avg_high}) and {bad_nbar} == 2
-  R: not ({A} or {B} or {C})
+  D: ({spe_high_nch} + {spe_low_nch}) == 0 and (not {lo_asymm_avg_high}) and {bad_nbar} > 2 and {bad_nbar_lo} <= 2 and {res_high_nbar} >= 0
+  R: not ({A} or {B} or {C} or {D})
 
 # Define metrics in terms of objects (like tgraphs) read from files
 # Python expressions will be evaluated
@@ -22,6 +23,14 @@ metrics:
   spe_low_nch: "numpy.count_nonzero(get_gry({spe_ch}) < {spe_ch_min})"
   
   lo_asymm_avg_high: "bool(numpy.mean(get_gry({lo_asymm_bar})) > {lo_asymm_avg_max})"
+  
+  bad_nbar_lo: >-
+    numpy.count_nonzero(
+      (get_gry({lo_barL}) < {lo_ch_min})
+    + (get_gry({lo_barR}) < {lo_ch_min})
+    + (get_gry({lo_bar}) < {lo_bar_min})
+    + (numpy.abs(get_gry({lo_asymm_bar})) > {lo_asymm_bar_max})
+    )
   
   bad_nbar: >-
     numpy.count_nonzero(
