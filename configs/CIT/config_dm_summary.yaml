@@ -348,6 +348,37 @@ g1_deltaT-avg_vs_refT:
   labelmode: "corr"
 
 
+g1_deltaTcorr-avg_vs_refT:
+  type: "graph"
+  entries:
+    deltaT-avg_vs_refT:
+      plotx: "0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))"
+      ploty: "0.15*(25.5 - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
+      read:
+        tL: "g_DeltaTTopL"
+        tR: "g_DeltaTTopR"
+        bL: "g_DeltaTBottomL"
+        bR: "g_DeltaTBottomR"
+        refL: "g_CopperL"
+        refR: "g_CopperR"
+      fit:
+        pol0: "[0]+([1]*x)"
+      label: ""
+      color: 1
+      marker: 4
+      size: 1
+      drawopt: "P"
+  xmin: 22
+  xmax: 30
+  ymin: -23
+  ymax: -15
+  xtitle: "Cold plate temperature [#circC]"
+  ytitle: "Avg. #DeltaT [#circC] at 4 min."
+  gridx: True
+  gridy: True
+  labelmode: "corr"
+
+
 g1_power_vs_tec-sum:
   type: "graph"
   entries:

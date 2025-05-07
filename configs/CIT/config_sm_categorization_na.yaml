@@ -46,7 +46,7 @@ metrics:
   # Negative for reverse sorting
   pairing: "-float(numpy.mean(get_gry({lo_bar})))"
 
-pairing_condition: "'{category}' != 'R'"
+pairing_condition: "'{category}' in ['A', 'B', 'C']"
 
 # Define the objects to be read from files
 read:
