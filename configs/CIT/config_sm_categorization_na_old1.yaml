@@ -5,7 +5,6 @@ categories:
   A: ({spe_high_nch} + {spe_low_nch}) == 0 and (not {lo_asymm_avg_high}) and {bad_nbar} == 0
   B: ({spe_high_nch} + {spe_low_nch}) == 0 and (not {lo_asymm_avg_high}) and {bad_nbar} == 1
   C: ({spe_high_nch} + {spe_low_nch}) == 0 and (not {lo_asymm_avg_high}) and {bad_nbar} == 2
-  D: ({spe_high_nch} + {spe_low_nch}) == 0 and (not {lo_asymm_avg_high}) and {bad_nbar} > 2 and {bad_nbar_lo} <= 2 and {res_high_nbar} > 0
   R: not ({A} or {B} or {C} or {D})
 
 # Define metrics in terms of objects (like tgraphs) read from files
@@ -45,8 +44,6 @@ metrics:
   
   # Negative for reverse sorting
   pairing: "-float(numpy.mean(get_gry({lo_bar})))"
-
-pairing_condition: "'{category}' != 'R'"
 
 # Define the objects to be read from files
 read:

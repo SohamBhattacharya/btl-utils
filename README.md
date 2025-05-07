@@ -54,7 +54,7 @@
 --moduletype SensorModule \
 --plotcfg configs/CIT/config_sm_summary.yaml \
 --catcfg configs/CIT/config_sm_categorization_na.yaml \
---outdir results/sm_summary/w-calib \
+--outdir results/sm_summary \
 --skipmodules info/CIT/skip_sms.txt \
 --sminfo info/CIT/sm_info.yaml \
 --location <BAC>
@@ -66,10 +66,11 @@
 --srcs "/path/to/dir/with/runs:run(?P<run>\d+)/module_(?P<barcode>\d+)_analysis.root" \
 --moduletype SensorModule \
 --catcfg configs/CIT/config_sm_categorization_na.yaml \
---outdir results/sm_summary/w-calib \
+--outdir results/sm_pairing \
 --sminfo info/CIT/sm_info.yaml \
 --dminfo info/CIT/dm_info.yaml \
 --pairsms \
+--mixsmcats \
 --location <BAC>
 ```
 
@@ -95,7 +96,7 @@
 --srcs "/path/to/dir/with/runs:run-(?P<run>\d+)_DM-(?P<barcode>\d+).root" \
 --moduletype DetectorModule \
 --catcfg configs/CIT/config_dm_categorization.yaml \
---outdir results/CIT/dm_summary \
+--outdir results/CIT/dm_grouping \
 --sipminfo info/CIT/sipm_info.yaml \
 --sminfo info/CIT/sm_info.yaml \
 --dminfo info/CIT/dm_info.yaml \

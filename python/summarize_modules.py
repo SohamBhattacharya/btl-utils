@@ -37,6 +37,35 @@ class DetectorModule(utils.DetectorModule) :
     fname: str = None
     category: str = None
 
+
+def do_sm_pairing(l_sms, cat, outdir) :
+    
+    n_sms = len(l_sms)
+    l_sms_sorted = sorted(l_sms, key = lambda _sm: _sm["pairing"])
+    
+    logging.info(f"Finding pairs in {n_sms} category {cat} SMs ...")
+    
+    l_sm_groups = [l_sms_sorted[_i: _i+2] if (_i < n_sms-1) else l_sms_sorted[_i: _i+1] for _i in range(0, n_sms, 2)]
+    l_sm_pairs = [sorted(_pair, key = lambda _x: int(_x["barcode"])) for _pair in l_sm_groups if len(_pair) == 2]
+    
+    outfname = f"{outdir}/sm-pairs_cat-{cat}.csv"
+    logging.info(f"Writing pairing results to: {outfname} ...")
+    with open(outfname, "w") as fopen :
+        
+        print("# sm1 barcode , sm2 barcode , sm1 metric , sm2 metric, sm1 cat, sm2 cat", file = fopen)
+        for pair in l_sm_pairs :
+            
+            print(" , ".join([
+                pair[0]['barcode'],
+                pair[1]['barcode'],
+                str(pair[0]['pairing']),
+                str(pair[1]['pairing']),
+                pair[0]['category'],
+                pair[1]['category'],
+            ]), file = fopen)
+
+
+
 def main() :
     
     # Argument parser
@@ -119,6 +148,18 @@ def main() :
     )
     
     parser.add_argument(
+        "--selectexpr",
+        help = (
+            "Module selection expression string (must be a valid python expression).\n"
+            "For e.g.: \"{key1}>=X and {key2}<Y\"\n"
+            "Allowed keys are: barcode (str), run (int)"
+        ),
+        type = str,
+        required = False,
+        default = "True",
+    )
+    
+    parser.add_argument(
         "--sipminfo",
         help = "YAML file with SiPM information.\n",
         type = str,
@@ -186,6 +227,13 @@ def main() :
     parser.add_argument(
         "--pairsms",
         help = "Will pair SMs using the \"pairing\" metric in the categorization configuration \n",
+        action = "store_true",
+        default = False
+    )
+    
+    parser.add_argument(
+        "--mixsmcats",
+        help = "Will mix SM categories when pairing them \n",
         action = "store_true",
         default = False
     )
@@ -358,6 +406,13 @@ def main() :
         run = int(parsed_result["run"]) if ("run" in parsed_result) else -1
         barcode = parsed_result["barcode"].strip()
         
+        selectexpr_tmp = args.selectexpr.format(
+            run = run,
+            barcode = barcode,
+        )
+        
+        selectexpr_eval = eval(selectexpr_tmp)
+        
         if barcode not in l_found_modules :
             
             l_found_modules.append(barcode)
@@ -366,7 +421,7 @@ def main() :
             
             continue
         
-        if (barcode in l_toskip_modules) :
+        if (barcode in l_toskip_modules or not selectexpr_eval) :
             
             #print(f"Skipping module {barcode}")
             l_skipped_modules.append(barcode)
@@ -821,7 +876,7 @@ def main() :
     # Pair SMs
     if (args.pairsms) :
         
-        d_cat_pairs = {}
+        #d_cat_pairs = {}
         
         d_produced_dms = utils.save_all_part_info(
             parttype = constants.DM.KIND_OF_PART,
@@ -834,32 +889,36 @@ def main() :
         
         l_used_sms = list(itertools.chain(*[[_dm.sm1, _dm.sm2] for _dm in d_produced_dms.values()]))
         
-        for cat in d_cat_results["categories"].keys() :
+        if (args.mixsmcats) :
             
-            #l_sms = [{_sm: d_cat_results["results"][_sm]} for _sm in d_cat_results["modules"][cat] if _sm not in l_used_sms]
             l_sms = [{
                 "barcode": _sm,
                 "pairing": d_cat_results["results"][_sm]["pairing"],
-            } for _sm in d_cat_results["modules"][cat] if _sm not in l_used_sms]
+                "category": d_cat_results["results"][_sm]["category"],
+            } for _sm in d_cat_results["results"].keys() if _sm not in l_used_sms and eval(d_catcfgs["pairing_condition"].format(**d_cat_results["results"][_sm]))]
             
-            n_sms = len(l_sms)
-            l_sms_sorted = sorted(l_sms, key = lambda _sm: _sm["pairing"])
+            do_sm_pairing(
+                l_sms = l_sms,
+                cat = "mixed",
+                outdir = args.outdir,
+            )
+        
+        else :
             
-            logging.info(f"Finding pairs in {n_sms} category {cat} SMs ...")
-            
-            l_sm_groups = [l_sms_sorted[_i: _i+2] if (_i < n_sms-1) else l_sms_sorted[_i: _i+1] for _i in range(0, n_sms, 2)]
-            l_sm_pairs = [sorted(_pair, key = lambda _x: int(_x["barcode"])) for _pair in l_sm_groups if len(_pair) == 2]
-            
-            d_cat_pairs[cat] = l_sm_pairs
-            
-            outfname = f"{args.outdir}/sm-pairs_cat-{cat}.csv"
-            logging.info(f"Writing pairing results to: {outfname} ...")
-            with open(outfname, "w") as fopen :
+            for cat in d_cat_results["categories"].keys() :
                 
-                print("#sm1 barcode , sm2 barcode , sm1 pairing metric , sm2 pairing metric", file = fopen)
-                for pair in l_sm_pairs :
-                    
-                    print(f"{pair[0]['barcode']} , {pair[1]['barcode']} , {pair[0]['pairing']:.2f} , {pair[1]['pairing']:.2f}", file = fopen)
+                #l_sms = [{_sm: d_cat_results["results"][_sm]} for _sm in d_cat_results["modules"][cat] if _sm not in l_used_sms]
+                l_sms = [{
+                    "barcode": _sm,
+                    "pairing": d_cat_results["results"][_sm]["pairing"],
+                    "category": d_cat_results["results"][_sm]["category"],
+                } for _sm in d_cat_results["modules"][cat] if _sm not in l_used_sms and eval(d_catcfgs["pairing_condition"].format(**d_cat_results["results"][_sm]))]
+                
+                do_sm_pairing(
+                    l_sms = l_sms,
+                    cat = cat,
+                    outdir = args.outdir,
+                )
     
     
     # Group DMs
