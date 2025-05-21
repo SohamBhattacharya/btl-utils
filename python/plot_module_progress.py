@@ -19,6 +19,8 @@ from utils import yaml
 LOC_ALL = "ALL"
 LOC_ALL_LABEL = "All"
 
+LOC_BACS = ["CIT", "MIB", "PKU", "UVA"]
+
 TOTALS = {
     constants.SM.KIND_OF_PART: {
         "CIT": 18*144,
@@ -35,6 +37,21 @@ TOTALS = {
         "UVA": 18*72,
         "CERN": 18*72,
         LOC_ALL: 72*72,
+    },
+}
+
+BARCODE_RANGES = {
+    constants.SM.KIND_OF_PART: {
+        "MIB": (32110020000001, 32110020002800),
+        "PKU": (32110020002801, 32110020005600),
+        "UVA": (32110020005601, 32110020008400),
+        "CIT": (32110020008401, 32110020011200),
+    },
+    constants.DM.KIND_OF_PART: {
+        "MIB": (32110040000001, 32110040001400),
+        "PKU": (32110040001401, 32110040002800),
+        "UVA": (32110040002801, 32110040004200),
+        "CIT": (32110040004201, 32110040005600),
     },
 }
 
@@ -95,6 +112,8 @@ def main() :
         d_module_info[mtype] = {}
         d_module_time[mtype] = {}
         
+        d_module_info[mtype][LOC_ALL] = {}
+        
         for loc in args.locations :
             
             fname_info = f"{args.outdir}/info_{mtype}_{loc}.yaml"
@@ -107,10 +126,27 @@ def main() :
                 ret = True
             )
             
+            d_module_info[mtype][LOC_ALL].update(d_module_info[mtype][loc])
+        
+        # Assembly location can be different from the current location
+        # Get the assembly location using the barcode
+        for loc in LOC_BACS :
+            
+            l_barcodes_loc = [
+                _module.barcode for _module in d_module_info[mtype][LOC_ALL].values()
+                if _module and _module.prod_datime and (BARCODE_RANGES[mtype][loc][0] <= int(_module.barcode) <= BARCODE_RANGES[mtype][loc][1])
+            ]
+            
+            #d_module_time[mtype][loc] = numpy.array([
+            #    ROOT.TDatime(_module.prod_datime).Convert(toGMT = True)
+            #    for _module in d_module_info[mtype][loc].values()
+            #    if _module and _module.prod_datime and _module.barcode.startswith("321100")
+            #], dtype = float)
+            
             d_module_time[mtype][loc] = numpy.array([
                 ROOT.TDatime(_module.prod_datime).Convert(toGMT = True)
-                for _module in d_module_info[mtype][loc].values()
-                if _module and _module.prod_datime and _module.barcode.startswith("321100")
+                for _module in d_module_info[mtype][LOC_ALL].values()
+                if _module and _module.barcode in l_barcodes_loc
             ], dtype = float)
             
             time_min = min(time_min, min(d_module_time[mtype][loc]))
@@ -134,7 +170,7 @@ def main() :
         d_module_hist[mtype][LOC_ALL] = {}
         d_module_hist[mtype][LOC_ALL]["hist"] = ROOT.TH1F(f"h1_{mtype}_{LOC_ALL}", "All", nbins, time_min, time_max)
         
-        for loc in args.locations :
+        for loc in LOC_BACS :
             
             histname = f"h1_{mtype}_{loc}"
             d_module_hist[mtype][loc] = {}
@@ -177,9 +213,9 @@ def main() :
         d_module_hist[mtype][LOC_ALL]["hist_cumu"].SetMarkerSize(0)
         #d_module_hist[mtype][LOC_ALL]["hist_cumu"].Fit("pol1", option = "SEM", goption = "L")
         
-        l_hists = [d_module_hist[mtype][_loc]["hist_cumu"] for _loc in args.locations+[LOC_ALL]]
+        l_hists = [d_module_hist[mtype][_loc]["hist_cumu"] for _loc in LOC_BACS+[LOC_ALL]]
         
-        l_locations = args.locations+[LOC_ALL]
+        l_locations = LOC_BACS+[LOC_ALL]
         
         arr_data = numpy.array([[
             datetime.fromtimestamp(int(d_module_hist[mtype][LOC_ALL]["hist_cumu"].GetBinCenter(_ibin+1))).strftime("%Y-%m-%d"),

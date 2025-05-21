@@ -1,0 +1,245 @@
+#!/usr/bin/env python3
+
+import argparse
+import numpy
+import os
+import pyvisa
+import time
+
+import utils
+from utils import logging
+from utils import yaml
+
+
+TIME_INTERVAL = 2
+VOLT_INTERVAL = 5
+
+
+def set_voltage_ch(visa_vm, channel, volt_target, curr_max) :
+    
+    volt_start = float(visa_vm.query(f"MEAS:VOLT? CH{channel}").strip())
+    
+    volt_steps = numpy.arange(
+        start = volt_start,
+        stop = volt_target,
+        step = (-1)**int(volt_target < volt_start) * VOLT_INTERVAL
+    )
+    
+    if len(volt_steps):
+        
+        if volt_steps[-1] != volt_target :
+        
+            volt_steps = numpy.append(volt_steps, [volt_target])
+        
+        logging.info(f"Voltage steps: {' , '.join([str(_v) for _v in volt_steps])}")
+        
+        for volt_set in volt_steps :
+            
+            logging.info(f"Setting CH{channel} voltage to {volt_set} V (target {volt_target} V), and maximum current to {curr_max} A ...")
+            visa_vm.write(f"APPL CH{channel}, {volt_set} V, {curr_max} A")
+            
+            time.sleep(TIME_INTERVAL)
+            
+            while True :
+                
+                print_vi_ch(visa_vm, channel)
+                volt_read = float(visa_vm.query(f"MEAS:VOLT? CH{channel}").strip())
+                
+                if abs(volt_read - volt_set) < 0.1 :
+                    break
+                
+                time.sleep(TIME_INTERVAL)
+
+
+def set_voltage(visa_vm, volt_target, curr_max) :
+    
+    volt_targets_ch = [
+        min(30, volt_target),
+        min(30, max(0, volt_target-30)),
+        min(5, max(0, volt_target-60)),
+    ]
+    
+    for ichannel, volt_target_ch in enumerate(volt_targets_ch) :
+        
+        channel = ichannel + 1
+        
+        set_voltage_ch(
+            visa_vm = visa_vm,
+            channel = channel,
+            volt_target = volt_target_ch,
+            curr_max = curr_max,
+        )
+
+
+def print_vi_ch(visa_vm, channel) :
+    
+    volt_read = float(visa_vm.query(f"MEAS:VOLT? CH{channel}").strip())
+    curr_read = float(visa_vm.query(f"MEAS:CURR? CH{channel}").strip())
+    logging.info(f"CH{channel}: {volt_read} V, {curr_read} A")
+
+
+def print_vi_all(visa_vm, nchannels) :
+    
+    for channel in range(1, nchannels+1) :
+        
+        print_vi_ch(
+            visa_vm = visa_vm,
+            channel = channel,
+        )
+
+
+
+def main() :
+    """
+    https://iotexpert.com/pyvisa-first-use/
+    """    
+    
+    # Argument parser
+    parser = argparse.ArgumentParser(
+        formatter_class = utils.Formatter,
+        description = "Control power supply",
+    )
+    
+    parser.add_argument(
+        "--mode",
+        help = "Power supply mode", 
+        type = str,
+        required = True,
+        choices = ["HV"],
+    )
+    
+    parser.add_argument(
+        "--pscfg",
+        help = "Power supply details",
+        type = str,
+        required = True,
+    )
+    
+    parser.add_argument(
+        "--voltage",
+        help = "Set voltage",
+        type = float,
+        required = False,
+        default = None
+    )
+    
+    parser.add_argument(
+        "--current",
+        help = "Set maximum current",
+        type = float,
+        required = False,
+        default = None
+    )
+    
+    parser.add_argument(
+        "--noreset",
+        help = "Will not safely reset the power supply before setting voltage",
+        action = "store_true",
+        default = False,
+    )
+    
+    parser.add_argument(
+        "--poff",
+        help = "Power off the power supply",
+        action = "store_true",
+        default = False,
+    )
+    
+    # Parse arguments
+    args = parser.parse_args()
+    
+    with open(args.pscfg, "r") as fopen :
+        
+        d_pscfgs = yaml.load(fopen.read())
+    
+    pscfg = d_pscfgs[args.mode]
+    
+    if not args.poff :
+        
+        assert (args.voltage is not None), "Voltage must be set if not powering off"
+        assert (args.current is not None), "Current must be set if not powering off"
+        
+        assert (args.voltage >= 0 and args.voltage <= pscfg["max_voltage"]), f"Voltage must be between 0 and {pscfg['max_voltage']} V"
+        assert (args.current >= 0 and args.current <= pscfg["max_current"]), f"Current must be between 0 and {pscfg['max_current']} A"
+    
+    visa_rm = pyvisa.ResourceManager()
+    l_visa_resources = visa_rm.list_resources()
+    resource = None
+    
+    for res in l_visa_resources :
+        
+        try:
+            
+            visa_vm = visa_rm.open_resource(res)
+            
+            if res.startswith("ASRL") :
+                
+                ps_id = visa_vm.query("*IDN?").strip().split(",")
+                ps_mfr = str(ps_id[0].strip())
+                ps_model = str(ps_id[1].strip())
+                ps_sn = str(ps_id[2].strip())
+                
+                if ps_mfr == str(pscfg["manufacturer"]) and ps_model == str(pscfg["model"]) and ps_sn == str(pscfg["serial_number"]) :
+                    
+                    resource = res
+                    break
+        
+        except Exception as exc:
+            
+            logging.warning(f"Error opening resource {res}: {exc}")
+            
+            if "Permission denied" in str(exc) :
+                
+                logging.info(f"Permission denied for resource {res}. Run: sudo chmod 666 {res}")
+            
+            continue
+    
+    if resource is None :
+        
+        logging.error(f"Power supply {pscfg['manufacturer']} {pscfg['model']} {pscfg['serial_number']} not found in available resources: {' , '.join(l_visa_resources)}")
+        exit(1)
+    
+    logging.info(f"Found power supply on resource {resource}: {ps_mfr}, {ps_model}, {ps_sn}")
+    
+    visa_vm.write("SYST:REM")
+    
+    if not args.noreset :
+        
+        # Ramp down to 0 V safely
+        set_voltage(
+            visa_vm = visa_vm,
+            volt_target = 0,
+            curr_max = 0.001
+        )
+        
+        visa_vm.write("*RST")
+        visa_vm.write("APP:VOLT 0, 0 ,0")
+        visa_vm.write("APP:CURR 0, 0 ,0")
+        time.sleep(TIME_INTERVAL)
+    
+    if args.poff :
+        
+        visa_vm.write("OUTP OFF")
+        time.sleep(TIME_INTERVAL)
+    
+    else :
+        
+        visa_vm.write("OUTP ON")
+        
+        set_voltage(
+            visa_vm = visa_vm,
+            volt_target = args.voltage,
+            curr_max = args.current
+        )
+    
+    logging.info(f"Done setting voltage to {args.voltage} V and maximum current to {args.current} A")
+    print_vi_all(
+        visa_vm = visa_vm,
+        nchannels = 3,
+    )
+    
+    return 0
+
+if __name__ == "__main__" :
+
+    main()

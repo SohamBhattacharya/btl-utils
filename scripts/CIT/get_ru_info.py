@@ -7,6 +7,6 @@ utils.save_all_part_info(
     parttype = constants.RU.KIND_OF_PART,
     outyamlfile = "info/CIT/ru_info.yaml",
     inyamlfile = "info/CIT/ru_info.yaml",
-    location_id = constants.LOCATION.CERN,
+    location_id = constants.LOCATION.CIT,
     ret = False
 )
