@@ -160,7 +160,7 @@ g1_deltaT_vs_barcode:
       marker: 4
       size: 1
       drawopt: "P"
-  xmin: 4150
+  xmin: null
   xmax: null
   ymin: -23
   ymax: -15
@@ -188,8 +188,8 @@ g1_deltaT-std_vs_barcode:
       marker: 4
       size: 1
       drawopt: "P"
-  xmin: 4100
-  xmax: 4500
+  xmin: null
+  xmax: null
   ymin: 0
   ymax: 1
   xtitle: "DM barcode [prefix 3211004000]"
@@ -231,7 +231,7 @@ g1_deltaT-std_vs_tec-std:
 g1_deltaT-std_vs_deltaT-avg:
   type: "graph"
   entries:
-    deltaT-std_vs_tec-std:
+    deltaT-std_vs_deltaT-avg:
       plotx: "numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
       ploty: "numpy.std([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
       read:
@@ -261,7 +261,7 @@ g1_deltaT-std_vs_deltaT-avg:
 g1_deltaT-avg_vs_tec-sum:
   type: "graph"
   entries:
-    deltaT-avg_vs_tec-std:
+    deltaT-avg_vs_tec-sum:
       plotx: "numpy.sum([{sm1}['sipm1']['tec_res'], {sm1}['sipm2']['tec_res'], {sm2}['sipm1']['tec_res'], {sm2}['sipm2']['tec_res']])"
       ploty: "numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
       read:
@@ -290,7 +290,7 @@ g1_deltaT-avg_vs_tec-sum:
 g1_deltaT-avg_vs_power:
   type: "graph"
   entries:
-    deltaT-avg_vs_tec-std:
+    deltaT-avg_vs_power:
       plotx: "{pwr}.Eval(4)"
       ploty: "numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
       read:
@@ -351,7 +351,7 @@ g1_deltaT-avg_vs_refT:
 g1_deltaTcorr-avg_vs_refT:
   type: "graph"
   entries:
-    deltaT-avg_vs_refT:
+    deltaTcorr-avg_vs_refT:
       plotx: "0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))"
       ploty: "0.15*(25.5 - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
       read:
@@ -379,10 +379,37 @@ g1_deltaTcorr-avg_vs_refT:
   labelmode: "corr"
 
 
+g1_refT_vs_barcode:
+  type: "graph"
+  entries:
+    refT_vs_barcode:
+      plotx: "int('{barcode}'.split('3211004000')[1])"
+      ploty: "0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))"
+      read:
+        refL: "g_CopperL"
+        refR: "g_CopperR"
+      fit:
+        pol0: "[0]+([1]*x)"
+      label: ""
+      color: 1
+      marker: 4
+      size: 1
+      drawopt: "P"
+  xmin: null
+  xmax: null
+  ymin: 22
+  ymax: 30
+  xtitle: "DM barcode [prefix 3211004000]"
+  ytitle: "Cold plate temperature [#circC]"
+  gridx: True
+  gridy: True
+  labelmode: "corr"
+
+
 g1_power_vs_tec-sum:
   type: "graph"
   entries:
-    deltaT-avg_vs_tec-std:
+    power_vs_tec-sum:
       plotx: "numpy.sum([{sm1}['sipm1']['tec_res'], {sm1}['sipm2']['tec_res'], {sm2}['sipm1']['tec_res'], {sm2}['sipm2']['tec_res']])"
       ploty: "{pwr}.Eval(4)"
       read:
@@ -405,10 +432,58 @@ g1_power_vs_tec-sum:
   labelmode: "corr"
 
 
+g1_tec-sum_vs_barcode:
+  type: "graph"
+  entries:
+    tec-sum_vs_barcode:
+      plotx: "int('{barcode}'.split('3211004000')[1])"
+      ploty: "numpy.sum([{sm1}['sipm1']['tec_res'], {sm1}['sipm2']['tec_res'], {sm2}['sipm1']['tec_res'], {sm2}['sipm2']['tec_res']])"
+      fit:
+        pol0: "[0]+([1]*x)"
+      label: ""
+      color: 1
+      marker: 4
+      size: 1
+      drawopt: "P"
+  xmin: null
+  xmax: null
+  ymin: 45
+  ymax: 55
+  xtitle: "DM barcode [prefix 3211004000]"
+  ytitle: "#Sigma(R_{TEC}) [#Omega]"
+  gridx: True
+  gridy: True
+  labelmode: "corr"
+
+
+g1_tec-sum-bac_vs_barcode:
+  type: "graph"
+  entries:
+    tec-sum-bac_vs_barcode:
+      plotx: "int('{barcode}'.split('3211004000')[1])"
+      ploty: "{extra}['tec_sum_bac']"
+      fit:
+        pol0: "[0]+([1]*x)"
+      label: ""
+      color: 1
+      marker: 4
+      size: 1
+      drawopt: "P"
+  xmin: null
+  xmax: null
+  ymin: 45
+  ymax: 55
+  xtitle: "DM barcode [prefix 3211004000]"
+  ytitle: "#Sigma(R_{TEC}) at BAC [#Omega]"
+  gridx: True
+  gridy: True
+  labelmode: "corr"
+
+
 g1_tec-sum-bac_vs_tec-sum:
   type: "graph"
   entries:
-    deltaT-avg_vs_tec-std:
+    tec-sum-bac_vs_tec-sum:
       plotx: "numpy.sum([{sm1}['sipm1']['tec_res'], {sm1}['sipm2']['tec_res'], {sm2}['sipm1']['tec_res'], {sm2}['sipm2']['tec_res']])"
       ploty: "{extra}['tec_sum_bac']"
       fit:

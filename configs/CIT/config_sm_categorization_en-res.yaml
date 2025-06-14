@@ -1,0 +1,26 @@
+# Define categories in terms of metrics and values
+# Python expressions will be evaluated
+# For e.g.: a metric {key} needs to be defined under the "metrics" block as key: expression
+categories:
+  HR0: "{res_high_nbar} == 0"
+  HR1: "{res_high_nbar} == 1"
+  HR2: "{res_high_nbar} == 2"
+  HR3: "{res_high_nbar} > 2" 
+
+# Define metrics in terms of objects (like tgraphs) read from files
+# Python expressions will be evaluated
+# For e.g.: an object {key} needs to be defined under "read" block as key: object_name
+# The "pairing" key needs to be defined if modules are to be paired
+# Can define your favorite metrics here
+# All metrics will be stored in the categorization output file
+metrics:
+  res_high_nbar: "numpy.count_nonzero(get_gry({res_bar}) > {res_bar_max})"
+
+# Define the objects to be read from files
+read:
+  res_bar: "g_avg_lyso_res_vs_bar"
+
+# Define values
+# Python expressions will be evaluated
+values:
+  res_bar_max: 0.06

@@ -16,6 +16,8 @@ import utils
 from utils import yaml
 
 
+DATIME_FMT = "%Y-%m-%d %H:%M:%S%z"
+
 LOC_ALL = "ALL"
 LOC_ALL_LABEL = "All"
 
@@ -54,6 +56,14 @@ BARCODE_RANGES = {
         "CIT": (32110040004201, 32110040005600),
     },
 }
+
+
+def datime_str_to_stamp(datime_str) :
+    
+    # +01:00 is the timezone offset for CERN
+    stamp = datetime.strptime(f"{datime_str}+01:00", DATIME_FMT).timestamp()
+    
+    return stamp
 
 def main() :
     
@@ -107,6 +117,8 @@ def main() :
     time_min = numpy.inf
     time_max = -1
     
+    d_time_max = {}
+    
     for mtype in args.moduletypes :
         
         d_module_info[mtype] = {}
@@ -144,13 +156,16 @@ def main() :
             #], dtype = float)
             
             d_module_time[mtype][loc] = numpy.array([
-                ROOT.TDatime(_module.prod_datime).Convert(toGMT = True)
+                #ROOT.TDatime(_module.prod_datime).Convert(toGMT = True)
+                datime_str_to_stamp(_module.prod_datime)
                 for _module in d_module_info[mtype][LOC_ALL].values()
                 if _module and _module.barcode in l_barcodes_loc
             ], dtype = float)
             
             time_min = min(time_min, min(d_module_time[mtype][loc]))
             time_max = max(time_max, max(d_module_time[mtype][loc]))
+        
+        d_time_max[mtype] = time_max
     
     nsecs_day = 3600*24
     time_min = nsecs_day * numpy.floor(time_min/nsecs_day)
@@ -161,8 +176,9 @@ def main() :
     #time_end = time_start + (365*nsecs_day)
     # Start prediction from N months before the latest data
     time_pred_start = time_max - (60*nsecs_day)
-    time_end_str = "2025-12-31  00:00:00"
-    time_end = ROOT.TDatime(time_end_str).Convert(toGMT = True)
+    time_end_str = "2025-12-31 00:00:00"
+    #time_end = ROOT.TDatime(time_end_str).Convert(toGMT = True)
+    time_end =  datime_str_to_stamp(time_end_str)
     
     for mtype in args.moduletypes :
         
@@ -275,7 +291,8 @@ def main() :
             start = datetime.fromtimestamp(time_pred_start).strftime("%Y-%m-%d"),
             end = datetime.fromtimestamp(time_end).strftime("%Y-%m-%d")
         )
-        arr_pred_time = numpy.array([ROOT.TDatime(str(_dt)).Convert(toGMT = True) for _dt in pred_res.index], dtype = float)
+        #arr_pred_time = numpy.array([ROOT.TDatime(str(_dt)).Convert(toGMT = True) for _dt in pred_res.index], dtype = float)
+        arr_pred_time = numpy.array([datime_str_to_stamp(_dt) for _dt in pred_res.index], dtype = float)
         arr_pred_val = numpy.array(pred_res.values, dtype = float)
         
         # Used to set the xrange
@@ -293,7 +310,7 @@ def main() :
         utils.root_plot1D(
             l_hist = [h1_dummy] + l_hists,
             l_graph_overlay = [
-                g1_projection,
+                #g1_projection,
                 f1,
             ],
             outfile = f"{args.outdir}/progress_{mtype}.pdf",
@@ -315,9 +332,9 @@ def main() :
             legendncol = 1,
             legendfillstyle = 0,
             legendfillcolor = 0,
-            legendtextsize = 0.045,
-            legendtitle = "",
-            legendheightscale = 1.0,
+            legendtextsize = 0.04,
+            legendtitle = f"Latest data: {datetime.fromtimestamp(d_time_max[mtype]).strftime('%Y-%m-%d')}",
+            legendheightscale = 0.9,
             legendwidthscale = 2.0,
             CMSextraText = "BTL Internal",
             lumiText = "Phase-2"
