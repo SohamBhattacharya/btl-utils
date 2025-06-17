@@ -240,7 +240,14 @@ def main() :
     
     parser.add_argument(
         "--groupdms",
-        help = "Will pair DMs using the \"grouping\" metric in the categorization configuration \n",
+        help = "Will group DMs using the \"grouping\" metric in the categorization configuration \n",
+        action = "store_true",
+        default = False
+    )
+    
+    parser.add_argument(
+        "--flipru",
+        help = "Will print RU DMs [0, 1, 2, 3] row at the top (default is at the bottom) \n",
         action = "store_true",
         default = False
     )
@@ -675,6 +682,9 @@ def main() :
                     for plotx, ploty in numpy.dstack((plotx_arr, ploty_arr))[0] :
                         
                         # Move the outliers to the outer range
+                        plotx = max(plotcfg["xmin"], plotx) if (plotcfg["xmin"] is not None) else plotx
+                        plotx = min(plotcfg["xmax"], plotx) if (plotcfg["xmax"] is not None) else plotx
+                        
                         ploty = max(plotcfg["ymin"], ploty) if (plotcfg["ymin"] is not None) else ploty
                         ploty = min(plotcfg["ymax"], ploty) if (plotcfg["ymax"] is not None) else ploty
                         
@@ -942,6 +952,7 @@ def main() :
             l_dms = [{
                 "barcode": _dm,
                 "grouping": d_cat_results["results"][_dm]["grouping"],
+                "sm_cat": d_cat_results["results"][_dm]["sm_cat"]
             } for _dm in d_cat_results["modules"][cat] if _dm not in l_used_dms and d_modules[_dm].location_id in l_location_ids]
             
             n_dms = len(l_dms)
@@ -958,7 +969,8 @@ def main() :
             for _i in range(0, n_dms_tray, 72)]
             
             # DM positions in RU
-            l_dmidx_ru = numpy.reshape(range(0, 12), (3, 4))[::-1]
+            l_dmidx_ru = numpy.reshape(range(0, 12), (3, 4))
+            l_dmidx_ru = l_dmidx_ru[::-1] if not args.flipru else l_dmidx_ru
             
             d_cat_groups[cat] = l_dm_tray_groups
             
@@ -970,13 +982,14 @@ def main() :
                 l_dm_ru_groups = [l_dms_tray[_i: _i+12] for _i in range(0, len(l_dms_tray), 12)]
                 
                 l_lines = []
-                l_lines.append("[<DM position in RU> <DM barcode> <DM grouping metric>]\n\n")
+                l_lines.append("[<DM position in RU> <DM barcode> <SM categories> <DM grouping metric>]\n\n")
                 l_rus = []
                 
                 for iru, l_dms_ru in enumerate(l_dm_ru_groups) :
                     
                     # Shape into DM arrangement on an RU
-                    l_dms_ru_shaped = numpy.reshape(l_dms_ru, (4, 3)).transpose()[::-1]
+                    l_dms_ru_shaped = numpy.reshape(l_dms_ru, (4, 3)).transpose()
+                    l_dms_ru_shaped = l_dms_ru_shaped[::-1] if not args.flipru else l_dms_ru_shaped
                     
                     l_lines.append("="*100)
                     l_lines.append(f"RU {iru}:")
@@ -997,7 +1010,7 @@ def main() :
                     
                     for irow, dm_row in enumerate(l_dms_ru_shaped) :
                         
-                        l_lines.append(" ".join([f"[{l_dmidx_ru[irow][_idm]:2d} {_dm['barcode']} {_dm['grouping']:0.2f}]" for _idm, _dm in enumerate(dm_row)]))
+                        l_lines.append(" ".join([f"[{l_dmidx_ru[irow][_idm]:2d} {_dm['barcode'].split('3211004000')[1]} {_dm['sm_cat']} {_dm['grouping']:0.2f}]" for _idm, _dm in enumerate(dm_row)]))
                     
                     l_lines.append("\nRU metrics:")
                     for metric_name, metric_val in d_ru_metrics.items() :

@@ -57,7 +57,7 @@ h1_deltaTcorr_4min:
   type: "hist1"
   entries:
     deltaT_tL:
-      plot: "0.15*(25.5 - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + {DT}.Eval(4)"
+      plot: "0.041*(25.5 - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + {DT}.Eval(4)"
       read:
         DT: "g_DeltaTTopL"
         refL: "g_CopperL"
@@ -66,7 +66,7 @@ h1_deltaTcorr_4min:
       color: 2
       fillstyle: 0
     deltaT_tR:
-      plot: "0.15*(25.5 - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + {DT}.Eval(4)"
+      plot: "0.041*(25.5 - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + {DT}.Eval(4)"
       read:
         DT: "g_DeltaTTopR"
         refL: "g_CopperL"
@@ -75,7 +75,7 @@ h1_deltaTcorr_4min:
       color: 800
       fillstyle: 0
     deltaT_bL:
-      plot: "0.15*(25.5 - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + {DT}.Eval(4)"
+      plot: "0.041*(25.5 - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + {DT}.Eval(4)"
       read:
         DT: "g_DeltaTBottomL"
         refL: "g_CopperL"
@@ -84,7 +84,7 @@ h1_deltaTcorr_4min:
       color: 4
       fillstyle: 0
     deltaT_bR:
-      plot: "0.15*(25.5 - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + {DT}.Eval(4)"
+      plot: "0.041*(25.5 - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + {DT}.Eval(4)"
       read:
         DT: "g_DeltaTBottomR"
         refL: "g_CopperL"
@@ -93,7 +93,7 @@ h1_deltaTcorr_4min:
       color: 6
       fillstyle: 0
     deltaT_avg:
-      plot: "0.15*(25.5 - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
+      plot: "0.041*(25.5 - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
       read:
         tL: "g_DeltaTTopL"
         tR: "g_DeltaTTopR"
@@ -337,7 +337,7 @@ g1_deltaT-avg_vs_refT:
       marker: 4
       size: 1
       drawopt: "P"
-  xmin: 22
+  xmin: 20
   xmax: 30
   ymin: -23
   ymax: -15
@@ -348,12 +348,45 @@ g1_deltaT-avg_vs_refT:
   labelmode: "corr"
 
 
-g1_deltaTcorr-avg_vs_refT:
+#g1_deltaT-avg_vs_refT:
+#  type: "graph"
+#  entries:
+#    deltaT-avg_vs_refT:
+#      plotx: "numpy.mean([{refTL}.Eval(0.33), {refTR}.Eval(0.33), {refBL}.Eval(0.33), {refBR}.Eval(0.33)])"
+#      ploty: "numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
+#      read:
+#        tL: "g_DeltaTTopL"
+#        tR: "g_DeltaTTopR"
+#        bL: "g_DeltaTBottomL"
+#        bR: "g_DeltaTBottomR"
+#        refTL: "g_TopL"
+#        refTR: "g_TopR"
+#        refBL: "g_BottomL"
+#        refBR: "g_BottomR"
+#      fit:
+#        pol0: "[0]+([1]*x)"
+#      label: ""
+#      color: 1
+#      marker: 4
+#      size: 1
+#      drawopt: "P"
+#  xmin: 20
+#  xmax: 30
+#  ymin: -23
+#  ymax: -15
+#  xtitle: "Cold plate temperature [#circC]"
+#  ytitle: "Avg. #DeltaT [#circC] at 4 min."
+#  gridx: True
+#  gridy: True
+#  labelmode: "corr"
+
+
+g1_deltaT-avg_vs_ref-deltaT:
   type: "graph"
   entries:
-    deltaTcorr-avg_vs_refT:
-      plotx: "0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))"
-      ploty: "0.15*(25.5 - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
+    deltaT-avg_vs_ref-deltaT:
+      plotx: "0.5*(({refL}.Eval(4)+{refR}.Eval(4)) - ({refL}.Eval(0.33)+{refR}.Eval(0.33)))"
+      ploty: "numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
       read:
         tL: "g_DeltaTTopL"
         tR: "g_DeltaTTopR"
@@ -368,7 +401,38 @@ g1_deltaTcorr-avg_vs_refT:
       marker: 4
       size: 1
       drawopt: "P"
-  xmin: 22
+  xmin: 0
+  xmax: 5
+  ymin: -23
+  ymax: -15
+  xtitle: "#Delta(Cold plate temperature) [#circC]"
+  ytitle: "Avg. #DeltaT [#circC] at 4 min."
+  gridx: True
+  gridy: True
+  labelmode: "corr"
+
+
+g1_deltaTcorr-avg_vs_refT:
+  type: "graph"
+  entries:
+    deltaTcorr-avg_vs_refT:
+      plotx: "0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))"
+      ploty: "0.041*(25.5 - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
+      read:
+        tL: "g_DeltaTTopL"
+        tR: "g_DeltaTTopR"
+        bL: "g_DeltaTBottomL"
+        bR: "g_DeltaTBottomR"
+        refL: "g_CopperL"
+        refR: "g_CopperR"
+      fit:
+        pol0: "[0]+([1]*x)"
+      label: ""
+      color: 1
+      marker: 4
+      size: 1
+      drawopt: "P"
+  xmin: 20
   xmax: 30
   ymin: -23
   ymax: -15
@@ -397,7 +461,7 @@ g1_refT_vs_barcode:
       drawopt: "P"
   xmin: null
   xmax: null
-  ymin: 22
+  ymin: 20
   ymax: 30
   xtitle: "DM barcode [prefix 3211004000]"
   ytitle: "Cold plate temperature [#circC]"
