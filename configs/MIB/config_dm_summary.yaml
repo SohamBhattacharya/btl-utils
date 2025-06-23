@@ -53,6 +53,67 @@ h1_deltaT_4min:
   labelmode: "stddev_by_mean"
 
 
+h1_deltaTcorr_4min:
+  type: "hist1"
+  entries:
+    deltaT_tL:
+      plot: "-0.088*(25. - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + {DT}.Eval(4)"
+      read:
+        DT: "g_DeltaTTopL"
+        refL: "g_TColdPlateL"
+        refR: "g_TColdPlateR"
+      label: "Top left"
+      color: 2
+      fillstyle: 0
+    deltaT_tR:
+      plot: "-0.088*(25. - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + {DT}.Eval(4)"
+      read:
+        DT: "g_DeltaTTopR"
+        refL: "g_TColdPlateL"
+        refR: "g_TColdPlateR"
+      label: "Top right"
+      color: 800
+      fillstyle: 0
+    deltaT_bL:
+      plot: "-0.088*(25. - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + {DT}.Eval(4)"
+      read:
+        DT: "g_DeltaTBottomL"
+        refL: "g_TColdPlateL"
+        refR: "g_TColdPlateR"
+      label: "Bottom left"
+      color: 4
+      fillstyle: 0
+    deltaT_bR:
+      plot: "-0.088*(25. - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + {DT}.Eval(4)"
+      read:
+        DT: "g_DeltaTBottomR"
+        refL: "g_TColdPlateL"
+        refR: "g_TColdPlateR"
+      label: "Bottom right"
+      color: 6
+      fillstyle: 0
+    deltaT_avg:
+      plot: "-0.088*(25. - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
+      read:
+        tL: "g_DeltaTTopL"
+        tR: "g_DeltaTTopR"
+        bL: "g_DeltaTBottomL"
+        bR: "g_DeltaTBottomR"
+        refL: "g_TColdPlateL"
+        refR: "g_TColdPlateR"
+      label: "Avg."
+      color: 1
+      fillstyle: 0
+  xmin: -23
+  xmax: -15
+  nbins: 80
+  xtitle: "#DeltaT at 4 min. [#circC]"
+  ytitle: "Entries"
+  gridx: True
+  gridy: False
+  labelmode: "stddev_by_mean"
+
+
 h1_deltaT-std_4min:
   type: "hist1"
   entries:
@@ -99,8 +160,8 @@ g1_deltaT_vs_barcode:
       marker: 4
       size: 1
       drawopt: "P"
-  xmin: 4100
-  xmax: 4500
+  xmin: 100
+  xmax: 1400
   ymin: -23
   ymax: -15
   xtitle: "DM barcode [prefix 3211004000]"
@@ -127,8 +188,8 @@ g1_deltaT-std_vs_barcode:
       marker: 4
       size: 1
       drawopt: "P"
-  xmin: 4100
-  xmax: 4500
+  xmin: 100
+  xmax: 1400
   ymin: 0
   ymax: 1
   xtitle: "DM barcode [prefix 3211004000]"
@@ -254,6 +315,69 @@ g1_deltaT-avg_vs_power:
   gridy: True
   labelmode: "corr"
 
+
+g1_deltaT-avg_vs_refT:
+  type: "graph"
+  entries:
+    deltaT-avg_vs_refT:
+      plotx: "0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))"
+      ploty: "numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
+      read:
+        tL: "g_DeltaTTopL"
+        tR: "g_DeltaTTopR"
+        bL: "g_DeltaTBottomL"
+        bR: "g_DeltaTBottomR"
+        refL: "g_TColdPlateL"
+        refR: "g_TColdPlateR"
+      fit:
+        pol0: "[0]+([1]*x)"
+      label: ""
+      color: 1
+      marker: 4
+      size: 1
+      drawopt: "P"
+  xmin: 22
+  xmax: 30
+  ymin: -23
+  ymax: -15
+  xtitle: "Cold plate temperature [#circC]"
+  ytitle: "Avg. #DeltaT [#circC] at 4 min."
+  gridx: True
+  gridy: True
+  labelmode: "corr"
+
+
+g1_deltaTcorr-avg_vs_refT:
+  type: "graph"
+  entries:
+    deltaT-avg_vs_refT:
+      plotx: "0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))"
+      ploty: "-0.088*(25. - 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))) + numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
+      read:
+        tL: "g_DeltaTTopL"
+        tR: "g_DeltaTTopR"
+        bL: "g_DeltaTBottomL"
+        bR: "g_DeltaTBottomR"
+        refL: "g_TColdPlateL"
+        refR: "g_TColdPlateR"
+      fit:
+        pol0: "[0]+([1]*x)"
+      label: ""
+      color: 1
+      marker: 4
+      size: 1
+      drawopt: "P"
+  xmin: 22
+  xmax: 30
+  ymin: -23
+  ymax: -15
+  xtitle: "Cold plate temperature [#circC]"
+  ytitle: "Avg. #DeltaT [#circC] at 4 min."
+  gridx: True
+  gridy: True
+  labelmode: "corr"
+
+
 g1_power_vs_tec-sum:
   type: "graph"
   entries:
@@ -275,6 +399,30 @@ g1_power_vs_tec-sum:
   ymax: 5.5
   xtitle: "#Sigma(R_{TEC}) [#Omega]"
   ytitle: "Power drawn [W]"
+  gridx: True
+  gridy: True
+  labelmode: "corr"
+
+
+g1_tec-sum-bac_vs_tec-sum:
+  type: "graph"
+  entries:
+    deltaT-avg_vs_tec-std:
+      plotx: "numpy.sum([{sm1}['sipm1']['tec_res'], {sm1}['sipm2']['tec_res'], {sm2}['sipm1']['tec_res'], {sm2}['sipm2']['tec_res']])"
+      ploty: "{extra}['tec_sum_bac']"
+      fit:
+        pol0: "[0]+([1]*x)"
+      label: ""
+      color: 1
+      marker: 4
+      size: 1
+      drawopt: "P"
+  xmin: 45
+  xmax: 55
+  ymin: 45
+  ymax: 60
+  xtitle: "#Sigma(R_{TEC}) [#Omega]"
+  ytitle: "#Sigma(R_{TEC}) at BAC [#Omega]"
   gridx: True
   gridy: True
   labelmode: "corr"

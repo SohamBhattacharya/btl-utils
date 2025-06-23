@@ -1,2 +1,17 @@
-32110020000697
-32110020001541
+32110020000258 # shipped to UVA, lost
+32110020000265 # shipped to UVA, lost
+32110020000326 # shipped to UVA, lost
+32110020000327 # shipped to UVA, lost
+32110020000331 # shipped to UVA, lost
+32110020000332 # shipped to UVA, lost
+32110020000518 # shipped to UVA
+32110020000520 # shipped to UVA
+32110020000526 # shipped to UVA
+32110020000531 # shipped to UVA
+32110020000541 # ???
+32110020000545 # shipped to UVA
+32110020000547 # shipped to UVA
+32110020000697 # bad, 1 channel missing in qaqc
+32110020001541 # bad, misaligned, cat D
+32110020001694 # bad, misaligned, cat D
+32110020001813 # bad, bar0 weird

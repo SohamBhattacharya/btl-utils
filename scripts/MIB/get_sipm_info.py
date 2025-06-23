@@ -10,6 +10,7 @@ utils.save_all_part_info(
     parttype = constants.SIPM.KIND_OF_PART,
     outyamlfile = "info/MIB/sipm_info.yaml",
     inyamlfile = "info/MIB/sipm_info.yaml",
-    location_id = constants.LOCATION.MIB,
+    location_id = [constants.LOCATION.MIB, constants.LOCATION.CERN],
+    #location_id = [constants.LOCATION.MIB],
     ret = False
 )

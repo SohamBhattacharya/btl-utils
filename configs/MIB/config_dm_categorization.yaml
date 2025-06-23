@@ -1,11 +1,7 @@
 categories:
-  #A: "(not {deltaT_high}) and (not {deltaT_avg_high}) and ('{sm_cat}' in ['AA'])"
-  #B: "(not {deltaT_high}) and (not {deltaT_avg_high}) and ('{sm_cat}' in ['AB', 'BA', 'AC', 'CA', 'BB', 'BC', 'CB', 'CC'])"
-  #C: "(not {deltaT_high}) and (not {deltaT_avg_high}) and ('{sm_cat}' in ['AR', 'RA', 'BR', 'RB', 'CR', 'RC', 'RR'])"
-  #R: "not ({A} or {B} or {C})"
-  
-  A: "(not {deltaT_high}) and (not {deltaT_avg_high}) and ('{sm_cat}' in ['AA', 'AB', 'BA', 'AC', 'CA', 'BB', 'BC', 'CB', 'CC'])"
-  R: "not {A}"
+  A: "(not {deltaT_high}) and (not {deltaT_avg_high}) and ('R' not in '{sm_cat}')"
+  B: "(not {deltaT_high}) and (not {deltaT_avg_high}) and ('R' in '{sm_cat}')"
+  R: "not ({A} or {B})"
 
 
 metrics:
@@ -71,5 +67,5 @@ read:
 
 
 values:
-  deltaT_max: -17
-  deltaT_avg_max: -17
+  deltaT_max: -18
+  deltaT_avg_max: -18
