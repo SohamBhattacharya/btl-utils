@@ -10,6 +10,6 @@ utils.save_all_part_info(
     parttype = constants.SM.KIND_OF_PART,
     outyamlfile = "info/MIB/sm_info.yaml",
     inyamlfile = "info/MIB/sm_info.yaml",
-    location_id = constants.LOCATION.MIB,
+    location_id = [constants.LOCATION.MIB, constants.LOCATION.CERN],
     ret = False
 )
