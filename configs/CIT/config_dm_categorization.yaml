@@ -1,6 +1,8 @@
 categories:
-  A: "(not {deltaT_high}) and (not {deltaT_avg_high}) and ('R' not in '{sm_cat}')"
-  R: "not {A}"
+  X: ('D' in '{sm_cat}') or ('R' in '{sm_cat}')
+  A: "(not {deltaT_high}) and (not {deltaT_avg_high}) and (not {X})"
+  R: "({deltaT_high} or {deltaT_avg_high}) and (not {X})"
+  #R: "not {A}"
 
 
 metrics:

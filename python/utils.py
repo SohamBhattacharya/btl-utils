@@ -666,7 +666,7 @@ def get_all_part_info(parttype, location_id = None, yamlfile = None, nodb = Fals
         
         # Group the barcodes and then use ranges to fetch from database
         # Significantly faster than looping over barcodes
-        l_part_barcodes_int = sorted([int(_bc) for _bc in l_part_barcodes])
+        l_part_barcodes_int = sorted([int(_bc) for _bc in l_part_barcodes if _bc.isdigit()])
         l_barcode_groups_tmp = [list(group) for group in more_itertools.consecutive_groups(l_part_barcodes_int)]
         
         # Merge groups if they span < 1000

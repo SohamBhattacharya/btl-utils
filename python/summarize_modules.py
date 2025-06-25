@@ -52,10 +52,11 @@ def do_sm_pairing(l_sms, cat, outdir) :
     logging.info(f"Writing pairing results to: {outfname} ...")
     with open(outfname, "w") as fopen :
         
-        print("# sm1 barcode , sm2 barcode , sm1 metric , sm2 metric, sm1 cat, sm2 cat", file = fopen)
-        for pair in l_sm_pairs :
-            
+        print("# pair number, sm1 barcode , sm2 barcode , sm1 metric , sm2 metric, sm1 cat, sm2 cat", file = fopen)
+        for ipair, pair in enumerate(l_sm_pairs) :
+
             print(" , ".join([
+                str(ipair+1),
                 pair[0]['barcode'],
                 pair[1]['barcode'],
                 str(pair[0]['pairing']),
@@ -573,6 +574,11 @@ def main() :
                     #varname = varname if rootfile.GetListOfKeys().Contains(varname) else f"{varname}_{module.barcode}"
                     d_read_info[varkey] = rootfile.Get(varname)
                     d_fmt[varkey] = f"d_read_info['{varkey}']"
+                
+                for defkey, defexpr in entrycfg.get("def", {}).items() :
+                    
+                    defexpr = defexpr.format(**d_fmt)
+                    d_fmt[defkey] = defexpr
                 
                 if (plotcfg["type"] == "hist1") :
                     
