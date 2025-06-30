@@ -11,12 +11,20 @@ from utils import logging
 from utils import yaml
 
 
-TIME_INTERVAL = 2
-VOLT_INTERVAL = 5
+TIME_INTERVAL = 2 # Seconds
+VOLT_INTERVAL = 5 # Volts
+VOLT_TOLERANCE = 0.1 # Volts
+
+TRIES_MAX = 5 # Maximum number of tries to reach target voltage
 
 
-def set_voltage_ch(visa_vm, channel, volt_target, curr_max) :
+def set_voltage_ch(visa_vm, channel, volt_target, curr_max = None) :
     
+    if curr_max is None and volt_target > 0 :
+        
+        logging.error(f"Max current must be set if target voltage is greater than 0 V")
+        return 1
+
     volt_start = float(visa_vm.query(f"MEAS:VOLT? CH{channel}").strip())
     
     volt_steps = numpy.arange(
@@ -35,20 +43,35 @@ def set_voltage_ch(visa_vm, channel, volt_target, curr_max) :
         
         for volt_set in volt_steps :
             
-            logging.info(f"Setting CH{channel} voltage to {volt_set} V (target {volt_target} V), and maximum current to {curr_max} A ...")
-            visa_vm.write(f"APPL CH{channel}, {volt_set} V, {curr_max} A")
-            
+            if curr_max is not None:
+                logging.info(f"Setting CH{channel} voltage to {volt_set} V (target {volt_target} V), and maximum current to {curr_max} A ...")
+                visa_vm.write(f"APPL CH{channel}, {volt_set} V, {curr_max} A")
+            else:
+                logging.info(f"Setting CH{channel} voltage to {volt_set} V (target {volt_target} V) ...")
+                visa_vm.write(f"APPL CH{channel}, {volt_set} V")
+
             time.sleep(TIME_INTERVAL)
             
+            ntries = 0
+            
             while True :
+                
+                ntries += 1
+                
+                if ntries > TRIES_MAX :
+                    
+                    logging.error(f"Failed to reach target voltage {volt_target} V on CH{channel} after {TRIES_MAX-1} attempts")
+                    return 1
                 
                 print_vi_ch(visa_vm, channel)
                 volt_read = float(visa_vm.query(f"MEAS:VOLT? CH{channel}").strip())
                 
-                if abs(volt_read - volt_set) < 0.1 :
+                if abs(volt_read - volt_set) < VOLT_TOLERANCE :
                     break
                 
                 time.sleep(TIME_INTERVAL)
+    
+    return 0
 
 
 def set_voltage(visa_vm, volt_target, curr_max) :
@@ -63,12 +86,18 @@ def set_voltage(visa_vm, volt_target, curr_max) :
         
         channel = ichannel + 1
         
-        set_voltage_ch(
+        retval = set_voltage_ch(
             visa_vm = visa_vm,
             channel = channel,
             volt_target = volt_target_ch,
             curr_max = curr_max,
         )
+        
+        if retval :
+            
+            return retval
+    
+    return 0
 
 
 def print_vi_ch(visa_vm, channel) :
@@ -87,6 +116,24 @@ def print_vi_all(visa_vm, nchannels) :
             channel = channel,
         )
 
+
+def reset(visa_vm) :
+    
+    retval = set_voltage(
+        visa_vm = visa_vm,
+        volt_target = 0,
+        curr_max = None
+    )
+    
+    if retval :
+        return retval
+    
+    visa_vm.write("*RST")
+    visa_vm.write("APP:VOLT 0, 0 ,0")
+    visa_vm.write("APP:CURR 0, 0 ,0")
+    time.sleep(TIME_INTERVAL)
+    
+    return 0
 
 
 def main() :
@@ -203,19 +250,12 @@ def main() :
     
     visa_vm.write("SYST:REM")
     
+    retval = 0
+    
     if not args.noreset :
         
         # Ramp down to 0 V safely
-        set_voltage(
-            visa_vm = visa_vm,
-            volt_target = 0,
-            curr_max = 0.001
-        )
-        
-        visa_vm.write("*RST")
-        visa_vm.write("APP:VOLT 0, 0 ,0")
-        visa_vm.write("APP:CURR 0, 0 ,0")
-        time.sleep(TIME_INTERVAL)
+        retval = reset(visa_vm = visa_vm)
     
     if args.poff :
         
@@ -226,19 +266,28 @@ def main() :
         
         visa_vm.write("OUTP ON")
         
-        set_voltage(
+        retval = set_voltage(
             visa_vm = visa_vm,
             volt_target = args.voltage,
             curr_max = args.current
         )
     
-    logging.info(f"Done setting voltage to {args.voltage} V and maximum current to {args.current} A")
     print_vi_all(
         visa_vm = visa_vm,
         nchannels = 3,
     )
     
-    return 0
+    if retval :
+        
+        logging.error("Failed to set voltage and current on power supply. Powering down ...")
+        reset(visa_vm = visa_vm)
+        visa_vm.write("OUTP OFF")
+    
+    else :
+        
+        logging.info(f"Done setting voltage to {args.voltage} V and maximum current to {args.current} A")
+    
+    return retval
 
 if __name__ == "__main__" :
 

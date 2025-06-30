@@ -206,7 +206,8 @@ def get_file_list(
             
             src = src.replace("//", "/")
         
-        l_tmp = glob.glob(f"{src}/**", recursive = True)
+        #l_tmp = glob.glob(f"{src}/**", recursive = True)
+        l_tmp = glob.glob(f"{src}", recursive = True)
         l_tmp = [_f for _f in l_tmp if os.path.isfile(_f) and rgx.search(_f)]
         
         if (flatten) :

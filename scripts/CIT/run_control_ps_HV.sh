@@ -9,7 +9,7 @@ if [ "$OPT" == "1" ]; then
     --mode HV \
     --pscfg configs/CIT/config_ps.yaml \
     --voltage 45 \
-    --current 0.1
+    --current 0.2
 elif [ "$OPT" == "0" ]; then
     ./python/control_ps.py \
     --mode HV \
