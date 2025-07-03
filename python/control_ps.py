@@ -24,7 +24,7 @@ def set_voltage_ch(visa_vm, channel, volt_target, curr_max = None) :
         
         logging.error(f"Max current must be set if target voltage is greater than 0 V")
         return 1
-
+    
     volt_start = float(visa_vm.query(f"MEAS:VOLT? CH{channel}").strip())
     
     volt_steps = numpy.arange(
