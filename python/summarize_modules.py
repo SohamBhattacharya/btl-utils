@@ -149,6 +149,14 @@ def main() :
     )
     
     parser.add_argument(
+        "--runcond",
+        help = "Valid python expression to filter runs. For example: \"{run}>=X and {run}<Y\".\n",
+        type = str,
+        required = False,
+        default = None,
+    )
+    
+    parser.add_argument(
         "--selectexpr",
         help = (
             "Module selection expression string (must be a valid python expression).\n"
@@ -428,6 +436,14 @@ def main() :
         if (run in l_toskip_runs or (l_toproc_runs and run not in l_toproc_runs)) :
             
             continue
+        
+        if args.runcond :
+            
+            runcond_expr = args.runcond.format(run = run)
+            
+            if not eval(runcond_expr) :
+                
+                continue
         
         if (barcode in l_toskip_modules or not selectexpr_eval) :
             
