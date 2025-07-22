@@ -3,6 +3,9 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
+import pathlib
+import os
+import sys
 import subprocess
 
 LOCATION_IDs = {}
@@ -14,12 +17,18 @@ LOCATION_IDs['CERN'] = 1005
 LOCATION_IDs['TRANSIT'] = 2880
 
 
+api_path = str(pathlib.Path(__file__).parent.resolve())
+myenv = os.environ.copy()
+myenv_path = myenv.get("PATH", "")
 
+if api_path not in myenv_path:
+    myenv_path = f"{api_path}:{myenv_path}"
+
+myenv["PATH"] = myenv_path
 
 parser = argparse.ArgumentParser(description='Get list of SiPM')
 parser.add_argument('-l', '--location', type=str, required=True, help="location (MIB, UVA, CIT, PKU, CERN, TRANSIT)")
 args = parser.parse_args()
-
 
 # Get list of PCCi 1.2 V
 query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'PCCIv1.2\' and s.PART_PARENT_ID is NULL and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
@@ -27,7 +36,7 @@ output = subprocess.run(['rhapi.py',
                          '-u', 'http://localhost:8113',
                          query,
                          '-a'],
-                        stdout=subprocess.PIPE)
+                        stdout=subprocess.PIPE, env = myenv)
 PCC12s = output.stdout.decode('utf-8').split()
 PCC12s.pop(0)
 print('Found %d PCCIv1.2'%len(PCC12s))
@@ -38,7 +47,7 @@ output = subprocess.run(['rhapi.py',
                          '-u', 'http://localhost:8113',
                          query,
                          '-a'],
-                        stdout=subprocess.PIPE)
+                        stdout=subprocess.PIPE, env = myenv)
 PCC25s = output.stdout.decode('utf-8').split()
 PCC25s.pop(0)
 print('Found %d PCCIv2.5'%len(PCC25s))
@@ -49,7 +58,7 @@ output = subprocess.run(['rhapi.py',
                          '-u', 'http://localhost:8113',
                          query,
                          '-a'],
-                        stdout=subprocess.PIPE)
+                        stdout=subprocess.PIPE, env = myenv)
 CCs = output.stdout.decode('utf-8').split()
 CCs.pop(0)
 print('Found %d CC'%len(CCs))
