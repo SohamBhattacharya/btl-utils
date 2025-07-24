@@ -1,5 +1,5 @@
 import dataclasses
-import ROOT
+#import ROOT
 
 @dataclasses.dataclass(frozen = True)
 class SIPM:
@@ -61,6 +61,9 @@ class LOCATION:
 
 @dataclasses.dataclass(frozen = True)
 class COLORS:
+    
+    import ROOT
+    
     CIT = ROOT.TColor.GetColor("#f89c20")
     MIB = ROOT.TColor.GetColor("#3f90da")
     PKU = ROOT.TColor.GetColor("#bd1f01")
