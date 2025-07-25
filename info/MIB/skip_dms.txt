@@ -116,6 +116,8 @@
 32110040000408 # destroyed DM
 32110040000414 # destroyed DM
 32110040000741 # DM destroyed in db because wrong FE was used -- not reassembled after? to be checked
+32110040000792 # failing SM cat.e evaluation -- to be checked
+32110040000941 # failing SM cat.e evaluation -- to be checked
 32110040009000 # bad DM with cat. D SMs
 32110040009001 # bad DM with cat. D SMs
 32110040009002 # bad DM with cat. D SMs
