@@ -3,6 +3,7 @@ import ast
 import copy
 import dataclasses
 import glob
+import importlib.util
 import itertools
 import json
 import logging
@@ -22,8 +23,11 @@ yaml.preserve_quotes = True
 yaml.width = 1024
 yaml.boolean_representation = ["False", "True"]
 
-import ROOT
-ROOT.gROOT.SetBatch(1)
+HAS_ROOT = "ROOT" in sys.modules or importlib.util.find_spec("ROOT") is not None
+
+if HAS_ROOT :
+    import ROOT
+    ROOT.gROOT.SetBatch(1)
 
 #sys.path.append(f"{os.getcwd()}/scripts")
 sys.path.append(os.path.split(os.path.realpath(__file__))[0])

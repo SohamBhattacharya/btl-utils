@@ -1,6 +1,7 @@
 categories:
   X: ('D' in '{sm_cat}') or ('R' in '{sm_cat}')
-  A: "(not {deltaT_high}) and (not {deltaT_avg_high}) and (not {X})"
+  A: "(not {deltaT_high}) and (not {deltaT_avg_high}) and (not {X}) and ({nfoamlayers} == 1)"
+  B: "(not {deltaT_high}) and (not {deltaT_avg_high}) and (not {X}) and ({nfoamlayers} == 2)"
   R: "({deltaT_high} or {deltaT_avg_high}) and (not {X})"
   #R: "not {A}"
 
@@ -13,10 +14,16 @@ metrics:
   sm_cat: "str({sm1}['results']['category']+{sm2}['results']['category'])"
   
   deltaT_avg: "float(numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)]))"
+  deltaT_std: "float(numpy.std([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)]))"
+  deltaT_min: "float(numpy.min([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)]))"
+  deltaT_max: "float(numpy.max([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)]))"
+  
   tec_sum: "float(numpy.sum([{sm1}['sipm1']['tec_res'], {sm1}['sipm2']['tec_res'], {sm2}['sipm1']['tec_res'], {sm2}['sipm2']['tec_res']]))"
   tec_std: "float(numpy.std([{sm1}['sipm1']['tec_res'], {sm1}['sipm2']['tec_res'], {sm2}['sipm1']['tec_res'], {sm2}['sipm2']['tec_res']]))"
   
   lo_avg: "-0.5*({sm1}['results']['lo_bar_avg'] + {sm2}['results']['lo_bar_avg'])"
+  
+  nfoamlayers: "{extra}['nfoamlayers']"
   
   # Negative for reverse sorting
   grouping: "-0.5*({sm1}['results']['lo_bar_avg'] + {sm2}['results']['lo_bar_avg'])"
@@ -41,7 +48,9 @@ ru_metrics:
   
   deltaT_avg_ru: "numpy.mean([_dm.results['deltaT_avg'] for _dm in ru.dms])"
   deltaT_std_ru: "numpy.std([_dm.results['deltaT_avg'] for _dm in ru.dms])"
-  
+  deltaT_min_ru: "numpy.min([_dm.results['deltaT_min'] for _dm in ru.dms])"
+  deltaT_max_ru: "numpy.max([_dm.results['deltaT_max'] for _dm in ru.dms])"
+
   tec_avg_ru: "numpy.mean([_dm.results['tec_sum'] for _dm in ru.dms])"
   tec_std_ru: "numpy.std([_dm.results['tec_sum'] for _dm in ru.dms])"
 

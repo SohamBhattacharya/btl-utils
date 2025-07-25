@@ -3,6 +3,7 @@
 import argparse
 import dataclasses
 import glob
+import importlib
 import itertools
 import numpy
 import os
@@ -203,7 +204,7 @@ def main() :
             "  Barcode must be the first column\n"
             "  Column index starts from 0\n"
             "  \"name\" must be a valid python attribute name\n"
-            "Example: path/to/AssemblesDMs.csv tec_sum_bac:7:float\n"
+            "Example: path/to/AssemblesDMs.csv tec_sum_bac:76float\n"
             "Then one can access DM.extra['tec_sum_bac'].\n"
         ),
         type = str,
