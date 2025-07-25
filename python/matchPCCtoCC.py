@@ -31,6 +31,7 @@ parser.add_argument('-l', '--location', type=str, required=True, help="location 
 args = parser.parse_args()
 
 # Get list of PCCi 1.2 V
+#query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'PCCIv1.2\' and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
 query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'PCCIv1.2\' and s.PART_PARENT_ID is NULL and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
 output = subprocess.run(['rhapi.py', 
                          '-u', 'http://localhost:8113',
@@ -40,8 +41,10 @@ output = subprocess.run(['rhapi.py',
 PCC12s = output.stdout.decode('utf-8').split()
 PCC12s.pop(0)
 print('Found %d PCCIv1.2'%len(PCC12s))
+#print(PCC12s)
 
 # Get list of PCCi 2.5 V
+#query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'PCCIv2.5\' and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
 query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'PCCIv2.5\' and s.PART_PARENT_ID is NULL and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
 output = subprocess.run(['rhapi.py', 
                          '-u', 'http://localhost:8113',
@@ -51,6 +54,7 @@ output = subprocess.run(['rhapi.py',
 PCC25s = output.stdout.decode('utf-8').split()
 PCC25s.pop(0)
 print('Found %d PCCIv2.5'%len(PCC25s))
+#print(PCC25s)
 
 # Get list of CC
 query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'CC\' and s.PART_PARENT_ID is NULL and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
@@ -62,6 +66,7 @@ output = subprocess.run(['rhapi.py',
 CCs = output.stdout.decode('utf-8').split()
 CCs.pop(0)
 print('Found %d CC'%len(CCs))
+#print(CCs)
 
 pcc_csv_file = "info/COMMON/pcc_analysis_summary.csv"
 pcc_df = pd.read_csv(pcc_csv_file)
@@ -72,6 +77,8 @@ cc_df = pd.read_csv(cc_csv_file)
 #print(cc_df)
 
 
+
+##########################
 ### sort CCs by IEO values 
 cc_df['barcode'] = '32110052300' + cc_df['CC_num'].astype(int).astype(str).str.zfill(3)
 cc_df_filtered = cc_df.dropna(subset=['L0_EOM_IEO', 'L1_EOM_IEO'])
@@ -81,28 +88,52 @@ print('\n############################')
 print('Found %d CCs with IEO values'%len(cc_df_filtered))
 print(cc_df_filtered[['barcode', 'worst_IEO']].sort_values(by='worst_IEO', ascending=False))
 
-limit25 = 2.475
-limit12 = 1.175
-
-df_25V = pcc_df[pcc_df['pcc_barcode'].astype(str).str.contains('25V')]
-df_12V = pcc_df[pcc_df['pcc_barcode'].astype(str).str.contains('12V')]
 
 
+###############################################################
 # Get the list of df_25V where 'vouty_-31_-29_avg' is > limit25
-df_25V_filtered = df_25V[df_25V['vouty_-31_-29_avg'] > limit25].copy()
-df_25V_filtered['barcode'] = '3211002531' + df_25V_filtered['pcc_barcode'].astype(str).str[-4:]
-df_25V_filtered = df_25V_filtered[df_25V_filtered['barcode'].isin(PCC25s)]
-print('\n###############################')
-print('Found %d PCCIv2.5 within ranges'%len(df_25V_filtered))
-print(df_25V_filtered[['barcode','vouty_-31_-29_avg']].sort_values(by='vouty_-31_-29_avg', ascending=False))
+limits = (1.175,2.475)
+limits_EOM8 = [(1.175,2.55),(1.2,2.475)]
 
-# Get the list of df_12V where 'vouty_-31_-29_avg' is > limit12
-df_12V_filtered = df_12V[df_12V['vouty_-31_-29_avg'] > limit12].copy()
+df_12V = pcc_df[pcc_df['pcc_barcode'].astype(str).str.contains('12V')]
+df_25V = pcc_df[pcc_df['pcc_barcode'].astype(str).str.contains('25V')]
+
+df_12V_filtered = df_12V[df_12V['vouty_-31_-29_avg'] > limits[0]].copy()
 df_12V_filtered['barcode'] = '3211001231' + df_12V_filtered['pcc_barcode'].astype(str).str[-4:]
 df_12V_filtered = df_12V_filtered[df_12V_filtered['barcode'].isin(PCC12s)]
+df_12V_filtered = df_12V_filtered.sort_values(by='vouty_-31_-29_avg', ascending=False)
+
+df_25V_filtered = df_25V[df_25V['vouty_-31_-29_avg'] > limits[1]].copy()
+df_25V_filtered['barcode'] = '3211002531' + df_25V_filtered['pcc_barcode'].astype(str).str[-4:]
+df_25V_filtered = df_25V_filtered[df_25V_filtered['barcode'].isin(PCC25s)]
+df_25V_filtered = df_25V_filtered.sort_values(by='vouty_-31_-29_avg', ascending=False)
+
+pairings_EOM8 = []
+for jj in range(min(len(df_12V_filtered),len(df_25V_filtered))):
+    accept = False
+    for limit in limits_EOM8:
+        if df_12V_filtered.iloc[jj]['vouty_-31_-29_avg'] > limit[0] and df_25V_filtered.iloc[jj]['vouty_-31_-29_avg'] > limit[1]:
+            accept = True
+    if accept == True:
+        pairings_EOM8.append((df_12V_filtered.iloc[jj]['barcode'],df_25V_filtered.iloc[jj]['barcode']))
+    if len(pairings_EOM8) == 9:
+        break
+
 print('\n###############################')
-print('Found %d PCCIv1.2 within ranges'%len(df_12V_filtered))
-print(df_12V_filtered[['barcode','vouty_-31_-29_avg']].sort_values(by='vouty_-31_-29_avg', ascending=False))
+print('PCC pairings for EOM8 CC boards:')
+for pairing in pairings_EOM8:
+    print('PCCIv1.2: %s (%.3f V)  -   PCCIv2.5: %s (%.3f V)'%(pairing[0],df_12V_filtered[df_12V_filtered['barcode'] == pairing[0]]['vouty_-31_-29_avg'].values[0],pairing[1],df_25V_filtered[df_25V_filtered['barcode'] == pairing[1]]['vouty_-31_-29_avg'].values[0]))
+    df_12V_filtered = df_12V_filtered[df_12V_filtered['barcode'] != pairing[0]]
+    df_25V_filtered = df_25V_filtered[df_25V_filtered['barcode'] != pairing[1]]
+
+print('\n###############################')
+print('Remaining %d PCCIv1.2 within ranges'%len(df_12V_filtered))
+#print(df_12V_filtered[['barcode','vouty_-31_-29_avg']])
+
+print('\n###############################')
+print('Remaining %d PCCIv2.5 within ranges'%len(df_25V_filtered))
+#print(df_25V_filtered[['barcode','vouty_-31_-29_avg']])
+
 
 # Divide df_25V_filtered into len(cc_df_filtered) chunks ordered by vouty_-31_-29_avg
 num_chunks = len(cc_df_filtered)
@@ -130,15 +161,14 @@ for i in range(num_chunks):
 
 
 for i, row in cc_df_filtered.sort_values(by='worst_IEO', ascending=False).reset_index(drop=True).iterrows():
-    print(f"\nCC barcode: {row['barcode']}, worst_IEO: {row['worst_IEO']}")
-    # Print PCC25 barcodes for this chunk
-    pcc25_barcodes = df_25V_chunks[i]['barcode'].tolist() if i < len(df_25V_chunks) else []
-    print("PCC25 barcodes and vouty_-31_-29_avg:")
-    for _, pcc_row in df_25V_chunks[i].iterrows():
-        print(f"  {pcc_row['barcode']}: {pcc_row['vouty_-31_-29_avg']}")
-    print("PCC12 barcodes and vouty_-31_-29_avg:")
+    print(f"\n\n\n---> CC barcode: {row['barcode']}, worst_IEO: {row['worst_IEO']}")
+    print("PCCIv1.2 barcodes and Vout:")
     for _, pcc_row in df_12V_chunks[i].iterrows():
-        print(f"  {pcc_row['barcode']}: {pcc_row['vouty_-31_-29_avg']}")
+        print(f"  {pcc_row['barcode']}: {'%.3f V'%pcc_row['vouty_-31_-29_avg']}")
+    print("PCCIv2.5 barcodes and Vout:")
+    for _, pcc_row in df_25V_chunks[i].iterrows():
+        print(f"  {pcc_row['barcode']}: {'%.3f V'%pcc_row['vouty_-31_-29_avg']}")
+    
 
 ###
 #### Get the 'vouty_-31_-29_avg' values

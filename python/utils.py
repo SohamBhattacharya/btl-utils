@@ -255,7 +255,9 @@ def get_part_ids(barcode_min, barcode_max) :
 
 def get_part_barcodes(
     parttype,
-    location_id = None
+    location_id = None,
+    barcode_min = None,
+    barcode_max = None,
     ) :
     """
     Get list of part barcodes
@@ -276,6 +278,15 @@ def get_part_barcodes(
             
             query = f"{query} AND s.LOCATION_ID = {location_id}"
     
+    if (barcode_min is not None) :
+        
+        query = f"{query} AND s.BARCODE >= '{barcode_min}'"
+    
+    if (barcode_max is not None) :
+        
+        query = f"{query} AND s.BARCODE <= '{barcode_max}'"
+
+    print(query)
     dbquery_output = subprocess.run([
         "./python/rhapi.py",
         "-u", "http://localhost:8113",
@@ -305,7 +316,8 @@ def get_daughter_info(
     )
     
     l_parent_ids = [_info["id"] for _info in l_parent_infodicts]
-    
+
+    print(f"select s.* from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}")
     dbquery_output = subprocess.run([
         "./python/rhapi.py",
         "-u", "http://localhost:8113",
@@ -455,7 +467,7 @@ def get_part_info(
     """
     
     check_parttype(parttype)
-    
+    print('HEEEERE'+parttype)
     d_parts = {}
     
     if (parttype == constants.SIPM.KIND_OF_PART) :
@@ -648,7 +660,7 @@ def get_part_info(
     return d_parts
 
 
-def get_all_part_info(parttype, location_id = None, yamlfile = None, nodb = False) :
+def get_all_part_info(parttype, location_id = None, yamlfile = None, nodb = False, barcode_min = None, barcode_max = None) :
     """
     Get the information for all parts
     If yamlfile is provided, will load the information from there
@@ -662,7 +674,7 @@ def get_all_part_info(parttype, location_id = None, yamlfile = None, nodb = Fals
     if (not nodb) :
          
         print(f"Fetching {parttype} information from the database ... ")
-        l_part_barcodes = get_part_barcodes(parttype = parttype, location_id = location_id)
+        l_part_barcodes = get_part_barcodes(parttype = parttype, location_id = location_id, barcode_min = barcode_min, barcode_max = barcode_max)
         print(f"Found {len(l_part_barcodes)} {parttype}(s) on the database.")
         
         # Only fetch the ones that have not already been loaded
@@ -867,7 +879,7 @@ def combine_parts(d_sipms = {}, d_sms = {}, d_dms = {}, d_rus = {}, d_trays = {}
                 trayinfo.rus = [d_rus.get(_ru) for _ru in trayinfo.rus]
 
 
-def save_all_part_info(parttype, outyamlfile, inyamlfile = None, location_id = None, ret = False, ret_dict = False, nodb = False) :
+def save_all_part_info(parttype, outyamlfile, inyamlfile = None, location_id = None, ret = False, ret_dict = False, nodb = False, barcode_min = None, barcode_max = None) :
     """
     Load existing part info from inyamlfile
     Fetch additional part info from database
@@ -876,7 +888,7 @@ def save_all_part_info(parttype, outyamlfile, inyamlfile = None, location_id = N
     
     check_parttype(parttype)
     
-    d_parts_orig = get_all_part_info(parttype = parttype, yamlfile = inyamlfile, location_id = location_id, nodb = nodb)
+    d_parts_orig = get_all_part_info(parttype = parttype, yamlfile = inyamlfile, location_id = location_id, nodb = nodb, barcode_min = barcode_min, barcode_max = barcode_max)
     
     # Convert objects to dicts
     d_parts = {_key: _val.dict() for _key, _val in d_parts_orig.items() if _val}
