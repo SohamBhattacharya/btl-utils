@@ -547,6 +547,7 @@ def main() :
     for module in tqdm.tqdm(d_modules.values()) :
         
         rootfile = ROOT.TFile.Open(module.fname)
+        isbad = False
         
         try:
             d_module_cat = utils.eval_category(
@@ -556,8 +557,9 @@ def main() :
                 d_fmt = {**module.dict()},
             )
         except ValueError as excpt:
+            isbad = True
             l_modules_bad_eval.append((module, "category", "category", excpt))
-            continue
+            #continue
         
         module.category = d_module_cat["category"]
         d_cat_results["counts"][module.category] += 1
@@ -569,6 +571,9 @@ def main() :
         }
         
         module.results = d_cat_results["results"][module.barcode]
+        
+        if isbad :
+            continue
         
         for plotname, plotcfg in d_plotcfgs.items() :
             
