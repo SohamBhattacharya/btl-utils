@@ -50,7 +50,7 @@
 #### Plot
 ```bash
 ./python/summarize_modules.py \
---srcs "/path/to/dir/with/runs:run(?P<run>\d+)/module_(?P<barcode>\d+)_analysis.root" \
+--srcs "/path/to/dir/with/runs/**:run(?P<run>\d+)/module_(?P<barcode>\d+)_analysis.root" \
 --moduletype SensorModule \
 --plotcfg configs/CIT/config_sm_summary.yaml \
 --catcfg configs/CIT/config_sm_categorization_na.yaml \
@@ -63,7 +63,7 @@
 #### Pair SMs
 ```bash
 ./python/summarize_modules.py \
---srcs "/path/to/dir/with/runs:run(?P<run>\d+)/module_(?P<barcode>\d+)_analysis.root" \
+--srcs "/path/to/dir/with/runs/**:run(?P<run>\d+)/module_(?P<barcode>\d+)_analysis.root" \
 --moduletype SensorModule \
 --catcfg configs/CIT/config_sm_categorization_na.yaml \
 --outdir results/sm_pairing \
@@ -79,7 +79,7 @@
 #### Plot
 ```bash
 ./python/summarize_modules.py \
---srcs "/path/to/dir/with/runs:run-(?P<run>\d+)_DM-(?P<barcode>\d+).root" \
+--srcs "/path/to/dir/with/runs/**:run-(?P<run>\d+)_DM-(?P<barcode>\d+).root" \
 --moduletype DetectorModule \
 --plotcfg configs/CIT/config_dm_summary.yaml \
 --catcfg configs/CIT/config_dm_categorization.yaml \
@@ -93,7 +93,7 @@
 
 #### Group DMs
 ```bash
---srcs "/path/to/dir/with/runs:run-(?P<run>\d+)_DM-(?P<barcode>\d+).root" \
+--srcs "/path/to/dir/with/runs/**:run-(?P<run>\d+)_DM-(?P<barcode>\d+).root" \
 --moduletype DetectorModule \
 --catcfg configs/CIT/config_dm_categorization.yaml \
 --outdir results/CIT/dm_grouping \
