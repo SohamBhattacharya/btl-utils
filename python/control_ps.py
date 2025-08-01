@@ -152,7 +152,7 @@ def main() :
         help = "Power supply mode", 
         type = str,
         required = True,
-        choices = ["HV"],
+        choices = ["HV", "TEC"],
     )
     
     parser.add_argument(

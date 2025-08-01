@@ -10,4 +10,4 @@ TEC:
   model: "2231A-30-3"
   serial_number: "802196102797170034"
   max_voltage: 20
-  max_current: 2
+  max_current: 3
