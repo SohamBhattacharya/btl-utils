@@ -2,6 +2,7 @@
 
 for f in $(find python scripts -type f | grep -E ".sh$|.py$" | sort -V); do
     chmod -v +x $f
+    git update-index --chmod=+x $f
 done
 
 #sudo chmod 666 /dev/ttyS*
