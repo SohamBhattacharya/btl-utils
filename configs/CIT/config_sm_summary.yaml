@@ -270,7 +270,7 @@ h1_metric_counts:
   xmin: 0
   xmax: 32
   nbins: 32
-  ndivisionsx: [4, 8, 0]
+  ndivisionsx: [5, 5, 0]
   xtitle: "n_{bar} or n_{ch}"
   ytitle: "Number of SMs"
   gridx: True
@@ -316,7 +316,7 @@ h1_metric_counts_cat-B:
   xmin: 0
   xmax: 32
   nbins: 32
-  ndivisionsx: [4, 8, 0]
+  ndivisionsx: [5, 5, 0]
   xtitle: "n_{bar} or n_{ch}"
   ytitle: "Number of category B SMs"
   gridx: True
@@ -362,7 +362,7 @@ h1_metric_counts_cat-C:
   xmin: 0
   xmax: 32
   nbins: 32
-  ndivisionsx: [4, 8, 0]
+  ndivisionsx: [5, 5, 0]
   xtitle: "n_{bar} or n_{ch}"
   ytitle: "Number of category C SMs"
   gridx: True
@@ -408,7 +408,7 @@ h1_metric_counts_cat-D:
   xmin: 0
   xmax: 32
   nbins: 32
-  ndivisionsx: [4, 8, 0]
+  ndivisionsx: [5, 5, 0]
   xtitle: "n_{bar} or n_{ch}"
   ytitle: "Number of category D SMs"
   gridx: True
@@ -454,7 +454,7 @@ h1_metric_counts_cat-R:
   xmin: 0
   xmax: 32
   nbins: 32
-  ndivisionsx: [4, 8, 0]
+  ndivisionsx: [5, 5, 0]
   xtitle: "n_{bar} or n_{ch}"
   ytitle: "Number of category R SMs"
   gridx: True
@@ -498,7 +498,7 @@ h1_metric_barcodes:
   ymin: 0
   ymax: 70
   nbins: 150
-  #ndivisionsx: [4, 8, 0]
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 321100200]"
   ytitle: "n_{bar} or n_{ch}"
   gridx: True
@@ -542,7 +542,7 @@ g1_spe-avg_vs_barcode:
   xmax: null
   ymin: 2
   ymax: 6
-  #ndivisionsx: [5, 5, 0]
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 321100200]"
   ytitle: "Single p.e. charge [pC]"
   gridx: True
@@ -576,7 +576,7 @@ g1_spe-min_vs_barcode:
   xmax: null
   ymin: 2
   ymax: 6
-  #ndivisionsx: [5, 5, 0]
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 321100200]"
   ytitle: "Single p.e. charge [pC]"
   gridx: True
@@ -610,7 +610,7 @@ g1_spe-max_vs_barcode:
   xmax: null
   ymin: 2
   ymax: 6
-  #ndivisionsx: [5, 5, 0]
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 321100200]"
   ytitle: "Single p.e. charge [pC]"
   gridx: True
@@ -660,7 +660,7 @@ g1_src-chg-avg_vs_barcode:
   xmax: null
   ymin: 0
   ymax: 5
-  #ndivisionsx: [5, 5, 0]
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 321100200]"
   ytitle: "Integrated charge [pC/keV]"
   gridx: True
@@ -710,7 +710,7 @@ g1_lo-avg_vs_barcode:
   xmax: null
   ymin: 1.5
   ymax: 6.5
-  #ndivisionsx: [5, 5, 0]
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 321100200]"
   ytitle: "10^{-3}#times  Light output [p.e./MeV]"
   gridx: True
@@ -754,7 +754,7 @@ g1_lo-min_vs_barcode:
   xmax: null
   ymin: 1.5
   ymax: 6.5
-  #ndivisionsx: [5, 5, 0]
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 321100200]"
   ytitle: "10^{-3}#times  Light output [p.e./MeV]"
   gridx: True
@@ -798,7 +798,7 @@ g1_lo-max_vs_barcode:
   xmax: null
   ymin: 1.5
   ymax: 6.5
-  #ndivisionsx: [5, 5, 0]
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 321100200]"
   ytitle: "10^{-3}#times  Light output [p.e./MeV]"
   gridx: True
@@ -820,6 +820,7 @@ g1_lo-asymm_vs_barcode:
       drawopt: "P"
   xmin: null
   xmax: null
+  ndivisionsx: [5, 5, 0]
   ymin: 0.0
   ymax: 0.5
   xtitle: "SM barcode [prefix 321100200]"
@@ -871,7 +872,7 @@ g1_peak-res-avg_vs_barcode:
   xmax: null
   ymin: 2
   ymax: 30
-  #ndivisionsx: [5, 5, 0]
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 321100200]"
   ytitle: "Peak energy resolution [%]"
   gridx: True
@@ -915,7 +916,7 @@ g1_peak-res-max_vs_barcode:
   xmax: null
   ymin: 2
   ymax: 30
-  #ndivisionsx: [5, 5, 0]
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 321100200]"
   ytitle: "Peak energy resolution [%]"
   gridx: True
@@ -1005,7 +1006,7 @@ g1_cat_vs_barcode:
   xmax: null
   ymin: -1
   ymax: 7
-  #ndivisionsx: [5, 5, 0]
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 321100200]"
   ytitle: "Category"
   gridx: True
@@ -1051,7 +1052,7 @@ g1_metrics_vs_barcode:
   xmax: null
   ymin: -1
   ymax: 32
-  #ndivisionsx: [5, 5, 0]
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 321100200]"
   ytitle: "n_{bar} or n_{ch}"
   gridx: True

@@ -5,13 +5,13 @@ set -eE
 OPT=$1
 
 if [ "$OPT" == "1" ]; then
-    ./python/control_ps.py \
+    ./scripts/CIT/control_ps.py \
     --mode HV \
     --pscfg configs/CIT/config_ps.yaml \
     --voltage 45 \
     --current 1.0
 elif [ "$OPT" == "0" ]; then
-    ./python/control_ps.py \
+    ./scripts/CIT/control_ps.py \
     --mode HV \
     --pscfg configs/CIT/config_ps.yaml \
     --poff
