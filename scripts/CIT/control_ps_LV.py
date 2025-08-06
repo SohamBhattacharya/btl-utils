@@ -3,7 +3,7 @@
 import argparse
 import pyvisa
 
-import utils
+import python.utils as utils
 from utils import logging
 
 
