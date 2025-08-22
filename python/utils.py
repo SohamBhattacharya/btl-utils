@@ -49,6 +49,17 @@ class Formatter(
 
 
 @dataclasses.dataclass(init = True)
+class Lyso :
+    
+    barcode: str = None
+    id: str = None
+    location_id: int = None
+    
+    def dict(self) :
+        
+        return dataclasses.asdict(self)
+
+@dataclasses.dataclass(init = True)
 class SiPMArray :
     
     barcode: str = None
@@ -469,7 +480,26 @@ def get_part_info(
     check_parttype(parttype)
     d_parts = {}
     
-    if (parttype == constants.SIPM.KIND_OF_PART) :
+    if (parttype == constants.LYSO.KIND_OF_PART) :
+        
+        l_infodicts = get_part_ids(barcode_min = barcode_min, barcode_max = barcode_max)
+        
+        print(f"Fetched information for {len(l_infodicts)} {parttype}(s) from the database. Processing ...")
+        for infodict in tqdm.tqdm(l_infodicts) :
+            
+            id = infodict["id"]
+            barcode = infodict["barcode"]
+            location_id = infodict["locationId"]
+            
+            part = Lyso(
+                id = str(id),
+                barcode = str(barcode),
+                location_id = location_id
+            )
+            
+            d_parts[barcode] = part
+    
+    elif (parttype == constants.SIPM.KIND_OF_PART) :
         
         l_infodicts = get_part_ids(barcode_min = barcode_min, barcode_max = barcode_max)
         d_tec_res = get_sipm_tec_res(barcode_min = barcode_min, barcode_max = barcode_max)

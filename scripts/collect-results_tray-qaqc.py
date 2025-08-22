@@ -48,10 +48,28 @@ def main() :
     
     parser.add_argument(
         "--traycfgs",
-        help = "YAML files containing the tray configuration",
+        help = "YAML files containing the tray configuration (such as runs for each run type for each RU)",
         type = str,
         required = True,
         nargs = "+",
+    )
+    
+    parser.add_argument(
+        "--rus",
+        help = "If provided, will select only these RUs. The RU names must match the keys in the tray configuration files.",
+        type = str,
+        required = False,
+        nargs = "+",
+        default = [],
+    )
+    
+    parser.add_argument(
+        "--runtypes",
+        help = "If provided, will select only these run types. The run type names must match the keys in the configuration files.",
+        type = str,
+        required = False,
+        nargs = "+",
+        default = [],
     )
     
     parser.add_argument(
@@ -64,6 +82,13 @@ def main() :
     parser.add_argument(
         "--nocompress",
         help = "Will not create a tar.xz file for each tray",
+        action = "store_true",
+        default = False,
+    )
+    
+    parser.add_argument(
+        "--delete",
+        help = "Will delete the tar.xz file for each tray after transfer",
         action = "store_true",
         default = False,
     )
@@ -114,7 +139,13 @@ def main() :
             
             for ru, d_ru_cfg in d_tray_cfg.items():
                 
+                if args.rus and ru not in args.rus :
+                    continue
+                
                 for run_type, d_run_cfg in d_ru_cfg.items() :
+                    
+                    if args.runtypes and run_type not in args.runtypes :
+                        continue
                     
                     outdir = f"{outdir_tray}/{ru}/{run_type}"
                     
@@ -149,14 +180,21 @@ def main() :
                         
                         l_cmds.append(cmd)
         
+        oufile_archive = f"{outdir_tray}.tar.xz"
+        
         if not args.nocompress:
             
-            cmd = f"cd `dirname {outdir_tray}` && tar -c -I 'zstd -22 -T0' -f {tray}.tar.xz {tray}"
+            cmd = f"cd `dirname {outdir_tray}` && tar -c -I 'zstd -19 -T0' -f {tray}.tar.xz {tray}"
             l_cmds.append(cmd)
         
         if args.eos:
             
-            cmd = f"./scripts/transfer-results-eos_tray-qaqc.sh {outdir_tray}.tar.xz {lxplus_user} {location}"
+            cmd = f"./scripts/transfer-results-eos_tray-qaqc.sh {oufile_archive} {lxplus_user} {location}"
+            l_cmds.append(cmd)
+        
+        if args.delete:
+            
+            cmd = f"rm -v {oufile_archive}"
             l_cmds.append(cmd)
     
     utils.run_cmd_list(l_cmds, debug = True)

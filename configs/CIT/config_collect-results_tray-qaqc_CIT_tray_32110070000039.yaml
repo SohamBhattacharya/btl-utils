@@ -11,7 +11,7 @@ CIT_tray_32110070000039:
     iv:
       runs: [38]
     tec:
-      runs: [1]
+      runs: [17]
     calibrate:
       runs: [2]
   RU1:
@@ -26,7 +26,7 @@ CIT_tray_32110070000039:
     iv:
       runs: [39]
     tec:
-      runs: [2]
+      runs: [18]
     calibrate:
       runs: [3]
   RU2:
@@ -41,7 +41,7 @@ CIT_tray_32110070000039:
     iv:
       runs: [40]
     tec:
-      runs: [7]
+      runs: [24]
     calibrate:
       runs: [4]
   RU3:
@@ -56,12 +56,12 @@ CIT_tray_32110070000039:
     iv:
       runs: [41]
     tec:
-      runs: [4]
+      runs: [20]
     calibrate:
       runs: [5]
   RU4:
     dm_check:
-      runs: [37]
+      runs: [214]
     tp:
       runs: [76]
     lyso:
@@ -69,9 +69,9 @@ CIT_tray_32110070000039:
     disc:
       runs: [5]
     iv:
-      runs: [5]
+      runs: [42]
     tec:
-      runs: [5]
+      runs: [21]
     calibrate:
       runs: [6]
   RU5:
@@ -86,6 +86,6 @@ CIT_tray_32110070000039:
     iv:
       runs: [43]
     tec:
-      runs: [6]
+      runs: [22]
     calibrate:
       runs: [7]
