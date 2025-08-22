@@ -144,7 +144,7 @@ def main() :
                         #cmd = f"cp -rvu {plotsdir} {outdir}/"
                         #cmd = f"rsync -asP -z --zc lz4 --prune-empty-dirs --inplace {exclude_str} {plotsdir} {outdir}/"
                         #cmd = f"rsync -asP --prune-empty-dirs --inplace {exclude_str} {plotsdir} {outdir}/"
-                        cmd = f"msrsync3 -p 8 -P --stats --rsync \'-as --prune-empty-dirs {exclude_str}\' {plotsdir} {outdir}/"
+                        cmd = f"./scripts/msrsync3 -p 8 -P --stats --rsync \'-as --prune-empty-dirs {exclude_str}\' {plotsdir} {outdir}/"
                         print(cmd)
                         
                         l_cmds.append(cmd)
