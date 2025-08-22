@@ -162,7 +162,7 @@ def run_cmd_list(l_cmd, debug = False) :
         
         if (debug) :
             
-            print(f"Trying command: {cmd}")
+            logger.info(f"Trying command: {cmd}")
         
         retval = os.system(cmd)
         
@@ -1299,6 +1299,11 @@ def eval_category(rootfile, d_catcfgs, barcode = "", d_fmt = {}) :
         d_read_info[varkey] = rootfile.Get(varname)
         d_fmt[varkey] = f"d_read_info['{varkey}']"
     
+    for defkey, defexpr in d_cat_result.get("def", {}).items() :
+        
+        defexpr = defexpr.format(**d_fmt)
+        d_fmt[defkey] = defexpr
+    
     for metric, metric_str in d_cat_result["metrics"].items() :
         
         metric_str = metric_str.format(**d_fmt)
@@ -1434,3 +1439,10 @@ def root_get_fn_expr(
         expr = expr.replace(f"[{parname}]", parval_str)
     
     return expr
+
+
+def load_yaml_file(fname) :
+    d_cfg = {}
+    with open(fname, "r") as fopen :
+        d_cfg = yaml.load(fopen.read())
+    return d_cfg

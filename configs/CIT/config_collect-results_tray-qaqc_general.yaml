@@ -1,0 +1,29 @@
+run_types:
+  dm_check:
+    runsdir: "{runsdir}/tofhir/run_{run}"
+    plotsdir: "{plotsdir}/tofhir/plots_dmPosition_runs_{runstart}_{runend}"
+    #exclude: ["counts*.json"]
+  tp:
+    runsdir: "{runsdir}/tofhir/run_{run}"
+    plotsdir: "{plotsdir}/tofhir/plots_run_{run}"
+    #exclude: ["counts*.json", "DM*_chip*/*.png"]
+  lyso:
+    runsdir: "{runsdir}/tofhir/run_{run}"
+    plotsdir: "{plotsdir}/tofhir/plots_run_{run}"
+    #exclude: ["counts*.json", "DM*_chip*/*.png"]
+  disc:
+    runsdir: "{runsdir}/disc_scan/run_{run}"
+    plotsdir: "{plotsdir}/disc_scan/run_{run}"
+    #exclude: ["counts*.json", "DM*_chip*/*.png"]
+  iv:
+    runsdir: "{runsdir}/iv_scan/run_{run}"
+    plotsdir: "{plotsdir}/iv_scan/run_{run}"
+    #exclude: ["counts*.json"]
+  tec:
+    runsdir: "{runsdir}/temps/run_{run}"
+    plotsdir: "{plotsdir}/temps/run_{run}"
+    #exclude: ["counts*.json"]
+  calibrate:
+    runsdir: "{runsdir}/tofhir_calibs/run_{run}"
+    plotsdir: "{plotsdir}/tofhir_calibs/run_{run}"
+    #exclude: ["counts*.json", "qdc/*.png"]

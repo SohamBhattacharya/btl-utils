@@ -3,7 +3,7 @@ HV:
   model: "2231A-30-3"
   serial_number: "802196102797070184"
   max_voltage: 45
-  max_current: 1
+  max_current: 3
 
 TEC:
   manufacturer: "Keithley instruments"

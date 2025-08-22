@@ -8,8 +8,8 @@ if [ "$OPT" == "1" ]; then
     ./python/control_ps.py \
     --mode TEC \
     --pscfg configs/CIT/config_ps.yaml \
-    --voltage 10 \
-    --current 2.0
+    --voltage 15 \
+    --current 1.0
 elif [ "$OPT" == "0" ]; then
     ./python/control_ps.py \
     --mode TEC \
