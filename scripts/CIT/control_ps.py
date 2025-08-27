@@ -6,7 +6,8 @@ import os
 import pyvisa
 import time
 
-import utils
+import python.utils as utils
+
 from utils import logging
 from utils import yaml
 
