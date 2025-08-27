@@ -2,6 +2,7 @@ HV:
   manufacturer: "Keithley instruments"
   model: "2231A-30-3"
   serial_number: "802196102797070184"
+  channel_voltage_limits: [30, 30, 5]
   max_voltage: 45
   max_current: 3
 
@@ -9,5 +10,14 @@ TEC:
   manufacturer: "Keithley instruments"
   model: "2231A-30-3"
   serial_number: "802196102797170034"
+  channel_voltage_limits: [30, 30, 5]
   max_voltage: 20
+  max_current: 3
+
+LED:
+  manufacturer: "Keithley instruments"
+  model: "2231A-30-3"
+  serial_number: "802196102797170034"
+  channel_voltage_limits: [30, 30, 5]
+  max_voltage: 12
   max_current: 3

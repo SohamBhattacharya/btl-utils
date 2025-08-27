@@ -74,17 +74,33 @@ def set_voltage_ch(visa_vm, channel, volt_target, curr_max = None) :
     return 0
 
 
-def set_voltage(visa_vm, volt_target, curr_max) :
+def set_voltage(visa_vm, volt_target, curr_max, channel_voltage_limits, channels = []) :
+    """
+    All channels if channels is empty
+    """
+
+    # Set the voltage limit to 0 for unselected channels
+    for ichannel in range(len(channel_voltage_limits)) :
+        
+        channel = ichannel + 1
+        
+        if channels and (channel not in channels) :
+            
+            channel_voltage_limits[ichannel] = 0
     
     volt_targets_ch = [
-        min(30, volt_target),
-        min(30, max(0, volt_target-30)),
-        min(5, max(0, volt_target-60)),
+        min(channel_voltage_limits[0], volt_target),
+        min(channel_voltage_limits[1], max(0, volt_target-sum(channel_voltage_limits[:1]))),
+        min(channel_voltage_limits[2], max(0, volt_target-sum(channel_voltage_limits[:2]))),
     ]
     
     for ichannel, volt_target_ch in enumerate(volt_targets_ch) :
         
         channel = ichannel + 1
+        
+        if channels and channel not in channels :
+            
+            continue
         
         retval = set_voltage_ch(
             visa_vm = visa_vm,
@@ -152,7 +168,7 @@ def main() :
         help = "Power supply mode", 
         type = str,
         required = True,
-        choices = ["HV", "TEC"],
+        choices = ["HV", "TEC", "LED"],
     )
     
     parser.add_argument(
@@ -179,6 +195,15 @@ def main() :
     )
     
     parser.add_argument(
+        "--channels",
+        help = "If provided, will only use the specified channels. Syntax: <channel1> <channel2> ...",
+        type = int,
+        required = False,
+        default = [],
+        nargs = "+"
+    )
+    
+    parser.add_argument(
         "--noreset",
         help = "Will not safely reset the power supply before setting voltage",
         action = "store_true",
@@ -201,6 +226,9 @@ def main() :
     
     pscfg = d_pscfgs[args.mode]
     
+    channel_voltage_limits = pscfg["channel_voltage_limits"]
+    nchannels = len(channel_voltage_limits)
+    
     if not args.poff :
         
         assert (args.voltage is not None), "Voltage must be set if not powering off"
@@ -208,6 +236,8 @@ def main() :
         
         assert (args.voltage >= 0 and args.voltage <= pscfg["max_voltage"]), f"Voltage must be between 0 and {pscfg['max_voltage']} V"
         assert (args.current >= 0 and args.current <= pscfg["max_current"]), f"Current must be between 0 and {pscfg['max_current']} A"
+        
+        assert all([ch <= nchannels for ch in args.channels]), f"Channels must be >=1 and <={nchannels}"
     
     visa_rm = pyvisa.ResourceManager()
     l_visa_resources = visa_rm.list_resources()
@@ -269,12 +299,14 @@ def main() :
         retval = set_voltage(
             visa_vm = visa_vm,
             volt_target = args.voltage,
-            curr_max = args.current
+            curr_max = args.current,
+            channel_voltage_limits = channel_voltage_limits,
+            channels = args.channels,
         )
     
     print_vi_all(
         visa_vm = visa_vm,
-        nchannels = 3,
+        nchannels = nchannels,
     )
     
     if retval :

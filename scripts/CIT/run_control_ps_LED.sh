@@ -6,14 +6,14 @@ OPT=$1
 
 if [ "$OPT" == "1" ]; then
     ./python/control_ps.py \
-    --mode TEC \
+    --mode LED \
     --pscfg configs/CIT/config_ps.yaml \
-    --voltage 15 \
-    --current 1.0 \
-    --channels 1
+    --voltage 12 \
+    --current 0.1 \
+    --channels 2
 elif [ "$OPT" == "0" ]; then
     ./python/control_ps.py \
-    --mode TEC \
+    --mode LED \
     --pscfg configs/CIT/config_ps.yaml \
     --poff
 else

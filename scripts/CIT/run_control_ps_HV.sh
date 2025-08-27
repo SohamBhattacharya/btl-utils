@@ -17,6 +17,6 @@ elif [ "$OPT" == "0" ]; then
     --poff
 else
     echo "Invalid usage."
-    echo "Usage: run_control_ps_HV <option>"
+    echo "Usage: $0 <option>"
     echo "option: 1 to turn on the power supply, 0 to turn it off"
 fi
