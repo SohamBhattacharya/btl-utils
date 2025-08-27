@@ -5,14 +5,14 @@ set -eE
 OPT=$1
 
 if [ "$OPT" == "1" ]; then
-    ./python/control_ps.py \
+    ./scripts/CIT/control_ps.py \
     --mode LED \
     --pscfg configs/CIT/config_ps.yaml \
     --voltage 12 \
     --current 0.1 \
     --channels 2
 elif [ "$OPT" == "0" ]; then
-    ./python/control_ps.py \
+    ./scripts/CIT/control_ps.py \
     --mode LED \
     --pscfg configs/CIT/config_ps.yaml \
     --poff
