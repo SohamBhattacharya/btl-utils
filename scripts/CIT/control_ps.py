@@ -19,7 +19,7 @@ VOLT_TOLERANCE = 0.1 # Volts
 TRIES_MAX = 5 # Maximum number of tries to reach target voltage
 
 
-def set_voltage_ch(visa_vm, channel, volt_target, curr_max = None) :
+def set_voltage_ch(visa_vm, channel, volt_target, curr_max = None, allowcc = False) :
     
     if curr_max is None and volt_target > 0 :
         
@@ -50,7 +50,7 @@ def set_voltage_ch(visa_vm, channel, volt_target, curr_max = None) :
             else:
                 logging.info(f"Setting CH{channel} voltage to {volt_set} V (target {volt_target} V) ...")
                 visa_vm.write(f"APPL CH{channel}, {volt_set} V")
-
+            
             time.sleep(TIME_INTERVAL)
             
             ntries = 0
@@ -60,6 +60,11 @@ def set_voltage_ch(visa_vm, channel, volt_target, curr_max = None) :
                 ntries += 1
                 
                 if ntries > TRIES_MAX :
+                    
+                    if allowcc :
+                        
+                        logging.warning(f"Failed to reach target voltage {volt_target} V on CH{channel} after {TRIES_MAX-1} attempts. Likely in constant current mode, continuing ...")
+                        return 0
                     
                     logging.error(f"Failed to reach target voltage {volt_target} V on CH{channel} after {TRIES_MAX-1} attempts")
                     return 1
@@ -75,7 +80,7 @@ def set_voltage_ch(visa_vm, channel, volt_target, curr_max = None) :
     return 0
 
 
-def set_voltage(visa_vm, volt_target, curr_max, channel_voltage_limits, channels = []) :
+def set_voltage(visa_vm, volt_target, curr_max, channel_voltage_limits, channels = [], allowcc = False) :
     """
     All channels if channels is empty
     """
@@ -108,6 +113,7 @@ def set_voltage(visa_vm, volt_target, curr_max, channel_voltage_limits, channels
             channel = channel,
             volt_target = volt_target_ch,
             curr_max = curr_max,
+            allowcc = allowcc,
         )
         
         if retval :
@@ -134,12 +140,13 @@ def print_vi_all(visa_vm, nchannels) :
         )
 
 
-def reset(visa_vm) :
+def reset(visa_vm, nchannels) :
     
     retval = set_voltage(
         visa_vm = visa_vm,
         volt_target = 0,
-        curr_max = None
+        curr_max = None,
+        channel_voltage_limits = [0]*nchannels,
     )
     
     if retval :
@@ -218,6 +225,13 @@ def main() :
         default = False,
     )
     
+    parser.add_argument(
+        "--allowcc",
+        help = "Allow constant current mode",
+        action = "store_true",
+        default = False,
+    )
+    
     # Parse arguments
     args = parser.parse_args()
     
@@ -286,8 +300,8 @@ def main() :
     if not args.noreset :
         
         # Ramp down to 0 V safely
-        retval = reset(visa_vm = visa_vm)
-    
+        retval = reset(visa_vm = visa_vm, nchannels = nchannels)
+
     if args.poff :
         
         visa_vm.write("OUTP OFF")
@@ -303,6 +317,7 @@ def main() :
             curr_max = args.current,
             channel_voltage_limits = channel_voltage_limits,
             channels = args.channels,
+            allowcc = args.allowcc
         )
     
     print_vi_all(
@@ -313,7 +328,7 @@ def main() :
     if retval :
         
         logging.error("Failed to set voltage and current on power supply. Powering down ...")
-        reset(visa_vm = visa_vm)
+        reset(visa_vm = visa_vm, nchannels = nchannels)
         visa_vm.write("OUTP OFF")
     
     else :

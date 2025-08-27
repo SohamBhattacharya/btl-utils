@@ -10,7 +10,8 @@ if [ "$OPT" == "1" ]; then
     --pscfg configs/CIT/config_ps.yaml \
     --voltage 12 \
     --current 0.1 \
-    --channels 2
+    --channels 2 \
+    --allowcc
 elif [ "$OPT" == "0" ]; then
     ./scripts/CIT/control_ps.py \
     --mode LED \
