@@ -106,6 +106,15 @@ def main() :
         default = None,
     )
     
+    parser.add_argument(
+        "--nprocs",
+        help = "Number of parallel rsync processes to be used by msrsync for the transfer (-1 for all cpus)",
+        type = int,
+        required = False,
+        default = max(1, int(os.cpu_count()/2)),
+        choices = [-1] + list(range(1, os.cpu_count()+1))
+    )
+    
     args = parser.parse_args()
     
     lxplus_user = args.eos[0] if args.eos else None
@@ -157,6 +166,8 @@ def main() :
                     for run in l_runs :
                         
                         d_fmt = {
+                            "tray": tray,
+                            "ru": ru,
                             "run": run,
                             "runstart": run,
                             "runend": run + 11,
@@ -164,9 +175,12 @@ def main() :
                             "plotsdir": args.plotsdir,
                         }
                         
-                        plotsdir = d_cfg["run_types"][run_type]["plotsdir"].format(**d_fmt)
+                        #plotsdir = d_cfg["run_types"][run_type]["plotsdir"].format(**d_fmt)
                         #plotsdir_name = os.path.basename(plotsdir)
                         #print(plotsdir)
+                        
+                        l_srcs = [_src.format(**d_fmt) for _src in d_cfg["run_types"][run_type]["srcs"]]
+                        srcs = " ".join(l_srcs)
                         
                         l_excludes = d_cfg["run_types"][run_type].get("exclude", [])
                         
@@ -175,7 +189,7 @@ def main() :
                         #cmd = f"cp -rvu {plotsdir} {outdir}/"
                         #cmd = f"rsync -asP -z --zc lz4 --prune-empty-dirs --inplace {exclude_str} {plotsdir} {outdir}/"
                         #cmd = f"rsync -asP --prune-empty-dirs --inplace {exclude_str} {plotsdir} {outdir}/"
-                        cmd = f"./scripts/msrsync3 -p 8 -P --stats --rsync \'-as --prune-empty-dirs {exclude_str}\' {plotsdir} {outdir}/"
+                        cmd = f"./scripts/msrsync3 -p {args.nprocs} -P --stats --rsync \'-as --prune-empty-dirs {exclude_str}\' {srcs} {outdir}/"
                         print(cmd)
                         
                         l_cmds.append(cmd)

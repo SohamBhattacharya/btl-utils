@@ -67,6 +67,7 @@ class SiPMArray :
     location_id: int = None
     tec_res: float = None
     vbrs: list = None
+    vbr_avg: float = None
     
     def dict(self) :
         
@@ -510,8 +511,8 @@ def get_part_info(
             
             id = infodict["id"]
             barcode = infodict["barcode"]
-            tec_res = d_tec_res[barcode]
-            vbrs = d_vbrs[barcode]
+            tec_res = d_tec_res.get(barcode, 0)
+            vbrs = d_vbrs.get(barcode, [])
             location_id = infodict["locationId"]
             
             part = SiPMArray(
@@ -519,7 +520,8 @@ def get_part_info(
                 barcode = str(barcode),
                 location_id = location_id,
                 tec_res = tec_res,
-                vbrs = vbrs
+                vbrs = vbrs,
+                vbr_avg = float(numpy.mean(vbrs))
             )
             
             d_parts[barcode] = part
@@ -540,7 +542,8 @@ def get_part_info(
             location_id = pinfodict["locationId"]
         
             lyso = next((_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.LYSO.KIND_OF_PART and _info["partParentId"] == id)), None)
-            l_sipms = natural_sort([_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.SIPM.KIND_OF_PART and _info["partParentId"] == id)])
+            #l_sipms = natural_sort([_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.SIPM.KIND_OF_PART and _info["partParentId"] == id)])
+            l_sipms = [_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.SIPM.KIND_OF_PART and _info["partParentId"] == id)]
             part = None
             
             if (lyso is None or len(l_sipms) != 2) :
@@ -580,7 +583,8 @@ def get_part_info(
             location_id = pinfodict["locationId"]
             
             feb = next((_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.FE.KIND_OF_PART and _info["partParentId"] == id)), None)
-            l_sms = natural_sort([_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.SM.KIND_OF_PART and _info["partParentId"] == id)])
+            #l_sms = natural_sort([_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.SM.KIND_OF_PART and _info["partParentId"] == id)])
+            l_sms = [_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.SM.KIND_OF_PART and _info["partParentId"] == id)]
             part = None
             
             if (feb is None or len(l_sms) != 2) :
@@ -621,7 +625,9 @@ def get_part_info(
             cc = next((_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.CC.KIND_OF_PART and _info["partParentId"] == id)), None)
             pcc1p2 = next((_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.PCC1P2.KIND_OF_PART and _info["partParentId"] == id)), None)
             pcc2p5 = next((_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.PCC2P5.KIND_OF_PART and _info["partParentId"] == id)), None)
-            l_dms = natural_sort([_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.DM.KIND_OF_PART and _info["partParentId"] == id)])
+            #l_dms = natural_sort([_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.DM.KIND_OF_PART and _info["partParentId"] == id)])
+            l_dms = [_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.DM.KIND_OF_PART and _info["partParentId"] == id)]
+            #print(l_daughter_infodicts)
             part = None
             
             if (len(l_dms) != 12) :

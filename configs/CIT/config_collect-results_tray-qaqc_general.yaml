@@ -1,29 +1,19 @@
 run_types:
   dm_check:
-    runsdir: "{runsdir}/tofhir/run_{run}"
-    plotsdir: "{plotsdir}/tofhir/plots_dmPosition_runs_{runstart}_{runend}"
+    srcs: ["{plotsdir}/tofhir/plots_dmPosition_runs_{runstart}_{runend}"]
     #exclude: ["counts*.json"]
   tp:
-    runsdir: "{runsdir}/tofhir/run_{run}"
-    plotsdir: "{plotsdir}/tofhir/plots_run_{run}"
-    #exclude: ["counts*.json", "DM*_chip*/*.png"]
+    srcs: ["{plotsdir}/tofhir/plots_run_{run}"]
   lyso:
-    runsdir: "{runsdir}/tofhir/run_{run}"
-    plotsdir: "{plotsdir}/tofhir/plots_run_{run}"
-    #exclude: ["counts*.json", "DM*_chip*/*.png"]
+    srcs: ["{plotsdir}/tofhir/plots_run_{run}"]
   disc:
-    runsdir: "{runsdir}/disc_scan/run_{run}"
-    plotsdir: "{plotsdir}/disc_scan/run_{run}"
-    #exclude: ["counts*.json", "DM*_chip*/*.png"]
+    srcs: ["{plotsdir}/disc_scan/run_{run}"]
   iv:
-    runsdir: "{runsdir}/iv_scan/run_{run}"
-    plotsdir: "{plotsdir}/iv_scan/run_{run}"
-    #exclude: ["counts*.json"]
+    srcs: ["{plotsdir}/iv_scan/run_{run}"]
   tec:
-    runsdir: "{runsdir}/temps/run_{run}"
-    plotsdir: "{plotsdir}/temps/run_{run}"
-    #exclude: ["counts*.json"]
+    srcs: ["{plotsdir}/temps/run_{run}"]
   calibrate:
-    runsdir: "{runsdir}/tofhir_calibs/run_{run}"
-    plotsdir: "{plotsdir}/tofhir_calibs/run_{run}"
-    #exclude: ["counts*.json", "qdc/*.png"]
+    srcs: [
+      "{runsdir}/FE_calibs/{tray}_{ru}",
+      "{plotsdir}/tofhir_calibs/run_{run}"
+    ]
