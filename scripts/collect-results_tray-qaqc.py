@@ -34,7 +34,7 @@ def main() :
     
     parser.add_argument(
         "--dst",
-        help = "Path to destination directory. Will create the directory structure tray/RU/run_type/run under this path.",
+        help = "Path to local destination directory. Will create the directory structure tray/RU/run_type/run under this path.",
         type = str,
         required = True,
     )
@@ -87,8 +87,15 @@ def main() :
     )
     
     parser.add_argument(
-        "--delete",
-        help = "Will delete the tar.xz file for each tray after transfer",
+        "--deldst",
+        help = "Will delete the local destination directory for each tray after transfer",
+        action = "store_true",
+        default = False,
+    )
+    
+    parser.add_argument(
+        "--deltar",
+        help = "Will delete the local tar.xz file for each tray after transfer",
         action = "store_true",
         default = False,
     )
@@ -206,7 +213,12 @@ def main() :
             cmd = f"./scripts/transfer-results-eos_tray-qaqc.sh {oufile_archive} {lxplus_user} {location}"
             l_cmds.append(cmd)
         
-        if args.delete:
+        if args.deldst:
+            
+            cmd = f"rm -v -r {outdir_tray}"
+            l_cmds.append(cmd)
+        
+        if args.deltar:
             
             cmd = f"rm -v {oufile_archive}"
             l_cmds.append(cmd)

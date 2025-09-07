@@ -7,7 +7,7 @@ CIT_tray_32110070000040:
     lyso:
       runs: [450]
     disc:
-      runs: [9]
+      runs: [15]
     iv:
       runs: [45]
     tec:

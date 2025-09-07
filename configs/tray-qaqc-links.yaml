@@ -1,0 +1,98 @@
+# run_type:
+#   link_name:
+#     pattern: file_name_or_pattern
+#     depth: depth_of_search
+
+
+calibrate:
+  fetp:
+    pattern: fetp.png
+    depth: 4
+  
+  itrim:
+    pattern: itrim.png
+    depth: 4
+
+
+disc:
+  baseline_map:
+    pattern: baseline_map.png
+    depth: 4
+  
+  noise_map:
+    pattern: noise_map.png
+    depth: 4
+  
+  DM_chip_noise_corr:
+    pattern: DM*_chip*_noise_corr.png
+    depth: 4
+  
+  DM_chip_zero_corr:
+    pattern: DM*_chip*_zero_corr.png
+    depth: 4
+
+
+dm_check:
+  heatmap:
+    pattern: heatmap.png
+    depth: 4
+  
+  occupancy_map_total:
+    pattern: occupancy_map_total.png
+    depth: 4
+
+
+iv:
+  corr_diff:
+    pattern: corr_diff.png
+    depth: 4
+  
+  corr_map:
+    pattern: corr_map.png
+    depth: 4
+  
+  iv_scan_DM_chip:
+    pattern: iv_scan_DM*_chip*.png
+    depth: 4
+
+
+lyso:
+  occupancy_map:
+    pattern: occupancy_map.png
+    depth: 4
+  
+  peak_map:
+    pattern: peak_map.png
+    depth: 4
+  
+  peaks_DM_chip:
+    pattern: peaks_DM*_chip*.png
+    depth: 4
+
+
+tec:
+  temps:
+    pattern: temps.png
+    depth: 4
+
+
+tp:
+  global_rms_histogram:
+    pattern: global_rms_histogram.png
+    depth: 4
+  
+  occupancy_map:
+    pattern: occupancy_map.png
+    depth: 4
+  
+  resolution_map:
+    pattern: resolution_map.png
+    depth: 4
+  
+  resolution_rms_map:
+    pattern: resolution_rms_map.png
+    depth: 4
+  
+  resolution_rms_histograms_map:
+    pattern: resolution_rms_histograms_map.png
+    depth: 4
