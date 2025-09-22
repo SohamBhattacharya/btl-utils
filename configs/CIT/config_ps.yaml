@@ -20,4 +20,4 @@ LED:
   serial_number: "802196102797170034"
   channel_voltage_limits: [30, 30, 5]
   max_voltage: 12
-  max_current: 3
+  max_current: 1

@@ -339,6 +339,9 @@ def get_daughter_info(
         f"select s.* from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}" # Remove the trailing comma in a single element tuple: (X,)
     ], stdout = subprocess.PIPE, check = True)
     
+    # position in RU: apositionInRu
+    # ./python/rhapi.py -u http://localhost:8113 -a -f json2 "select c.* from mtd_cmsr.p10 c where c.BARCODE in ('32110040004706', '32110040004595')"
+    
     dbquery_output = dbquery_output.stdout.decode("utf-8")
     
     l_daughter_infodicts = ast.literal_eval(dbquery_output)["data"]

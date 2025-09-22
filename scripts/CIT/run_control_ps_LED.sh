@@ -9,7 +9,7 @@ if [ "$OPT" == "1" ]; then
     --mode LED \
     --pscfg configs/CIT/config_ps.yaml \
     --voltage 12 \
-    --current 0.1 \
+    --current 0.2 \
     --channels 2 \
     --allowcc
 elif [ "$OPT" == "0" ]; then
