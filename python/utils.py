@@ -243,12 +243,42 @@ def is_tunnel_open(port = 8113) :
         return s.connect_ex(("localhost", port)) == 0
 
 
-def get_part_ids(barcode_min, barcode_max) :
+def get_barcode_query(l_barcode_ranges) :
+    
+    query = None
+    l_barcode_queries = []
+    
+    for bc_min, bc_max in l_barcode_ranges :
+        
+        l_tmp = []
+        
+        if (bc_min is not None) :
+            l_tmp.append(f"s.BARCODE >= '{bc_min}'")
+        if (bc_max is not None) :
+            l_tmp.append(f"s.BARCODE <= '{bc_max}'")
+        
+        if len(l_tmp) :
+            
+            str_tmp = " AND ".join(l_tmp)
+            l_barcode_queries.append(f"({str_tmp})")
+    
+    if len(l_barcode_queries) :
+        
+        query = f"({' OR '.join(l_barcode_queries)})"
+    
+    return query
+
+
+def get_part_ids(barcode_min, barcode_max, l_barcode_ranges = []) :
     """
     Get part IDs for a range of barcodes
     """
     
     assert is_tunnel_open(port = 8113), "Open tunnel to database first."
+    
+    barcode_query = get_barcode_query(l_barcode_ranges = l_barcode_ranges + [(barcode_min, barcode_max)])
+    query = f"select s.* from mtd_cmsr.parts s where ({barcode_query})"
+    print(query)
     
     dbquery_output = subprocess.run([
         "./python/rhapi.py",
@@ -256,7 +286,8 @@ def get_part_ids(barcode_min, barcode_max) :
         "-a",
         "-f", "json2",
         #f"select s.ID,s.BARCODE from mtd_cmsr.parts s where s.BARCODE >= '{barcode_min}' and s.BARCODE <='{barcode_max}'"
-        f"select s.* from mtd_cmsr.parts s where s.BARCODE >= '{barcode_min}' and s.BARCODE <='{barcode_max}'"
+        #f"select s.* from mtd_cmsr.parts s where s.BARCODE >= '{barcode_min}' AND s.BARCODE <='{barcode_max}'"
+        query
     ], stdout = subprocess.PIPE, check = True)
     
     dbquery_output = dbquery_output.stdout.decode("utf-8")
@@ -270,6 +301,7 @@ def get_part_barcodes(
     location_id = None,
     barcode_min = None,
     barcode_max = None,
+    l_barcode_ranges = [],
     ) :
     """
     Get list of part barcodes
@@ -290,14 +322,17 @@ def get_part_barcodes(
             
             query = f"{query} AND s.LOCATION_ID = {location_id}"
     
-    if (barcode_min is not None) :
-        
-        query = f"{query} AND s.BARCODE >= '{barcode_min}'"
+    #if (barcode_min is not None) :
+    #    
+    #    query = f"{query} AND s.BARCODE >= '{barcode_min}'"
+    #
+    #if (barcode_max is not None) :
+    #    
+    #    query = f"{query} AND s.BARCODE <= '{barcode_max}'"
     
-    if (barcode_max is not None) :
-        
-        query = f"{query} AND s.BARCODE <= '{barcode_max}'"
-
+    barcode_query = get_barcode_query(l_barcode_ranges = l_barcode_ranges + [(barcode_min, barcode_max)])
+    query = f"{query} AND ({barcode_query})" if (barcode_query is not None) else query
+    
     print(query)
     dbquery_output = subprocess.run([
         "./python/rhapi.py",
@@ -315,6 +350,7 @@ def get_part_barcodes(
 def get_daughter_info(
     parent_barcode_min,
     parent_barcode_max,
+    l_parent_barcode_ranges = []
     ) :
     """
     Get list of daughter information dictionaries for a range of parent barcodes
@@ -324,27 +360,35 @@ def get_daughter_info(
     
     l_parent_infodicts = get_part_ids(
         barcode_min = parent_barcode_min,
-        barcode_max = parent_barcode_max
+        barcode_max = parent_barcode_max,
+        l_barcode_ranges = l_parent_barcode_ranges,
     )
     
     l_parent_ids = [_info["id"] for _info in l_parent_infodicts]
-
-    print(f"select s.* from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}")
-    dbquery_output = subprocess.run([
-        "./python/rhapi.py",
-        "-u", "http://localhost:8113",
-        "-a",
-        "-f", "json2",
-        #f"select s.PART_PARENT_ID,s.BARCODE,s.KIND_OF_PART from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}" # Remove the trailing comma in a single element tuple: (X,)
-        f"select s.* from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}" # Remove the trailing comma in a single element tuple: (X,)
-    ], stdout = subprocess.PIPE, check = True)
     
-    # position in RU: apositionInRu
-    # ./python/rhapi.py -u http://localhost:8113 -a -f json2 "select c.* from mtd_cmsr.p10 c where c.BARCODE in ('32110040004706', '32110040004595')"
+    l_daughter_infodicts = []
     
-    dbquery_output = dbquery_output.stdout.decode("utf-8")
+    l_parent_id_groups = list(more_itertools.chunked(l_parent_ids, 1000))
     
-    l_daughter_infodicts = ast.literal_eval(dbquery_output)["data"]
+    for l_parent_ids_tmp in l_parent_id_groups :
+        
+        print(f"select s.* from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}")
+        dbquery_output = subprocess.run([
+            "./python/rhapi.py",
+            "-u", "http://localhost:8113",
+            "-a",
+            "-f", "json2",
+            #f"select s.PART_PARENT_ID,s.BARCODE,s.KIND_OF_PART from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}" # Remove the trailing comma in a single element tuple: (X,)
+            f"select s.* from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids_tmp)).replace(',)', ')')}" # Remove the trailing comma in a single element tuple: (X,)
+        ], stdout = subprocess.PIPE, check = True)
+        
+        # position in RU: apositionInRu
+        # ./python/rhapi.py -u http://localhost:8113 -a -f json2 "select c.* from mtd_cmsr.p10 c where c.BARCODE in ('32110040004706', '32110040004595')"
+        
+        dbquery_output = dbquery_output.stdout.decode("utf-8")
+        
+        l_daughter_infodicts_tmp = ast.literal_eval(dbquery_output)["data"]
+        l_daughter_infodicts.extend(l_daughter_infodicts_tmp)
     
     # Insert the parent barcode in each daughter part dictionary
     for infodict in l_daughter_infodicts :
@@ -458,24 +502,31 @@ def get_sipm_vbrs(
 
 def check_parttype(parttype) :
     
-    assert parttype in [
-        constants.SIPM.KIND_OF_PART,
-        constants.LYSO.KIND_OF_PART,
-        constants.SM.KIND_OF_PART,
-        constants.FE.KIND_OF_PART,
-        constants.DM.KIND_OF_PART,
-        constants.CC.KIND_OF_PART,
-        constants.PCC1P2.KIND_OF_PART,
-        constants.PCC2P5.KIND_OF_PART,
-        constants.RU.KIND_OF_PART,
-        constants.TRAY.KIND_OF_PART,
+    l_parts = [
+        constants.SIPM,
+        constants.LYSO,
+        constants.SM,
+        constants.FE,
+        constants.DM,
+        constants.CC,
+        constants.PCC1P2,
+        constants.PCC2P5,
+        constants.RU,
+        constants.TRAY,
     ]
+    
+    l_parttypes = [_part.KIND_OF_PART for _part in l_parts]
+    
+    assert (parttype in l_parttypes), f"Invalid part type {parttype}. Must be one of: {l_parttypes}"
+    
+    return l_parts[l_parttypes.index(parttype)]
 
 
 def get_part_info(
     barcode_min,
     barcode_max,
-    parttype
+    parttype,
+    l_barcode_ranges = []
 ) :
     """
     Get part information
@@ -533,7 +584,8 @@ def get_part_info(
         
         l_parent_infodicts, l_daughter_infodicts = get_daughter_info(
             parent_barcode_min = barcode_min,
-            parent_barcode_max = barcode_max
+            parent_barcode_max = barcode_max,
+            l_parent_barcode_ranges = l_barcode_ranges
         )
         
         print(f"Fetched information for {len(l_parent_infodicts)} {parttype}(s) from the database. Processing ...")
@@ -574,7 +626,8 @@ def get_part_info(
         
         l_parent_infodicts, l_daughter_infodicts = get_daughter_info(
             parent_barcode_min = barcode_min,
-            parent_barcode_max = barcode_max
+            parent_barcode_max = barcode_max,
+            l_parent_barcode_ranges = l_barcode_ranges
         )
         
         print(f"Fetched information for {len(l_parent_infodicts)} {parttype}(s) from the database. Processing ...")
@@ -614,7 +667,8 @@ def get_part_info(
         
         l_parent_infodicts, l_daughter_infodicts = get_daughter_info(
             parent_barcode_min = barcode_min,
-            parent_barcode_max = barcode_max
+            parent_barcode_max = barcode_max,
+            l_parent_barcode_ranges = l_barcode_ranges
         )
         
         print(f"Fetched information for {len(l_parent_infodicts)} {parttype}(s) from the database. Processing ...")
@@ -658,7 +712,8 @@ def get_part_info(
         
         l_parent_infodicts, l_daughter_infodicts = get_daughter_info(
             parent_barcode_min = barcode_min,
-            parent_barcode_max = barcode_max
+            parent_barcode_max = barcode_max,
+            l_parent_barcode_ranges = l_barcode_ranges
         )
         
         print(f"Fetched information for {len(l_parent_infodicts)} {parttype}(s) from the database. Processing ...")
@@ -698,7 +753,15 @@ def get_part_info(
     return d_parts
 
 
-def get_all_part_info(parttype, location_id = None, yamlfile = None, nodb = False, barcode_min = None, barcode_max = None) :
+def get_all_part_info(
+    parttype,
+    location_id = None,
+    yamlfile = None,
+    nodb = False,
+    barcode_min = None,
+    barcode_max = None,
+    l_barcode_ranges = []
+) :
     """
     Get the information for all parts
     If yamlfile is provided, will load the information from there
@@ -712,7 +775,13 @@ def get_all_part_info(parttype, location_id = None, yamlfile = None, nodb = Fals
     if (not nodb) :
          
         print(f"Fetching {parttype} information from the database ... ")
-        l_part_barcodes = get_part_barcodes(parttype = parttype, location_id = location_id, barcode_min = barcode_min, barcode_max = barcode_max)
+        l_part_barcodes = get_part_barcodes(
+            parttype = parttype,
+            location_id = location_id,
+            barcode_min = barcode_min,
+            barcode_max = barcode_max,
+            l_barcode_ranges = l_barcode_ranges
+        )
         print(f"Found {len(l_part_barcodes)} {parttype}(s) on the database.")
         
         # Only fetch the ones that have not already been loaded
@@ -917,7 +986,43 @@ def combine_parts(d_sipms = {}, d_sms = {}, d_dms = {}, d_rus = {}, d_trays = {}
                 trayinfo.rus = [d_rus.get(_ru) for _ru in trayinfo.rus]
 
 
-def save_all_part_info(parttype, outyamlfile, inyamlfile = None, location_id = None, ret = False, ret_dict = False, nodb = False, barcode_min = None, barcode_max = None) :
+def get_location_barcode_range(parttype, location_id) :
+    
+    location_id = [location_id] if isinstance(location_id, int) else location_id
+    
+    ranges = []
+    
+    for loc in location_id :
+        
+        range_tmp = check_parttype(parttype).BARCODE_RANGES.get(loc, None)
+        
+        if range_tmp is not None :
+            ranges.extend(range_tmp)
+    
+    #if len(ranges) >= 2 :
+    #    
+    #    ranges = [int(_x) for _x in ranges]
+    #    return (min(ranges), max(ranges))
+    #
+    #else :
+    #    return (None, None)
+    
+    return ranges
+
+
+def save_all_part_info(
+    parttype,
+    outyamlfile,
+    inyamlfile = None,
+    location_id = None,
+    use_location_barcode_range = True,
+    ret = False,
+    ret_dict = False,
+    nodb = False,
+    barcode_min = None,
+    barcode_max = None,
+    l_barcode_ranges = []
+) :
     """
     Load existing part info from inyamlfile
     Fetch additional part info from database
@@ -926,7 +1031,26 @@ def save_all_part_info(parttype, outyamlfile, inyamlfile = None, location_id = N
     
     check_parttype(parttype)
     
-    d_parts_orig = get_all_part_info(parttype = parttype, yamlfile = inyamlfile, location_id = location_id, nodb = nodb, barcode_min = barcode_min, barcode_max = barcode_max)
+    l_barcode_ranges = l_barcode_ranges + [(barcode_min, barcode_max)]
+    
+    if use_location_barcode_range :
+        
+        l_barcode_ranges.extend(get_location_barcode_range(
+            parttype = parttype,
+            location_id = location_id
+        ))
+        
+        location_id = None
+    
+    d_parts_orig = get_all_part_info(
+        parttype = parttype,
+        yamlfile = inyamlfile,
+        location_id = location_id,
+        nodb = nodb,
+        barcode_min = barcode_min,
+        barcode_max = barcode_max,
+        l_barcode_ranges = l_barcode_ranges
+    )
     
     # Convert objects to dicts
     d_parts = {_key: _val.dict() for _key, _val in d_parts_orig.items() if _val}
