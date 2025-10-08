@@ -755,7 +755,7 @@ def main() :
                 xrange = (plotcfg["xmin"], plotcfg["xmax"]),
                 yrange = (
                     plotcfg.get("ymin", 0.5),
-                    plotcfg.get("ymax", 100 * max([_hist.GetMaximum() for _hist in l_hists]))
+                    plotcfg.get("ymax", 1e3 * max([_hist.GetMaximum() for _hist in l_hists]))
                 ),
                 logx = plotcfg.get("logx", False),
                 logy = plotcfg.get("logy", True),
@@ -973,7 +973,7 @@ def main() :
             nodb = args.nodb
         )
         
-        l_used_dms = list(itertools.chain(*[_ru.dms for _ru in d_produced_rus.values()]))
+        l_used_dms = list(itertools.chain(*[_ru.dms.values() for _ru in d_produced_rus.values()]))
         
         for cat in d_cat_results["categories"].keys() :
             
@@ -1121,7 +1121,7 @@ def main() :
         
         if (len(l_missing_modules)) :
             
-            logging.info(f"{len(l_missing_modules)} missing modules:")
+            logging.info(f"Missing run for {len(l_missing_modules)} modules:")
             for barcode in l_missing_modules :
                 
                 print(barcode)

@@ -58,6 +58,7 @@ print('Found %d PCCIv2.5'%len(PCC25s))
 
 # Get list of CC
 query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'CC\' and s.PART_PARENT_ID is NULL and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
+#query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'CC\' and ( s.PART_PARENT_ID is NULL or s.PART_PARENT_ID = 1000 ) and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
 output = subprocess.run(['rhapi.py', 
                          '-u', 'http://localhost:8113',
                          query,

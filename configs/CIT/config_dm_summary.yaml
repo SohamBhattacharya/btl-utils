@@ -53,6 +53,72 @@ h1_deltaT_4min:
   labelmode: "stddev_by_mean"
 
 
+h1_deltaTsignificance_4min:
+  type: "hist1"
+  entries:
+    deltaT_tL:
+      plot: "({DT}.Eval(4) - {mu}) / ({sigmarel}*{mu}/100)"
+      def:
+        mu: "-18.86"
+        sigmarel: "3.13"
+      read:
+        DT: "g_DeltaTTopL"
+      label: "Top left"
+      color: 2
+      fillstyle: 0
+    deltaT_tR:
+      plot: "({DT}.Eval(4) - {mu}) / ({sigmarel}*{mu}/100)"
+      def:
+        mu: "-18.73"
+        sigmarel: "2.82"
+      read:
+        DT: "g_DeltaTTopR"
+      label: "Top right"
+      color: 800
+      fillstyle: 0
+    deltaT_bL:
+      plot: "({DT}.Eval(4) - {mu}) / ({sigmarel}*{mu}/100)"
+      def:
+        mu: "-18.79"
+        sigmarel: "3.15"
+      read:
+        DT: "g_DeltaTBottomL"
+      label: "Bottom left"
+      color: 4
+      fillstyle: 0
+    deltaT_bR:
+      plot: "({DT}.Eval(4) - {mu}) / ({sigmarel}*{mu}/100)"
+      def:
+        mu: "-18.65"
+        sigmarel: "2.76"
+      read:
+        DT: "g_DeltaTBottomR"
+      label: "Bottom right"
+      color: 6
+      fillstyle: 0
+    deltaT_avg:
+      plot: "(numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)]) - {mu}) / ({sigmarel}*{mu}/100)"
+      def:
+        mu: "-18.75"
+        sigmarel: "2.43"
+      read:
+        tL: "g_DeltaTTopL"
+        tR: "g_DeltaTTopR"
+        bL: "g_DeltaTBottomL"
+        bR: "g_DeltaTBottomR"
+      label: "Avg."
+      color: 1
+      fillstyle: 0
+  xmin: -10
+  xmax: 10
+  nbins: 40
+  xtitle: "#hat{z}(#DeltaT) at 4 min. [#circC]"
+  ytitle: "Entries"
+  gridx: True
+  gridy: False
+  labelmode: "stddev"
+
+
 h1_deltaTcorr_4min:
   type: "hist1"
   entries:
@@ -429,8 +495,10 @@ g1_deltaT-avg_vs_deltaT-offset:
   type: "graph"
   entries:
     deltaT-avg_vs_deltaT-offset:
-      plotx: "0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33)) - numpy.mean([{refTL}.Eval(0.33), {refTR}.Eval(0.33), {refBL}.Eval(0.33), {refBR}.Eval(0.33)])"
+      plotx: "{offset}"
       ploty: "numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
+      def:
+        offset: (0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33)) - numpy.mean([{refTL}.Eval(0.33), {refTR}.Eval(0.33), {refBL}.Eval(0.33), {refBR}.Eval(0.33)]))
       read:
         tL: "g_DeltaTTopL"
         tR: "g_DeltaTTopR"

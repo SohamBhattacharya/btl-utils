@@ -79,6 +79,12 @@ class RU:
     }
 
 @dataclasses.dataclass(frozen = True)
+class COLDTRAY:
+    KIND_OF_PART = "Cold Tray"
+    LABEL = "Cold Tray"
+    BARCODE_RANGES = {}
+
+@dataclasses.dataclass(frozen = True)
 class TRAY:
     KIND_OF_PART = "Tray"
     LABEL = "Tray"

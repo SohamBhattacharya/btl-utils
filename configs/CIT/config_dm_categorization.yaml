@@ -8,14 +8,6 @@ categories:
 
 metrics:
   
-  #deltaT_high: "bool(max([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)]) > {deltaT_avg_max})"
-  #deltaT_avg_high: "bool(numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)]) > {deltaT_avg_max})"
-  #
-  #deltaT_avg: "float(numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)]))"
-  #deltaT_std: "float(numpy.std([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)]))"
-  #deltaT_min: "float(numpy.min([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)]))"
-  #deltaT_max: "float(numpy.max([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)]))"
-
   deltaT_high: "bool(max({tL}, {tR}, {bL}, {bR}) > {deltaT_avg_max})"
   deltaT_avg_high: "bool(numpy.mean([{tL}, {tR}, {bL}, {bR}]) > {deltaT_avg_max})"
 
