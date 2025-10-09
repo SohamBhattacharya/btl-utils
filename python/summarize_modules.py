@@ -743,11 +743,11 @@ def main() :
                 
                 if (labelmode == "stddev") :
                     
-                    hist.SetTitle(f"{hist.GetTitle()} [#mu: {mean_str}, #sigma: {stddev:0.2f}]")
+                    hist.SetTitle(f"{hist.GetTitle()}#scale[0.7]{{ [#mu: {mean_str}, #sigma: {stddev:0.2f}]}}")
                 
                 elif (labelmode == "stddev_by_mean") :
                     
-                    hist.SetTitle(f"{hist.GetTitle()} [#mu: {mean_str}, #sigma/#mu: {stddev/abs(mean)*100:0.2f}%]")
+                    hist.SetTitle(f"{hist.GetTitle()}#scale[0.7]{{ [#mu: {mean_str}, #sigma: {stddev:0.2f}, #sigma/#mu: {stddev/abs(mean)*100:0.2f}%]}}")
             
             utils.root_plot1D(
                 l_hist = l_hists,
@@ -775,7 +775,7 @@ def main() :
                 legendtextsize = 0.045,
                 legendtitle = "+".join(args.location),
                 legendheightscale = 1.0,
-                legendwidthscale = 1.9,
+                legendwidthscale = 2.0,
                 CMSextraText = "BTL Internal",
                 lumiText = "Phase-2"
             )

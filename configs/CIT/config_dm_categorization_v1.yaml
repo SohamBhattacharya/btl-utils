@@ -8,7 +8,7 @@ categories:
 
 metrics:
   
-  deltaT_high: "bool(max({tL}, {tR}, {bL}, {bR}) > {deltaT_avg_max})"
+  deltaT_high: "bool(max({tL}, {tR}, {bL}, {bR}) > {deltaT_max})"
   deltaT_avg_high: "bool(numpy.mean([{tL}, {tR}, {bL}, {bR}]) > {deltaT_avg_max})"
 
   deltaT_avg: "float(numpy.mean([{tL}, {tR}, {bL}, {bR}]))"
@@ -70,15 +70,10 @@ tray_metrics:
 
 
 def:
-  #tL: "({gtL}.Eval(4) - 0.54) if {run} < 493 else ((1.15*{gtL}.Eval(4)) + 2.33)"
-  #tR: "({gtR}.Eval(4) - 0.54) if {run} < 493 else ((1.15*{gtR}.Eval(4)) + 2.33)"
-  #bL: "({gbL}.Eval(4) - 0.54) if {run} < 493 else ((1.15*{gbL}.Eval(4)) + 2.33)"
-  #bR: "({gbR}.Eval(4) - 0.54) if {run} < 493 else ((1.15*{gbR}.Eval(4)) + 2.33)"
-  
-  tL: "({gtL}.Eval(4) - 0.31) if {run} < 493 else ((0.68*{gtL}.Eval(4)) - 6.22)"
-  tR: "({gtR}.Eval(4) - 0.38) if {run} < 493 else ((0.58*{gtR}.Eval(4)) - 7.93)"
-  bL: "({gbL}.Eval(4) - 0.72) if {run} < 493 else ((0.72*{gbL}.Eval(4)) - 5.86)"
-  bR: "({gbR}.Eval(4) - 0.19) if {run} < 493 else ((0.91*{gbR}.Eval(4)) - 1.92)"
+  tL: "{gtL}.Eval(4)"
+  tR: "{gtR}.Eval(4)"
+  bL: "{gbL}.Eval(4)"
+  bR: "{gbR}.Eval(4)"
 
 
 read:
