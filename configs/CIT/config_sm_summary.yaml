@@ -270,7 +270,7 @@ h1_metric_counts:
   xmin: 0
   xmax: 32
   nbins: 32
-  ndivisionsx: [5, 5, 0]
+  ndivisionsx: [4, 8, 0]
   xtitle: "n_{bar} or n_{ch}"
   ytitle: "Number of SMs"
   gridx: True
@@ -316,7 +316,7 @@ h1_metric_counts_cat-B:
   xmin: 0
   xmax: 32
   nbins: 32
-  ndivisionsx: [5, 5, 0]
+  ndivisionsx: [4, 8, 0]
   xtitle: "n_{bar} or n_{ch}"
   ytitle: "Number of category B SMs"
   gridx: True
@@ -362,7 +362,7 @@ h1_metric_counts_cat-C:
   xmin: 0
   xmax: 32
   nbins: 32
-  ndivisionsx: [5, 5, 0]
+  ndivisionsx: [4, 8, 0]
   xtitle: "n_{bar} or n_{ch}"
   ytitle: "Number of category C SMs"
   gridx: True
@@ -408,7 +408,7 @@ h1_metric_counts_cat-D:
   xmin: 0
   xmax: 32
   nbins: 32
-  ndivisionsx: [5, 5, 0]
+  ndivisionsx: [4, 8, 0]
   xtitle: "n_{bar} or n_{ch}"
   ytitle: "Number of category D SMs"
   gridx: True
@@ -454,7 +454,7 @@ h1_metric_counts_cat-R:
   xmin: 0
   xmax: 32
   nbins: 32
-  ndivisionsx: [5, 5, 0]
+  ndivisionsx: [4, 8, 0]
   xtitle: "n_{bar} or n_{ch}"
   ytitle: "Number of category R SMs"
   gridx: True
@@ -498,7 +498,7 @@ h1_metric_barcodes:
   ymin: 0
   ymax: 70
   nbins: 150
-  ndivisionsx: [5, 5, 0]
+  ndivisionsx: [4, 8, 0]
   xtitle: "SM barcode [prefix 321100200]"
   ytitle: "n_{bar} or n_{ch}"
   gridx: True
