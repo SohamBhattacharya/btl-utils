@@ -5,3 +5,4 @@
 32110020001541 # bad, misaligned, cat D
 32110020001694 # bad, misaligned, cat D
 32110020001813 # bad, bar0 weird
+32110020002334 # bad, bar 7 weird
