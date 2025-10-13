@@ -40,7 +40,7 @@ h1_deltaT_4min:
         tR: "g_DeltaTTopR"
         bL: "g_DeltaTBottomL"
         bR: "g_DeltaTBottomR"
-      label: "Avg."
+      label: "Average"
       color: 1
       fillstyle: 0
   xmin: -23
@@ -53,11 +53,77 @@ h1_deltaT_4min:
   labelmode: "stddev_by_mean"
 
 
-h1_deltaTcorr_4min:
+h1_deltaT-sig_4min:
   type: "hist1"
   entries:
     deltaT_tL:
-      plot: "-0.099*(25.5 - {refT}) + {DT}.Eval(4)"
+      plot: "({DT}.Eval(4) - {mu}) / {sigma}"
+      def:
+        mu: "-18.86"
+        sigma: "0.59"
+      read:
+        DT: "g_DeltaTTopL"
+      label: "Top left"
+      color: 2
+      fillstyle: 0
+    deltaT_tR:
+      plot: "({DT}.Eval(4) - {mu}) / {sigma}"
+      def:
+        mu: "-18.73"
+        sigma: "0.53"
+      read:
+        DT: "g_DeltaTTopR"
+      label: "Top right"
+      color: 800
+      fillstyle: 0
+    deltaT_bL:
+      plot: "({DT}.Eval(4) - {mu}) / {sigma}"
+      def:
+        mu: "-18.79"
+        sigma: "0.59"
+      read:
+        DT: "g_DeltaTBottomL"
+      label: "Bottom left"
+      color: 4
+      fillstyle: 0
+    deltaT_bR:
+      plot: "({DT}.Eval(4) - {mu}) / {sigma}"
+      def:
+        mu: "-18.65"
+        sigma: "0.52"
+      read:
+        DT: "g_DeltaTBottomR"
+      label: "Bottom right"
+      color: 6
+      fillstyle: 0
+    deltaT_avg:
+      plot: "(numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)]) - {mu}) / {sigma}"
+      def:
+        mu: "-18.75"
+        sigma: "0.46"
+      read:
+        tL: "g_DeltaTTopL"
+        tR: "g_DeltaTTopR"
+        bL: "g_DeltaTBottomL"
+        bR: "g_DeltaTBottomR"
+      label: "Average"
+      color: 1
+      fillstyle: 0
+  xmin: -10
+  xmax: 10
+  nbins: 40
+  xtitle: "#hat{z}(#DeltaT) at 4 min."
+  ytitle: "Entries"
+  gridx: True
+  gridy: False
+  labelmode: "stddev"
+
+
+h1_deltaTcorr-cp_4min:
+  type: "hist1"
+  entries:
+    deltaT_tL:
+      plot: "-0.067*(25 - {refT}) + {DT}.Eval(4)"
       def:
         refT: 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))
       read:
@@ -68,7 +134,7 @@ h1_deltaTcorr_4min:
       color: 2
       fillstyle: 0
     deltaT_tR:
-      plot: "-0.099*(25.5 - {refT}) + {DT}.Eval(4)"
+      plot: "-0.067*(25 - {refT}) + {DT}.Eval(4)"
       def:
         refT: 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))
       read:
@@ -79,7 +145,7 @@ h1_deltaTcorr_4min:
       color: 800
       fillstyle: 0
     deltaT_bL:
-      plot: "-0.099*(25.5 - {refT}) + {DT}.Eval(4)"
+      plot: "-0.067*(25 - {refT}) + {DT}.Eval(4)"
       def:
         refT: 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))
       read:
@@ -90,7 +156,7 @@ h1_deltaTcorr_4min:
       color: 4
       fillstyle: 0
     deltaT_bR:
-      plot: "-0.099*(25.5 - {refT}) + {DT}.Eval(4)"
+      plot: "-0.067*(25 - {refT}) + {DT}.Eval(4)"
       def:
         refT: 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))
       read:
@@ -101,7 +167,7 @@ h1_deltaTcorr_4min:
       color: 6
       fillstyle: 0
     deltaT_avg:
-      plot: "-0.099*(25.5 - {refT}) + {avgDT}"
+      plot: "-0.067*(25 - {refT}) + {avgDT}"
       def:
         avgDT: numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])
         refT: 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))
@@ -112,7 +178,89 @@ h1_deltaTcorr_4min:
         bR: "g_DeltaTBottomR"
         refL: "g_CopperL"
         refR: "g_CopperR"
-      label: "Avg."
+      label: "Average"
+      color: 1
+      fillstyle: 0
+  xmin: -23
+  xmax: -15
+  nbins: 80
+  xtitle: "#DeltaT at 4 min. [#circC]"
+  ytitle: "Entries"
+  gridx: True
+  gridy: False
+  labelmode: "stddev_by_mean"
+
+
+h1_deltaTcorr-tec_4min:
+  type: "hist1"
+  entries:
+    deltaT_tL:
+      plot: "-0.1*(25 - {refT}) + {DT}.Eval(4)"
+      def:
+        refT: numpy.mean([{refTL}.Eval(0.33), {refTR}.Eval(0.33), {refBL}.Eval(0.33), {refBR}.Eval(0.33)])
+      read:
+        DT: "g_DeltaTTopL"
+        refTL: "g_TopL"
+        refTR: "g_TopR"
+        refBL: "g_BottomL"
+        refBR: "g_BottomR"
+      label: "Top left"
+      color: 2
+      fillstyle: 0
+    deltaT_tR:
+      plot: "-0.1*(25 - {refT}) + {DT}.Eval(4)"
+      def:
+        refT: numpy.mean([{refTL}.Eval(0.33), {refTR}.Eval(0.33), {refBL}.Eval(0.33), {refBR}.Eval(0.33)])
+      read:
+        DT: "g_DeltaTTopR"
+        refTL: "g_TopL"
+        refTR: "g_TopR"
+        refBL: "g_BottomL"
+        refBR: "g_BottomR"
+      label: "Top right"
+      color: 800
+      fillstyle: 0
+    deltaT_bL:
+      plot: "-0.1*(25 - {refT}) + {DT}.Eval(4)"
+      def:
+        refT: numpy.mean([{refTL}.Eval(0.33), {refTR}.Eval(0.33), {refBL}.Eval(0.33), {refBR}.Eval(0.33)])
+      read:
+        DT: "g_DeltaTBottomL"
+        refTL: "g_TopL"
+        refTR: "g_TopR"
+        refBL: "g_BottomL"
+        refBR: "g_BottomR"
+      label: "Bottom left"
+      color: 4
+      fillstyle: 0
+    deltaT_bR:
+      plot: "-0.1*(25 - {refT}) + {DT}.Eval(4)"
+      def:
+        refT: numpy.mean([{refTL}.Eval(0.33), {refTR}.Eval(0.33), {refBL}.Eval(0.33), {refBR}.Eval(0.33)])
+      read:
+        DT: "g_DeltaTBottomR"
+        refTL: "g_TopL"
+        refTR: "g_TopR"
+        refBL: "g_BottomL"
+        refBR: "g_BottomR"
+      label: "Bottom right"
+      color: 6
+      fillstyle: 0
+    deltaT_avg:
+      plot: "-0.1*(25 - {refT}) + {avgDT}"
+      def:
+        avgDT: numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])
+        refT: numpy.mean([{refTL}.Eval(0.33), {refTR}.Eval(0.33), {refBL}.Eval(0.33), {refBR}.Eval(0.33)])
+      read:
+        tL: "g_DeltaTTopL"
+        tR: "g_DeltaTTopR"
+        bL: "g_DeltaTBottomL"
+        bR: "g_DeltaTBottomR"
+        refTL: "g_TopL"
+        refTR: "g_TopR"
+        refBL: "g_BottomL"
+        refBR: "g_BottomR"
+      label: "Average"
       color: 1
       fillstyle: 0
   xmin: -23
@@ -166,7 +314,7 @@ g1_deltaT_vs_barcode:
         bR: "g_DeltaTBottomR"
       fit:
         pol0: "[0]+([1]*x)"
-      label: "Avg."
+      label: "Average"
       color: 1
       marker: 4
       size: 1
@@ -262,7 +410,7 @@ g1_deltaT-std_vs_deltaT-avg:
   xmax: -15
   ymin: 0
   ymax: 1
-  xtitle: "Avg. #DeltaT [#circC]"
+  xtitle: "Average #DeltaT [#circC]"
   ytitle: "#sigma(#DeltaT) [#circC]"
   gridx: True
   gridy: True
@@ -292,7 +440,7 @@ g1_deltaT-avg_vs_tec-sum:
   ymin: -23
   ymax: -15
   xtitle: "#Sigma(R_{TEC}) [#Omega]"
-  ytitle: "Avg. #DeltaT [#circC]"
+  ytitle: "Average #DeltaT [#circC]"
   gridx: True
   gridy: True
   labelmode: "corr"
@@ -322,13 +470,13 @@ g1_deltaT-avg_vs_power:
   ymin: -23
   ymax: -15
   xtitle: "Power drawn [W]"
-  ytitle: "Avg. #DeltaT [#circC]"
+  ytitle: "Average #DeltaT [#circC]"
   gridx: True
   gridy: True
   labelmode: "corr"
 
 
-g1_deltaT-avg_vs_refT:
+g1_deltaT-avg_vs_refT-cp:
   type: "graph"
   entries:
     deltaT-avg_vs_refT:
@@ -352,8 +500,8 @@ g1_deltaT-avg_vs_refT:
   xmax: 30
   ymin: -23
   ymax: -15
-  xtitle: "CP temperature [#circC]"
-  ytitle: "Avg. #DeltaT [#circC] at 4 min."
+  xtitle: "Initial CP temp. [#circC]"
+  ytitle: "Average #DeltaT [#circC] at 4 min."
   gridx: True
   gridy: True
   labelmode: "corr"
@@ -387,8 +535,8 @@ g1_deltaT-avg_vs_refT-tec:
   xmax: 30
   ymin: -23
   ymax: -15
-  xtitle: "Initial temp. (RTD avg.) [#circC]"
-  ytitle: "Avg. #DeltaT [#circC] at 4 min."
+  xtitle: "Initial temp. (RTD Average) [#circC]"
+  ytitle: "Average #DeltaT [#circC] at 4 min."
   gridx: True
   gridy: True
   labelmode: "corr"
@@ -419,7 +567,7 @@ g1_deltaT-avg_vs_ref-deltaT:
   ymin: -23
   ymax: -15
   xtitle: "#Delta(CP temperature) [#circC]"
-  ytitle: "Avg. #DeltaT [#circC] at 4 min."
+  ytitle: "Average #DeltaT [#circC] at 4 min."
   gridx: True
   gridy: True
   labelmode: "corr"
@@ -429,8 +577,10 @@ g1_deltaT-avg_vs_deltaT-offset:
   type: "graph"
   entries:
     deltaT-avg_vs_deltaT-offset:
-      plotx: "0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33)) - numpy.mean([{refTL}.Eval(0.33), {refTR}.Eval(0.33), {refBL}.Eval(0.33), {refBR}.Eval(0.33)])"
+      plotx: "{offset}"
       ploty: "numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
+      def:
+        offset: (0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33)) - numpy.mean([{refTL}.Eval(0.33), {refTR}.Eval(0.33), {refBL}.Eval(0.33), {refBR}.Eval(0.33)]))
       read:
         tL: "g_DeltaTTopL"
         tR: "g_DeltaTTopR"
@@ -454,18 +604,18 @@ g1_deltaT-avg_vs_deltaT-offset:
   ymin: -23
   ymax: -15
   xtitle: "#DeltaT offset (CP - TEC) [#circC]"
-  ytitle: "Avg. #DeltaT [#circC] at 4 min."
+  ytitle: "Average #DeltaT [#circC] at 4 min."
   gridx: True
   gridy: True
   labelmode: "corr"
 
 
-g1_deltaTcorr-avg_vs_refT:
+g1_deltaTcorr-cp-avg_vs_refT-cp:
   type: "graph"
   entries:
     deltaTcorr-avg_vs_refT:
       plotx: "{refT}"
-      ploty: "-0.099*(25.5 - {refT}) + {avgDT}"
+      ploty: "-0.067*(25 - {refT}) + {avgDT}"
       def:
         refT: 0.5*({refL}.Eval(0.33)+{refR}.Eval(0.33))
         avgDT: numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])
@@ -487,8 +637,44 @@ g1_deltaTcorr-avg_vs_refT:
   xmax: 30
   ymin: -23
   ymax: -15
-  xtitle: "CP temperature [#circC]"
-  ytitle: "Avg. #DeltaT [#circC] at 4 min."
+  xtitle: "Initial CP temp. [#circC]"
+  ytitle: "Average #DeltaT [#circC] at 4 min."
+  gridx: True
+  gridy: True
+  labelmode: "corr"
+
+
+g1_deltaTcorr-tec-avg_vs_refT-tec:
+  type: "graph"
+  entries:
+    deltaTcorr-avg_vs_refT:
+      plotx: "{refT}"
+      ploty: "-0.1*(25 - {refT}) + {avgDT}"
+      def:
+        refT: numpy.mean([{refTL}.Eval(0.33), {refTR}.Eval(0.33), {refBL}.Eval(0.33), {refBR}.Eval(0.33)])
+        avgDT: numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])
+      read:
+        tL: "g_DeltaTTopL"
+        tR: "g_DeltaTTopR"
+        bL: "g_DeltaTBottomL"
+        bR: "g_DeltaTBottomR"
+        refTL: "g_TopL"
+        refTR: "g_TopR"
+        refBL: "g_BottomL"
+        refBR: "g_BottomR"
+      fit:
+        pol0: "[0]+([1]*x)"
+      label: ""
+      color: 1
+      marker: 4
+      size: 1
+      drawopt: "P"
+  xmin: 20
+  xmax: 30
+  ymin: -23
+  ymax: -15
+  xtitle: "Initial temp. (RTD Average) [#circC]"
+  ytitle: "Average #DeltaT [#circC] at 4 min."
   gridx: True
   gridy: True
   labelmode: "corr"
@@ -515,7 +701,7 @@ g1_refT_vs_barcode:
   ymin: 20
   ymax: 30
   xtitle: "DM barcode [prefix 3211004000]"
-  ytitle: "CP temperature [#circC]"
+  ytitle: "Initial CP temp. [#circC]"
   gridx: True
   gridy: True
   labelmode: "corr"
@@ -617,3 +803,84 @@ g1_tec-sum-bac_vs_tec-sum:
   gridx: True
   gridy: True
   labelmode: "corr"
+
+
+g1_deltaT-sig_vs_deltaT:
+  type: "graph"
+  entries:
+    deltaT_tL:
+      plotx: "{DT}.Eval(4)"
+      ploty: "({DT}.Eval(4) - {mu}) / {sigma}"
+      def:
+        mu: "-18.86"
+        sigma: "0.59"
+      read:
+        DT: "g_DeltaTTopL"
+      label: "Top left"
+      color: 2
+      marker: 4
+      size: 1
+      drawopt: "P"
+    deltaT_tR:
+      plotx: "{DT}.Eval(4)"
+      ploty: "({DT}.Eval(4) - {mu}) / {sigma}"
+      def:
+        mu: "-18.73"
+        sigma: "0.53"
+      read:
+        DT: "g_DeltaTTopR"
+      label: "Top right"
+      color: 800
+      marker: 4
+      size: 1
+      drawopt: "P"
+    deltaT_bL:
+      plotx: "{DT}.Eval(4)"
+      ploty: "({DT}.Eval(4) - {mu}) / {sigma}"
+      def:
+        mu: "-18.79"
+        sigma: "0.59"
+      read:
+        DT: "g_DeltaTBottomL"
+      label: "Bottom left"
+      color: 4
+      marker: 4
+      size: 1
+      drawopt: "P"
+    deltaT_bR:
+      plotx: "{DT}.Eval(4)"
+      ploty: "({DT}.Eval(4) - {mu}) / {sigma}"
+      def:
+        mu: "-18.65"
+        sigma: "0.52"
+      read:
+        DT: "g_DeltaTBottomR"
+      label: "Bottom right"
+      color: 6
+      marker: 4
+      size: 1
+      drawopt: "P"
+    deltaT_avg:
+      plotx: "numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)])"
+      ploty: "(numpy.mean([{tL}.Eval(4), {tR}.Eval(4), {bL}.Eval(4), {bR}.Eval(4)]) - {mu}) / {sigma}"
+      def:
+        mu: "-18.75"
+        sigma: "0.46"
+      read:
+        tL: "g_DeltaTTopL"
+        tR: "g_DeltaTTopR"
+        bL: "g_DeltaTBottomL"
+        bR: "g_DeltaTBottomR"
+      label: "Average"
+      color: 1
+      marker: 4
+      size: 1
+      drawopt: "P"
+  xmin: -23
+  xmax: -15
+  ymin: -6
+  ymax: 10
+  xtitle: "#DeltaT at 4 min."
+  ytitle: "#hat{z}(#DeltaT) at 4 min."
+  gridx: True
+  gridy: True

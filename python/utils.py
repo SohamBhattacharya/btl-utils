@@ -133,7 +133,8 @@ class ReadoutUnit :
     cc: str = None
     pcc1p2: str = None
     pcc2p5: str = None
-    dms: list = None
+    dms: dict = None
+    #dm_positions: dict = None
     prod_datime: str = None
     location_id: int = None
     results: dict = dataclasses.field(default_factory = dict)
@@ -144,11 +145,25 @@ class ReadoutUnit :
 
 
 @dataclasses.dataclass(init = True)
+class ColdTray :
+    
+    barcode: str = None
+    id: str = None
+    prod_datime: str = None
+    location_id: int = None
+    
+    def dict(self) :
+        
+        return dataclasses.asdict(self)
+
+@dataclasses.dataclass(init = True)
 class Tray :
     
     barcode: str = None
     id: str = None
-    rus: list = None
+    rus: dict = None
+    #ru_positions: dict = None
+    coldtray: str = None
     prod_datime: str = None
     location_id: int = None
     results: dict = dataclasses.field(default_factory = dict)
@@ -243,12 +258,47 @@ def is_tunnel_open(port = 8113) :
         return s.connect_ex(("localhost", port)) == 0
 
 
-def get_part_ids(barcode_min, barcode_max) :
+def get_barcode_query(l_barcode_ranges, l_barcodes = []) :
+    
+    query = None
+    l_barcode_queries = []
+    
+    for bc_min, bc_max in l_barcode_ranges :
+        
+        l_tmp = []
+        
+        if (bc_min is not None) :
+            l_tmp.append(f"s.BARCODE >= '{bc_min}'")
+        if (bc_max is not None) :
+            l_tmp.append(f"s.BARCODE <= '{bc_max}'")
+        
+        if len(l_tmp) :
+            
+            str_tmp = " AND ".join(l_tmp)
+            l_barcode_queries.append(f"({str_tmp})")
+    
+    if len(l_barcode_queries) :
+        
+        query = f"({' OR '.join(l_barcode_queries)})"
+    
+    if len(l_barcodes) :
+        
+        query_tmp = f"(s.BARCODE in {str(tuple(l_barcodes)).replace(',)', ')')})"
+        query = f"({query} OR {query_tmp})" if query else query_tmp
+    
+    return query
+
+
+def get_part_ids(barcode_min, barcode_max, l_barcode_ranges = []) :
     """
     Get part IDs for a range of barcodes
     """
     
     assert is_tunnel_open(port = 8113), "Open tunnel to database first."
+    
+    barcode_query = get_barcode_query(l_barcode_ranges = l_barcode_ranges + [(barcode_min, barcode_max)])
+    query = f"select s.* from mtd_cmsr.parts s where ({barcode_query})"
+    print(query)
     
     dbquery_output = subprocess.run([
         "./python/rhapi.py",
@@ -256,7 +306,8 @@ def get_part_ids(barcode_min, barcode_max) :
         "-a",
         "-f", "json2",
         #f"select s.ID,s.BARCODE from mtd_cmsr.parts s where s.BARCODE >= '{barcode_min}' and s.BARCODE <='{barcode_max}'"
-        f"select s.* from mtd_cmsr.parts s where s.BARCODE >= '{barcode_min}' and s.BARCODE <='{barcode_max}'"
+        #f"select s.* from mtd_cmsr.parts s where s.BARCODE >= '{barcode_min}' AND s.BARCODE <='{barcode_max}'"
+        query
     ], stdout = subprocess.PIPE, check = True)
     
     dbquery_output = dbquery_output.stdout.decode("utf-8")
@@ -270,6 +321,7 @@ def get_part_barcodes(
     location_id = None,
     barcode_min = None,
     barcode_max = None,
+    l_barcode_ranges = [],
     ) :
     """
     Get list of part barcodes
@@ -290,14 +342,17 @@ def get_part_barcodes(
             
             query = f"{query} AND s.LOCATION_ID = {location_id}"
     
-    if (barcode_min is not None) :
-        
-        query = f"{query} AND s.BARCODE >= '{barcode_min}'"
+    #if (barcode_min is not None) :
+    #    
+    #    query = f"{query} AND s.BARCODE >= '{barcode_min}'"
+    #
+    #if (barcode_max is not None) :
+    #    
+    #    query = f"{query} AND s.BARCODE <= '{barcode_max}'"
     
-    if (barcode_max is not None) :
-        
-        query = f"{query} AND s.BARCODE <= '{barcode_max}'"
-
+    barcode_query = get_barcode_query(l_barcode_ranges = l_barcode_ranges + [(barcode_min, barcode_max)])
+    query = f"{query} AND ({barcode_query})" if (barcode_query is not None) else query
+    
     print(query)
     dbquery_output = subprocess.run([
         "./python/rhapi.py",
@@ -315,6 +370,7 @@ def get_part_barcodes(
 def get_daughter_info(
     parent_barcode_min,
     parent_barcode_max,
+    l_parent_barcode_ranges = []
     ) :
     """
     Get list of daughter information dictionaries for a range of parent barcodes
@@ -324,27 +380,52 @@ def get_daughter_info(
     
     l_parent_infodicts = get_part_ids(
         barcode_min = parent_barcode_min,
-        barcode_max = parent_barcode_max
+        barcode_max = parent_barcode_max,
+        l_barcode_ranges = l_parent_barcode_ranges,
     )
     
     l_parent_ids = [_info["id"] for _info in l_parent_infodicts]
-
-    print(f"select s.* from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}")
-    dbquery_output = subprocess.run([
-        "./python/rhapi.py",
-        "-u", "http://localhost:8113",
-        "-a",
-        "-f", "json2",
-        #f"select s.PART_PARENT_ID,s.BARCODE,s.KIND_OF_PART from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}" # Remove the trailing comma in a single element tuple: (X,)
-        f"select s.* from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}" # Remove the trailing comma in a single element tuple: (X,)
-    ], stdout = subprocess.PIPE, check = True)
+    l_parent_id_groups = list(more_itertools.chunked(l_parent_ids, 500))
+    l_daughter_infodicts = []
+    d_daughter_positions = {}
     
-    # position in RU: apositionInRu
-    # ./python/rhapi.py -u http://localhost:8113 -a -f json2 "select c.* from mtd_cmsr.p10 c where c.BARCODE in ('32110040004706', '32110040004595')"
-    
-    dbquery_output = dbquery_output.stdout.decode("utf-8")
-    
-    l_daughter_infodicts = ast.literal_eval(dbquery_output)["data"]
+    for l_parent_ids_tmp in l_parent_id_groups :
+        
+        print(f"select s.* from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}")
+        dbquery_output = subprocess.run([
+            "./python/rhapi.py",
+            "-u", "http://localhost:8113",
+            "-a",
+            "-f", "json2",
+            #f"select s.PART_PARENT_ID,s.BARCODE,s.KIND_OF_PART from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}" # Remove the trailing comma in a single element tuple: (X,)
+            f"select s.* from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids_tmp)).replace(',)', ')')}" # Remove the trailing comma in a single element tuple: (X,)
+        ], stdout = subprocess.PIPE, check = True)
+        
+        # position in RU: apositionInRu
+        # ./python/rhapi.py -u http://localhost:8113 -a -f json2 "select c.* from mtd_cmsr.p10 c where c.BARCODE in ('32110040004706', '32110040004595')"
+        
+        dbquery_output = dbquery_output.stdout.decode("utf-8")
+        
+        l_daughter_infodicts_tmp = ast.literal_eval(dbquery_output)["data"]
+        
+        for parttype in [constants.SIPM.KIND_OF_PART, constants.SM.KIND_OF_PART, constants.DM.KIND_OF_PART, constants.RU.KIND_OF_PART] :
+            
+            l_parts = [str(_info["barcode"]) for _info in l_daughter_infodicts_tmp if (_info["kindOfPart"] == parttype)]
+            
+            if not len(l_parts) :
+                continue
+            
+            d_part_positions = get_part_position(
+                barcode_min = None,
+                barcode_max = None,
+                parttype = parttype,
+                l_barcode_ranges = [],
+                l_barcodes = l_parts,
+            )
+            
+            d_daughter_positions.update(d_part_positions)
+        
+        l_daughter_infodicts.extend(l_daughter_infodicts_tmp)
     
     # Insert the parent barcode in each daughter part dictionary
     for infodict in l_daughter_infodicts :
@@ -352,6 +433,7 @@ def get_daughter_info(
         parent_info = next((_pinfo for _pinfo in l_parent_infodicts if _pinfo["id"] == infodict["partParentId"]), None)
         assert (parent_info is not None), "Could not find parent"
         infodict["parentBarcode"] = parent_info["barcode"]
+        infodict["positionInParent"] = d_daughter_positions.get(infodict["barcode"], None)
     
     return l_parent_infodicts, l_daughter_infodicts
 
@@ -458,24 +540,89 @@ def get_sipm_vbrs(
 
 def check_parttype(parttype) :
     
-    assert parttype in [
-        constants.SIPM.KIND_OF_PART,
-        constants.LYSO.KIND_OF_PART,
-        constants.SM.KIND_OF_PART,
-        constants.FE.KIND_OF_PART,
-        constants.DM.KIND_OF_PART,
-        constants.CC.KIND_OF_PART,
-        constants.PCC1P2.KIND_OF_PART,
-        constants.PCC2P5.KIND_OF_PART,
-        constants.RU.KIND_OF_PART,
-        constants.TRAY.KIND_OF_PART,
+    l_parts = [
+        constants.SIPM,
+        constants.LYSO,
+        constants.SM,
+        constants.FE,
+        constants.DM,
+        constants.CC,
+        constants.PCC1P2,
+        constants.PCC2P5,
+        constants.RU,
+        constants.COLDTRAY,
+        constants.TRAY,
     ]
+    
+    l_parttypes = [_part.KIND_OF_PART for _part in l_parts]
+    
+    assert (parttype in l_parttypes), f"Invalid part type {parttype}. Must be one of: {l_parttypes}"
+    
+    return l_parts[l_parttypes.index(parttype)]
+
+
+def get_part_position(
+    barcode_min,
+    barcode_max,
+    parttype,
+    l_barcode_ranges = [],
+    l_barcodes = [],
+) :
+    
+    d_part_db_info = {}
+    
+    d_part_db_info[constants.SIPM.KIND_OF_PART] = {
+        "db": "p3",
+        "position_key": "apositionInSensormodule",
+    }
+    
+    d_part_db_info[constants.SM.KIND_OF_PART] = {
+        "db": "p11",
+        "position_key": "apositionInDetectormodule",
+    }
+    
+    d_part_db_info[constants.DM.KIND_OF_PART] = {
+        "db": "p10",
+        "position_key": "apositionInRu",
+    }
+    
+    d_part_db_info[constants.RU.KIND_OF_PART] = {
+        "db": "p100",
+        "position_key": "apositionInTray",
+    }
+    
+    d_part_db = d_part_db_info[parttype]
+    
+    barcode_query = get_barcode_query(l_barcode_ranges = l_barcode_ranges + [(barcode_min, barcode_max)], l_barcodes = l_barcodes)
+    query = f"select s.* from mtd_cmsr.{d_part_db['db']} s where ({barcode_query})"
+    
+    dbquery_output = subprocess.run([
+        "./python/rhapi.py",
+        "-u", "http://localhost:8113",
+        "-a",
+        "-f", "json2",
+        query
+    ], stdout = subprocess.PIPE, check = True)
+    
+    dbquery_output = dbquery_output.stdout.decode("utf-8")
+    l_infodicts = ast.literal_eval(dbquery_output)["data"]
+    
+    d_part_positions = {}
+    
+    for infodict in l_infodicts :
+        
+        barcode = str(infodict["barcode"])
+        position = infodict.get(d_part_db["position_key"], None)
+        d_part_positions[barcode] = int(position) if (position is not None and position.isdigit()) else position
+    
+    return d_part_positions
 
 
 def get_part_info(
     barcode_min,
     barcode_max,
-    parttype
+    parttype,
+    l_barcode_ranges = []
 ) :
     """
     Get part information
@@ -486,7 +633,7 @@ def get_part_info(
     
     if (parttype == constants.LYSO.KIND_OF_PART) :
         
-        l_infodicts = get_part_ids(barcode_min = barcode_min, barcode_max = barcode_max)
+        l_infodicts = get_part_ids(barcode_min = barcode_min, barcode_max = barcode_max, l_barcode_ranges = l_barcode_ranges)
         
         print(f"Fetched information for {len(l_infodicts)} {parttype}(s) from the database. Processing ...")
         for infodict in tqdm.tqdm(l_infodicts) :
@@ -533,7 +680,8 @@ def get_part_info(
         
         l_parent_infodicts, l_daughter_infodicts = get_daughter_info(
             parent_barcode_min = barcode_min,
-            parent_barcode_max = barcode_max
+            parent_barcode_max = barcode_max,
+            l_parent_barcode_ranges = l_barcode_ranges
         )
         
         print(f"Fetched information for {len(l_parent_infodicts)} {parttype}(s) from the database. Processing ...")
@@ -543,10 +691,9 @@ def get_part_info(
             barcode = pinfodict["barcode"]
             prod_datime = pinfodict["productionDate"]
             location_id = pinfodict["locationId"]
-        
+            
             lyso = next((_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.LYSO.KIND_OF_PART and _info["partParentId"] == id)), None)
-            #l_sipms = natural_sort([_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.SIPM.KIND_OF_PART and _info["partParentId"] == id)])
-            l_sipms = [_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.SIPM.KIND_OF_PART and _info["partParentId"] == id)]
+            l_sipms = [_info for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.SIPM.KIND_OF_PART and _info["partParentId"] == id)]
             part = None
             
             if (lyso is None or len(l_sipms) != 2) :
@@ -557,12 +704,31 @@ def get_part_info(
             
             else :
                 
+                l_position_names = ["Left", "Right"]
+                l_sipm_barcodes = sorted([str(_sipm["barcode"]) for _sipm in l_sipms])
+                
+                # Sort by barcode if both positions are missing
+                if l_sipms[0]["positionInParent"] not in l_position_names and l_sipms[1]["positionInParent"] not in l_position_names :
+                    
+                    l_sipms[0]["positionInParent"] = l_sipms[0]["barcode"]
+                    l_sipms[1]["positionInParent"] = l_sipms[1]["barcode"]
+                
+                elif l_sipms[0]["positionInParent"] in l_position_names and l_sipms[1]["positionInParent"] not in l_position_names :
+                    
+                    l_sipms[1]["positionInParent"] = "Left" if l_sipms[0]["positionInParent"] == "Right" else "Right"
+                
+                elif l_sipms[0]["positionInParent"] not in l_position_names and l_sipms[1]["positionInParent"] in l_position_names :
+                    
+                    l_sipms[0]["positionInParent"] = "Left" if l_sipms[1]["positionInParent"] == "Right" else "Right"
+                
+                l_sipms = sorted(l_sipms, key = lambda _x: l_position_names.index(_x["positionInParent"]))
+                
                 part = SensorModule(
                     id = str(id),
                     barcode = str(barcode),
                     lyso = str(lyso),
-                    sipm1 = l_sipms[0],
-                    sipm2 = l_sipms[1],
+                    sipm1 = l_sipms[0]["barcode"],
+                    sipm2 = l_sipms[1]["barcode"],
                     prod_datime = prod_datime,
                     location_id = location_id
                 )
@@ -574,7 +740,8 @@ def get_part_info(
         
         l_parent_infodicts, l_daughter_infodicts = get_daughter_info(
             parent_barcode_min = barcode_min,
-            parent_barcode_max = barcode_max
+            parent_barcode_max = barcode_max,
+            l_parent_barcode_ranges = l_barcode_ranges
         )
         
         print(f"Fetched information for {len(l_parent_infodicts)} {parttype}(s) from the database. Processing ...")
@@ -586,8 +753,7 @@ def get_part_info(
             location_id = pinfodict["locationId"]
             
             feb = next((_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.FE.KIND_OF_PART and _info["partParentId"] == id)), None)
-            #l_sms = natural_sort([_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.SM.KIND_OF_PART and _info["partParentId"] == id)])
-            l_sms = [_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.SM.KIND_OF_PART and _info["partParentId"] == id)]
+            l_sms = [_info for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.SM.KIND_OF_PART and _info["partParentId"] == id)]
             part = None
             
             if (feb is None or len(l_sms) != 2) :
@@ -598,12 +764,30 @@ def get_part_info(
             
             else :
                 
+                l_position_names = ["Top", "Bottom"]
+                
+                # Sort by barcode if both positions are missing
+                if l_sms[0]["positionInParent"] not in l_position_names and l_sms[1]["positionInParent"] not in l_position_names :
+                    
+                    l_sms[0]["positionInParent"] = l_sms[0]["barcode"]
+                    l_sms[1]["positionInParent"] = l_sms[1]["barcode"]
+                
+                elif l_sms[0]["positionInParent"] in l_position_names and l_sms[1]["positionInParent"] not in l_position_names :
+                    
+                    l_sms[1]["positionInParent"] = "Top" if l_sms[0]["positionInParent"] == "Bottom" else "Bottom"
+                
+                elif l_sms[0]["positionInParent"] not in l_position_names and l_sms[1]["positionInParent"] in l_position_names :
+                    
+                    l_sms[0]["positionInParent"] = "Top" if l_sms[1]["positionInParent"] == "Bottom" else "Bottom"
+                
+                l_sms = sorted(l_sms, key = lambda _x: l_position_names.index(_x["positionInParent"]))
+                
                 part = DetectorModule(
                     id = str(id),
                     barcode = str(barcode),
                     feb = str(feb),
-                    sm1 = l_sms[0],
-                    sm2 = l_sms[1],
+                    sm1 = l_sms[0]["barcode"],
+                    sm2 = l_sms[1]["barcode"],
                     prod_datime = prod_datime,
                     location_id = location_id
                 )
@@ -614,7 +798,8 @@ def get_part_info(
         
         l_parent_infodicts, l_daughter_infodicts = get_daughter_info(
             parent_barcode_min = barcode_min,
-            parent_barcode_max = barcode_max
+            parent_barcode_max = barcode_max,
+            l_parent_barcode_ranges = l_barcode_ranges
         )
         
         print(f"Fetched information for {len(l_parent_infodicts)} {parttype}(s) from the database. Processing ...")
@@ -628,8 +813,8 @@ def get_part_info(
             cc = next((_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.CC.KIND_OF_PART and _info["partParentId"] == id)), None)
             pcc1p2 = next((_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.PCC1P2.KIND_OF_PART and _info["partParentId"] == id)), None)
             pcc2p5 = next((_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.PCC2P5.KIND_OF_PART and _info["partParentId"] == id)), None)
-            #l_dms = natural_sort([_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.DM.KIND_OF_PART and _info["partParentId"] == id)])
-            l_dms = [_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.DM.KIND_OF_PART and _info["partParentId"] == id)]
+            l_dms = [_info for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.DM.KIND_OF_PART and _info["partParentId"] == id)]
+            
             #print(l_daughter_infodicts)
             part = None
             
@@ -640,13 +825,16 @@ def get_part_info(
             
             else :
                 
+                l_dms = sorted(l_dms, key = lambda _x: _x["positionInParent"])
+                d_part_positions = {_x["positionInParent"]: _x["barcode"] for _x in l_dms}
+                
                 part = ReadoutUnit(
                     id = str(id),
                     barcode = str(barcode),
                     cc = str(cc),
                     pcc1p2 = str(pcc1p2),
                     pcc2p5 = str(pcc2p5),
-                    dms = l_dms,
+                    dms = d_part_positions,
                     prod_datime = prod_datime,
                     location_id = location_id
                 )
@@ -658,7 +846,8 @@ def get_part_info(
         
         l_parent_infodicts, l_daughter_infodicts = get_daughter_info(
             parent_barcode_min = barcode_min,
-            parent_barcode_max = barcode_max
+            parent_barcode_max = barcode_max,
+            l_parent_barcode_ranges = l_barcode_ranges
         )
         
         print(f"Fetched information for {len(l_parent_infodicts)} {parttype}(s) from the database. Processing ...")
@@ -669,7 +858,8 @@ def get_part_info(
             prod_datime = pinfodict["productionDate"]
             location_id = pinfodict["locationId"]
             
-            l_rus = natural_sort([_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.RU.KIND_OF_PART and _info["partParentId"] == id)])
+            l_rus = [_info for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.RU.KIND_OF_PART and _info["partParentId"] == id)]
+            ctray = [_info["barcode"] for _info in l_daughter_infodicts if (_info["kindOfPart"] == constants.COLDTRAY.KIND_OF_PART and _info["partParentId"] == id)][0]
             part = None
             
             if (len(l_rus) != 6) :
@@ -679,10 +869,14 @@ def get_part_info(
             
             else :
                 
+                l_rus = sorted(l_rus, key = lambda _x: _x["positionInParent"])
+                d_part_positions = {_x["positionInParent"]: _x["barcode"] for _x in l_rus}
+                
                 part = Tray(
                     id = str(id),
                     barcode = str(barcode),
-                    rus = l_rus,
+                    rus = d_part_positions,
+                    coldtray = str(ctray),
                     prod_datime = prod_datime,
                     location_id = location_id
                 )
@@ -698,7 +892,15 @@ def get_part_info(
     return d_parts
 
 
-def get_all_part_info(parttype, location_id = None, yamlfile = None, nodb = False, barcode_min = None, barcode_max = None) :
+def get_all_part_info(
+    parttype,
+    location_id = None,
+    yamlfile = None,
+    nodb = False,
+    barcode_min = None,
+    barcode_max = None,
+    l_barcode_ranges = []
+) :
     """
     Get the information for all parts
     If yamlfile is provided, will load the information from there
@@ -712,7 +914,13 @@ def get_all_part_info(parttype, location_id = None, yamlfile = None, nodb = Fals
     if (not nodb) :
          
         print(f"Fetching {parttype} information from the database ... ")
-        l_part_barcodes = get_part_barcodes(parttype = parttype, location_id = location_id, barcode_min = barcode_min, barcode_max = barcode_max)
+        l_part_barcodes = get_part_barcodes(
+            parttype = parttype,
+            location_id = location_id,
+            barcode_min = barcode_min,
+            barcode_max = barcode_max,
+            l_barcode_ranges = l_barcode_ranges
+        )
         print(f"Found {len(l_part_barcodes)} {parttype}(s) on the database.")
         
         # Only fetch the ones that have not already been loaded
@@ -908,16 +1116,54 @@ def combine_parts(d_sipms = {}, d_sms = {}, d_dms = {}, d_rus = {}, d_trays = {}
         for ru, ruinfo in d_rus.items() :
             
             if (ruinfo) :
-                ruinfo.dms = [d_dms.get(_dm) for _dm in ruinfo.dms]
+                #ruinfo.dms = [d_dms.get(_dm) for _dm in ruinfo.dms]
+                ruinfo.dms = {_position: d_dms.get(_dm) for _position, _dm in ruinfo.dms.items()}
     
     if (d_rus) :
         for tray, trayinfo in d_trays.items() :
             
             if (trayinfo) :
-                trayinfo.rus = [d_rus.get(_ru) for _ru in trayinfo.rus]
+                #trayinfo.rus = [d_rus.get(_ru) for _ru in trayinfo.rus]
+                trayinfo.rus = {_position: d_rus.get(_ru) for _position, _ru in trayinfo.rus.items()}
 
 
-def save_all_part_info(parttype, outyamlfile, inyamlfile = None, location_id = None, ret = False, ret_dict = False, nodb = False, barcode_min = None, barcode_max = None) :
+def get_location_barcode_range(parttype, location_id) :
+    
+    location_id = [location_id] if isinstance(location_id, int) else location_id
+    
+    ranges = []
+    
+    for loc in location_id :
+        
+        range_tmp = check_parttype(parttype).BARCODE_RANGES.get(loc, None)
+        
+        if range_tmp is not None :
+            ranges.extend(range_tmp)
+    
+    #if len(ranges) >= 2 :
+    #    
+    #    ranges = [int(_x) for _x in ranges]
+    #    return (min(ranges), max(ranges))
+    #
+    #else :
+    #    return (None, None)
+    
+    return ranges
+
+
+def save_all_part_info(
+    parttype,
+    outyamlfile,
+    inyamlfile = None,
+    location_id = None,
+    use_location_barcode_range = True,
+    ret = False,
+    ret_dict = False,
+    nodb = False,
+    barcode_min = None,
+    barcode_max = None,
+    l_barcode_ranges = []
+) :
     """
     Load existing part info from inyamlfile
     Fetch additional part info from database
@@ -926,7 +1172,26 @@ def save_all_part_info(parttype, outyamlfile, inyamlfile = None, location_id = N
     
     check_parttype(parttype)
     
-    d_parts_orig = get_all_part_info(parttype = parttype, yamlfile = inyamlfile, location_id = location_id, nodb = nodb, barcode_min = barcode_min, barcode_max = barcode_max)
+    l_barcode_ranges = l_barcode_ranges + [(barcode_min, barcode_max)]
+    
+    if use_location_barcode_range :
+        
+        l_barcode_ranges.extend(get_location_barcode_range(
+            parttype = parttype,
+            location_id = location_id
+        ))
+        
+        location_id = None
+    
+    d_parts_orig = get_all_part_info(
+        parttype = parttype,
+        yamlfile = inyamlfile,
+        location_id = location_id,
+        nodb = nodb,
+        barcode_min = barcode_min,
+        barcode_max = barcode_max,
+        l_barcode_ranges = l_barcode_ranges
+    )
     
     # Convert objects to dicts
     d_parts = {_key: _val.dict() for _key, _val in d_parts_orig.items() if _val}

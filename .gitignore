@@ -2,6 +2,7 @@
 .#*
 *__pycache__*
 *.bak
+*.bak*
 *.h5
 *.hdf5
 *.pdf
