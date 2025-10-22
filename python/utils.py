@@ -25,6 +25,7 @@ yaml.boolean_representation = ["False", "True"]
 
 HAS_ROOT = "ROOT" in sys.modules or importlib.util.find_spec("ROOT") is not None
 
+
 if HAS_ROOT :
     import ROOT
     ROOT.gROOT.SetBatch(1)
@@ -1596,7 +1597,7 @@ def eval_category(rootfile, d_catcfgs, barcode = "", d_fmt = {}) :
     d_cat_result = copy.deepcopy(d_catcfgs)
     
     d_read_info = {}
-    d_fmt.update(d_cat_result["values"])
+    d_fmt.update(d_cat_result.get("values", {}))
     
     for varkey, varname in d_cat_result["read"].items() :
         

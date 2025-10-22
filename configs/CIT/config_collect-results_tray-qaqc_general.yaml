@@ -12,8 +12,15 @@ run_types:
     srcs: ["{plotsdir}/iv_scan/run_{run}"]
   tec:
     srcs: ["{plotsdir}/temps/run_{run}"]
-  calibrate:
+  calibrate_qdc:
+    srcs: [
+      "{plotsdir}/tofhir_calibs/run_{run}"
+    ]
+  calibrate_tdc:
+    srcs: [
+      "{plotsdir}/tofhir_calibs/run_{run}"
+    ]
+  calibrations:
     srcs: [
       "{runsdir}/FE_calibs/{tray}_{ru}",
-      "{plotsdir}/tofhir_calibs/run_{run}"
     ]

@@ -106,6 +106,13 @@ def main() :
     )
     
     parser.add_argument(
+        "--defcfg",
+        help = "YAML file with definitions of variables to be used in plots.\n",
+        type = str,
+        required = False,
+    )
+    
+    parser.add_argument(
         "--moduletype",
         help = "Module type.\n",
         type = str,
@@ -529,6 +536,13 @@ def main() :
         
         d_catcfgs = yaml.load(fopen.read())
     
+    # Read the definitions config yaml
+    d_defs = {}
+    
+    with open(args.defcfg, "r") as fopen :
+        
+        d_defs = yaml.load(fopen.read())
+    
     d_cat_results = {
         "categories": d_catcfgs["categories"],
         "counts": {_key: 0 for _key in d_catcfgs["categories"].keys()},
@@ -554,7 +568,7 @@ def main() :
                 rootfile = rootfile,
                 d_catcfgs = d_catcfgs,
                 barcode = module.barcode,
-                d_fmt = {**module.dict()},
+                d_fmt = {**module.dict(), **d_defs},
             )
         except ValueError as excpt:
             isbad = True
@@ -586,7 +600,7 @@ def main() :
                 plot_arr = None
                 nelements = None
                 
-                d_fmt = {**module.dict()}
+                d_fmt = {**module.dict(), **d_defs}
                 d_fmt.update(d_module_cat["metrics"])
                 
                 d_read_info = {}
@@ -801,7 +815,7 @@ def main() :
                     
                     corr = numpy.corrcoef(get_grx(gr), get_gry(gr))[0, 1]*100
                     #corr_str = f"{corr:0.2g}"
-                    gr.SetTitle(f"{gr.GetTitle()} [#rho: {corr:0.2g}%]")
+                    gr.SetTitle(f"{gr.GetTitle()}#scale[0.7]{{ [#rho: {corr:0.2g}%]}}")
                 
                 for fnname, fnstr in entrycfg.get("fit", {}).items() :
                     
@@ -1085,6 +1099,7 @@ def main() :
         *args.skipmodules,
         args.plotcfg,
         args.catcfg,
+        args.defcfg,
         args.sipminfo,
         args.sminfo,
         args.dminfo,

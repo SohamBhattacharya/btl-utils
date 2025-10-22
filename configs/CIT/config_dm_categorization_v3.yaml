@@ -8,16 +8,16 @@ categories:
 
 metrics:
   
-  deltaT_sig_high: "bool(max({tL_sig}, {tR_sig}, {bL_sig}, {bR_sig}) > {deltaT_sig_max})"
-  deltaT_avg_sig_high: "bool({avg_sig} > {deltaT_avg_sig_max})"
+  deltaT_sig_high: "bool(max({TL_sig}, {TR_sig}, {BL_sig}, {BR_sig}) > {dm_deltaT_sig_max})"
+  deltaT_avg_sig_high: "bool({avg_sig} > {dm_deltaT_avg_sig_max})"
   
-  deltaT_high: "bool(max({tL}, {tR}, {bL}, {bR}) > {deltaT_max})"
-  deltaT_avg_high: "bool(numpy.mean([{tL}, {tR}, {bL}, {bR}]) > {deltaT_avg_max})"
+  deltaT_high: "bool(max({TL}, {TR}, {BL}, {BR}) > {dm_deltaT_max})"
+  deltaT_avg_high: "bool(numpy.mean([{TL}, {TR}, {BL}, {BR}]) > {dm_deltaT_avg_max})"
   
-  deltaT_avg: "float(numpy.mean([{tL}, {tR}, {bL}, {bR}]))"
-  deltaT_std: "float(numpy.std([{tL}, {tR}, {bL}, {bR}]))"
-  deltaT_min: "float(numpy.min([{tL}, {tR}, {bL}, {bR}]))"
-  deltaT_max: "float(numpy.max([{tL}, {tR}, {bL}, {bR}]))"
+  deltaT_avg: "float(numpy.mean([{TL}, {TR}, {BL}, {BR}]))"
+  deltaT_std: "float(numpy.std([{TL}, {TR}, {BL}, {BR}]))"
+  deltaT_min: "float(numpy.min([{TL}, {TR}, {BL}, {BR}]))"
+  deltaT_max: "float(numpy.max([{TL}, {TR}, {BL}, {BR}]))"
   
   sm_cat: "str({sm1}['results']['category']+{sm2}['results']['category'])"
   
@@ -37,9 +37,6 @@ metrics:
 # The above metrics can be accessed here as dm.results['metric_name'], where dm is an element of ru.dms
 # Results/metrics of the constituent SMs can be accessed here as dm.sm<1/2>.results['metric_name'] 
 ru_metrics:
-  
-  #lo_avg_ru: "numpy.mean([_dm.results['lo_avg'] for _dm in ru.dms])"
-  #lo_std_ru: "numpy.std([_dm.results['lo_avg'] for _dm in ru.dms])"
   
   lo_avg_ru: "numpy.mean([[_sm.results['lo_bar_avg'] for _sm in [_dm.sm1, _dm.sm2]] for _dm in ru.dms])"
   lo_std_ru: "numpy.std([[_sm.results['lo_bar_avg'] for _sm in [_dm.sm1, _dm.sm2]] for _dm in ru.dms])"
@@ -73,43 +70,20 @@ tray_metrics:
 
 
 def:
-  tL: "{gtL}.Eval(4)"
-  tR: "{gtR}.Eval(4)"
-  bL: "{gbL}.Eval(4)"
-  bR: "{gbR}.Eval(4)"
+  TL: "{gTL}.Eval(4)"
+  TR: "{gTR}.Eval(4)"
+  BL: "{gBL}.Eval(4)"
+  BR: "{gBR}.Eval(4)"
   
-  tL_sig: "({gtL}.Eval(4) - {tL_mu}) / {tL_sigma}"
-  tR_sig: "({gtR}.Eval(4) - {tR_mu}) / {tR_sigma}"
-  bL_sig: "({gbL}.Eval(4) - {bL_mu}) / {bL_sigma}"
-  bR_sig: "({gbR}.Eval(4) - {bR_mu}) / {bR_sigma}"
-  avg_sig: "(numpy.mean([{gtL}.Eval(4), {gtR}.Eval(4), {gbL}.Eval(4), {gbR}.Eval(4)]) - {avg_mu}) / {avg_sigma}"
+  TL_sig: "({gTL}.Eval(4) - {dm_deltaT_TL_mu}) / {dm_deltaT_TL_sigma}"
+  TR_sig: "({gTR}.Eval(4) - {dm_deltaT_TR_mu}) / {dm_deltaT_TR_sigma}"
+  BL_sig: "({gBL}.Eval(4) - {dm_deltaT_BL_mu}) / {dm_deltaT_BL_sigma}"
+  BR_sig: "({gBR}.Eval(4) - {dm_deltaT_BR_mu}) / {dm_deltaT_BR_sigma}"
+  avg_sig: "(numpy.mean([{gTL}.Eval(4), {gTR}.Eval(4), {gBL}.Eval(4), {gBR}.Eval(4)]) - {dm_deltaT_avg_mu}) / {dm_deltaT_avg_sigma}"
 
 
 read:
-  gtL: "g_DeltaTTopL"
-  gtR: "g_DeltaTTopR"
-  gbL: "g_DeltaTBottomL"
-  gbR: "g_DeltaTBottomR"
-
-
-values:
-  tL_mu: -18.86
-  tL_sigma: 0.59
-  
-  tR_mu: -18.73
-  tR_sigma: 0.53
-  
-  bL_mu: -18.79
-  bL_sigma: 0.59
-  
-  bR_mu: -18.65
-  bR_sigma: 0.52
-  
-  avg_mu: -18.75
-  avg_sigma: 0.46
-  
-  deltaT_sig_max: 4
-  deltaT_avg_sig_max: 4
-  
-  deltaT_max: -18
-  deltaT_avg_max: -18
+  gTL: "g_DeltaTTopL"
+  gTR: "g_DeltaTTopR"
+  gBL: "g_DeltaTBottomL"
+  gBR: "g_DeltaTBottomR"

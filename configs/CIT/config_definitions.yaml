@@ -1,0 +1,34 @@
+dm_deltaT_TL_mu: -18.86
+dm_deltaT_TL_sigma: 0.59
+
+dm_deltaT_TR_mu: -18.73
+dm_deltaT_TR_sigma: 0.53
+
+dm_deltaT_BL_mu: -18.79
+dm_deltaT_BL_sigma: 0.59
+
+dm_deltaT_BR_mu: -18.65
+dm_deltaT_BR_sigma: 0.52
+
+dm_deltaT_avg_mu: -18.75
+dm_deltaT_avg_sigma: 0.46
+
+dm_deltaTcorr_refT0: 25
+
+dm_deltaTcorr_cp_TL_slope: -0.042
+dm_deltaTcorr_cp_TR_slope: -0.067
+dm_deltaTcorr_cp_BL_slope: -0.085
+dm_deltaTcorr_cp_BR_slope: -0.054
+dm_deltaTcorr_cp_avg_slope: -0.062
+
+dm_deltaTcorr_rtd_TL_slope: -0.068
+dm_deltaTcorr_rtd_TR_slope: -0.11
+dm_deltaTcorr_rtd_BL_slope: -0.12
+dm_deltaTcorr_rtd_BR_slope: -0.096
+dm_deltaTcorr_rtd_avg_slope: -0.097
+
+dm_deltaT_sig_max: 4
+dm_deltaT_avg_sig_max: 4
+
+dm_deltaT_max: -18
+dm_deltaT_avg_max: -18
