@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR=~/mnt/cptlab_share/results/QAQC_tray/runs/tofhir/run_822
+DIR=$1
 FILE=$(find $DIR/temperatures_*.json | sort -V | tail -n 1)
 
 echo $FILE
