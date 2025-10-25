@@ -4,7 +4,7 @@
 #     depth: depth_of_search
 
 
-calibrate:
+calibrate_qdc:
   fetp:
     pattern: fetp.png
     depth: 4

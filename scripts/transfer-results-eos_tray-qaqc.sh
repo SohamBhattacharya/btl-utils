@@ -17,6 +17,7 @@ ${USER}@lxplus.cern.ch:${EOS_PATH}/
 
 ssh \
 -o ControlMaster=no \
--o ControlPath=~/.ssh/control:%C ${USER}@lxplus.cern.ch \
+-o ControlPath=~/.ssh/control:%C \
+${USER}@lxplus.cern.ch \
 -f "pushd ${EOS_PATH} && tar -xv -f ${FNAME_BASE} && rm -v ${FNAME_BASE} && popd"
 
