@@ -557,7 +557,7 @@ g1_deltaT_vs_refT-cp:
   ymin: -25
   ymax: 0
   xtitle: "Initial CP temp. [#circC]"
-  ytitle: "Average #DeltaT [#circC] at 4 min."
+  ytitle: "#DeltaT [#circC] at 4 min."
   gridx: True
   gridy: True
   labelmode: "corr"
@@ -664,7 +664,7 @@ g1_deltaT_vs_refT-rtd:
   ymin: -25
   ymax: 0
   xtitle: "Initial temp. (RTD average) [#circC]"
-  ytitle: "Average #DeltaT [#circC] at 4 min."
+  ytitle: "#DeltaT [#circC] at 4 min."
   gridx: True
   gridy: True
   labelmode: "corr"
@@ -834,7 +834,7 @@ g1_deltaTcorr-cp_vs_refT-cp:
   ymin: -25
   ymax: 0
   xtitle: "Initial CP temp. [#circC]"
-  ytitle: "Average #DeltaT_{CP corr} [#circC] at 4 min."
+  ytitle: "#DeltaT_{CP corr} [#circC] at 4 min."
   gridx: True
   gridy: True
   labelmode: "corr"
@@ -946,7 +946,7 @@ g1_deltaTcorr-rtd_vs_refT-rtd:
   ymin: -25
   ymax: 0
   xtitle: "Initial temp. (RTD average) [#circC]"
-  ytitle: "Average #DeltaT_{RTD corr} [#circC] at 4 min."
+  ytitle: "#DeltaT_{RTD corr} [#circC] at 4 min."
   gridx: True
   gridy: True
   labelmode: "corr"

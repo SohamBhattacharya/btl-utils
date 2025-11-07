@@ -539,9 +539,11 @@ def main() :
     # Read the definitions config yaml
     d_defs = {}
     
-    with open(args.defcfg, "r") as fopen :
+    if (args.defcfg) :
         
-        d_defs = yaml.load(fopen.read())
+        with open(args.defcfg, "r") as fopen :
+            
+            d_defs = yaml.load(fopen.read())
     
     d_cat_results = {
         "categories": d_catcfgs["categories"],
