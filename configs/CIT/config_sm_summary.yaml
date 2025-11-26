@@ -984,6 +984,7 @@ g1_lyso_vs_barcode:
   xmax: null
   ymin: null
   ymax: null
+  ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 321100200]"
   ytitle: "LYSO barcode [prefix 321100001]"
   gridx: True

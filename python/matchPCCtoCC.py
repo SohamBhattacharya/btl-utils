@@ -66,6 +66,7 @@ output = subprocess.run(['rhapi.py',
                         stdout=subprocess.PIPE, env = myenv)
 CCs = output.stdout.decode('utf-8').split()
 CCs.pop(0)
+CCs = ["32110052300298"]
 print('Found %d CC'%len(CCs))
 #print(CCs)
 

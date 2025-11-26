@@ -27,6 +27,18 @@ dm_deltaTcorr_rtd_BL_slope: -0.12
 dm_deltaTcorr_rtd_BR_slope: -0.096
 dm_deltaTcorr_rtd_avg_slope: -0.097
 
+dm_deltaTcorr_MIB_TL_p0: -8.405
+dm_deltaTcorr_MIB_TR_p0: -3.007
+dm_deltaTcorr_MIB_BL_p0: -8.147
+dm_deltaTcorr_MIB_BR_p0: -4.549
+dm_deltaTcorr_MIB_avg_p0: -6.902
+
+dm_deltaTcorr_MIB_TL_p1: 0.5523
+dm_deltaTcorr_MIB_TR_p1: 0.846
+dm_deltaTcorr_MIB_BL_p1: 0.5653
+dm_deltaTcorr_MIB_BR_p1: 0.7667
+dm_deltaTcorr_MIB_avg_p1: 0.6347
+
 dm_deltaT_sig_max: 4
 dm_deltaT_avg_sig_max: 4
 

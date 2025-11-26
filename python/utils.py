@@ -259,6 +259,24 @@ def is_tunnel_open(port = 8113) :
         return s.connect_ex(("localhost", port)) == 0
 
 
+def run_db_query(query, port = 8113) :
+    
+    assert is_tunnel_open(port = port), "Open tunnel to database first."
+    
+    dbquery_output = subprocess.run([
+        "./python/rhapi.py",
+        "-u", "http://localhost:8113",
+        "-a",
+        "-f", "json2",
+        query
+    ], stdout = subprocess.PIPE, check = True)
+    
+    dbquery_output = dbquery_output.stdout.decode("utf-8")
+    dbquery_output = ast.literal_eval(dbquery_output)["data"]
+    
+    return dbquery_output
+
+
 def get_barcode_query(l_barcode_ranges, l_barcodes = []) :
     
     query = None
@@ -392,14 +410,16 @@ def get_daughter_info(
     
     for l_parent_ids_tmp in l_parent_id_groups :
         
-        print(f"select s.* from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}")
+        query = f"select s.* from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids_tmp)).replace(',)', ')')}" # Remove the trailing comma in a single element tuple: (X,)
+        print(query)
+        
         dbquery_output = subprocess.run([
             "./python/rhapi.py",
             "-u", "http://localhost:8113",
             "-a",
             "-f", "json2",
             #f"select s.PART_PARENT_ID,s.BARCODE,s.KIND_OF_PART from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}" # Remove the trailing comma in a single element tuple: (X,)
-            f"select s.* from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids_tmp)).replace(',)', ')')}" # Remove the trailing comma in a single element tuple: (X,)
+            query
         ], stdout = subprocess.PIPE, check = True)
         
         # position in RU: apositionInRu
@@ -596,6 +616,7 @@ def get_part_position(
     
     barcode_query = get_barcode_query(l_barcode_ranges = l_barcode_ranges + [(barcode_min, barcode_max)], l_barcodes = l_barcodes)
     query = f"select s.* from mtd_cmsr.{d_part_db['db']} s where ({barcode_query})"
+    print(query)
     
     dbquery_output = subprocess.run([
         "./python/rhapi.py",
@@ -937,6 +958,7 @@ def get_all_part_info(
         # Otherwise there can be too many groups which takes a long time to query
         # However, this may add additional barcodes that are not needed (such as those not at the desired location)
         # Filter them out later
+        # N.B. Do not do this for RUs and Trays as their barcodes are not always sequential
         l_barcode_groups = []
         for igroup, group in enumerate(l_barcode_groups_tmp) :
             
@@ -949,7 +971,7 @@ def get_all_part_info(
                 barcode_min = l_barcode_groups[-1][0]
                 barcode_max = group[-1] if (len(group) > 1) else group[0]
                 
-                if (barcode_max-barcode_min) < 1000 :
+                if parttype not in [constants.RU.KIND_OF_PART, constants.TRAY.KIND_OF_PART] and (barcode_max-barcode_min) < 1000 :
                     
                     l_barcode_groups[-1].extend(group)
                 
@@ -1173,7 +1195,8 @@ def save_all_part_info(
     
     check_parttype(parttype)
     
-    l_barcode_ranges = l_barcode_ranges + [(barcode_min, barcode_max)]
+    if (barcode_min is not None and barcode_max is not None) :
+        l_barcode_ranges = l_barcode_ranges + [(barcode_min, barcode_max)]
     
     if use_location_barcode_range :
         
