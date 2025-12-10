@@ -1,0 +1,115 @@
+CIT_tray_32110070000043:
+  RU0:
+    dm_check:
+      runs: [929]
+    tp:
+      runs: [941]
+    lyso:
+      runs: [1024, 1044]
+    disc:
+      runs: [46]
+    iv:
+      runs: [78]
+    tec:
+      runs: [90]
+    calibrate_qdc:
+      runs: [106]
+    calibrate_tdc:
+      runs: [107]
+    calibrations:
+      runs: [0]
+  RU1:
+    dm_check:
+      runs: [943]
+    tp:
+      runs: [955]
+    lyso:
+      runs: [1025, 1045]
+    disc:
+      runs: [47]
+    iv:
+      runs: [79]
+    tec:
+      runs: [91]
+    calibrate_qdc:
+      runs: [108]
+    calibrate_tdc:
+      runs: [109]
+    calibrations:
+      runs: [0]
+  RU2:
+    dm_check:
+      runs: [1029]
+    tp:
+      runs: [1041]
+    lyso:
+      runs: [1042, 1046]
+    disc:
+      runs: [52]
+    iv:
+      runs: [85]
+    tec:
+      runs: [99]
+    calibrate_qdc:
+      runs: [119]
+    calibrate_tdc:
+      runs: [120]
+    calibrations:
+      runs: [0]
+  RU3:
+    dm_check:
+      runs: [999]
+    tp:
+      runs: [998]
+    lyso:
+      runs: [1023, 1043]
+    disc:
+      runs: [48]
+    iv:
+      runs: [83]
+    tec:
+      runs: [96]
+    calibrate_qdc:
+      runs: [110]
+    calibrate_tdc:
+      runs: [111]
+    calibrations:
+      runs: [0]
+  RU4:
+    dm_check:
+      runs: [958]
+    tp:
+      runs: [970]
+    lyso:
+      runs: [1026, 1047]
+    disc:
+      runs: [49]
+    iv:
+      runs: [81]
+    tec:
+      runs: [93]
+    calibrate_qdc:
+      runs: [112]
+    calibrate_tdc:
+      runs: [113]
+    calibrations:
+      runs: [0]
+  RU5:
+    dm_check:
+      runs: [972]
+    tp:
+      runs: [984]
+    lyso:
+      runs: [1027, 1048]
+    disc:
+      runs: [50]
+    iv:
+      runs: [82]
+    tec:
+      runs: [94]
+    calibrate_qdc:
+      runs: [114]
+    calibrate_tdc:
+      runs: [115]
+    calibrations:
+      runs: [0]
