@@ -176,7 +176,7 @@ def main() :
     #time_end = time_start + (365*nsecs_day)
     # Start prediction from N months before the latest data
     time_pred_start = time_max - (60*nsecs_day)
-    time_end_str = "2025-12-31 00:00:00"
+    time_end_str = "2026-03-31 00:00:00"
     #time_end = ROOT.TDatime(time_end_str).Convert(toGMT = True)
     time_end =  datime_str_to_stamp(time_end_str)
     
