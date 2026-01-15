@@ -1655,6 +1655,7 @@ def eval_category(rootfile, d_catcfgs, barcode = "", d_fmt = {}) :
         try:
             d_cat_result["categories"][catname] = eval(cat_str)
         except Exception as excpt:
+            d_cat_result["categories"][catname] = False
             logger.error(f"Error evaluating category \"{catname}\" for {barcode}: \n    {cat_str}")
             print(excpt)
             #sys.exit(1)

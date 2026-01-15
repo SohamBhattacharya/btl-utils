@@ -6,7 +6,8 @@ categories:
   B: ({valid}) and ({spe_high_nch} + {spe_low_nch}) == 0 and (not {lo_asymm_avg_high}) and {bad_nbar} == 1
   C: ({valid}) and ({spe_high_nch} + {spe_low_nch}) == 0 and (not {lo_asymm_avg_high}) and {bad_nbar} == 2
   D: ({valid}) and ({spe_high_nch} + {spe_low_nch}) == 0 and (not {lo_asymm_avg_high}) and {bad_nbar} > 2 and {bad_nbar_lo} <= 2 and {res_high_nbar} > 0
-  R: ({valid}) and (not ({A} or {B} or {C} or {D}))
+  E: ({valid}) and ({spe_high_nch} + {spe_low_nch}) > 0 and (not {lo_asymm_avg_high}) and {bad_nbar} <= 2
+  R: ({valid}) and (not ({A} or {B} or {C} or {D} or {E}))
   X: (not {valid})
 
 # Define metrics in terms of objects (like tgraphs) read from files

@@ -11,5 +11,6 @@ utils.save_all_part_info(
     outyamlfile = "info/CIT/lyso_info.yaml",
     inyamlfile = "info/CIT/lyso_info.yaml",
     location_id = constants.LOCATION.CIT,
+    use_location_barcode_range = False,
     ret = False
 )
