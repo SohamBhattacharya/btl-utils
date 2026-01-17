@@ -1669,19 +1669,19 @@ def eval_category(rootfile, d_catcfgs, barcode = "", d_fmt = {}) :
     if (cat is None) :
         
         err = True
-        print(f"Error: module {barcode} category is invalid.")
+        logger.error(f"Error: module {barcode} category is invalid.")
     
     cat_sum = sum(list(d_cat_result["categories"].values()))
     
     if (cat_sum <= 0) :
         
         err = True
-        print(f"Error: module {barcode} in uncategorized.")
+        logger.error(f"Error: module {barcode} in uncategorized.")
     
     elif (cat_sum > 1) :
         
         err = True
-        print(f"Error: module {barcode} uncategorization is not mutually exclusive.")
+        logger.error(f"Error: module {barcode} uncategorization is not mutually exclusive.")
     
     if (err) :
         

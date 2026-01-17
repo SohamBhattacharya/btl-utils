@@ -39,21 +39,21 @@ CIT_tray_32110070000043:
       runs: [0]
   RU2:
     dm_check:
-      runs: [1029]
+      runs: [1049]
     tp:
-      runs: [1041]
+      runs: [1061]
     lyso:
-      runs: [1042, 1046]
+      runs: [1062, 1065]
     disc:
-      runs: [52]
+      runs: [53]
     iv:
-      runs: [85]
+      runs: [87]
     tec:
-      runs: [99]
+      runs: [100]
     calibrate_qdc:
-      runs: [119]
+      runs: [123]
     calibrate_tdc:
-      runs: [120]
+      runs: [124]
     calibrations:
       runs: [0]
   RU3:
