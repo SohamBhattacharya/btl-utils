@@ -998,6 +998,7 @@ g1_cat_vs_barcode:
       plotx: "int('{barcode}'.split('321100200')[1])"
       #ploty: "ord('{category}')-65" # Converts to A, B, C, ... to 0, 1, 2, ...
       ploty: "['A', 'B', 'C', 'D', 'R', 'X'].index('{category}')"
+      #ploty: "['A', 'B', 'C', 'D', 'E', 'R', 'X'].index('{category}')"
       label: "Category"
       color: 1
       marker: 4

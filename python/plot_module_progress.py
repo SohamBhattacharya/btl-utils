@@ -26,19 +26,19 @@ LOC_BACS = ["CIT", "MIB", "PKU", "UVA"]
 TOTALS = {
     constants.SM.KIND_OF_PART: {
         "CIT": 18*144,
-        "MIB": 18*144,
+        "MIB": 19*144,
         "PKU": 18*144,
         "UVA": 18*144,
-        "CERN": 18*144,
-        LOC_ALL: 72*144,
+        #"CERN": 18*144,
+        LOC_ALL: 73*144,
     },
     constants.DM.KIND_OF_PART: {
         "CIT": 18*72,
-        "MIB": 18*72,
+        "MIB": 19*72,
         "PKU": 18*72,
         "UVA": 18*72,
-        "CERN": 18*72,
-        LOC_ALL: 72*72,
+        #"CERN": 18*72,
+        LOC_ALL: 73*72,
     },
 }
 

@@ -1604,13 +1604,22 @@ def root_plot1D(
     outfile_noext = os.path.splitext(outfile)[0]
     
     if (len(outdir)) :
-        
+    
         os.system(f"mkdir -p {outdir}")
     
     canvas.SaveAs(f"{outfile_noext}.pdf")
     #canvas.SaveAs(f"{outfile_noext}.png")
     pdf_to_png(infilename = f"{outfile_noext}.pdf")
+    
+    fout_root = ROOT.TFile.Open(f"{outfile_noext}.root", "recreate")
+    fout_root.cd()
+    
+    for obj in l_hist+l_hist_overlay+l_graph_overlay :
+        obj.Write()
+    
+    canvas.Write()
     canvas.Close()
+    fout_root.Close()
     
     return 0
 
