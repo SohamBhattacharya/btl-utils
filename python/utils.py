@@ -1272,6 +1272,8 @@ def get_canvas(ratio = False) :
     ROOT.gStyle.SetPaintTextFormat("0.2g")
     
     #ROOT.gStyle.SetPadTickX(0)
+    ROOT.gStyle.SetPadTickX(1)
+    ROOT.gStyle.SetPadTickY(1)
     ROOT.gStyle.SetHatchesSpacing(7*ROOT.gStyle.GetHatchesSpacing())
     ROOT.gStyle.SetHatchesLineWidth(1)
     
