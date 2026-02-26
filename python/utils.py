@@ -1370,7 +1370,7 @@ def root_plot1D(
     legendHeight = legendheightscale * 0.065 * (nentries + 1.5*(len(legendtitle)>0))
     legendWidth = legendwidthscale * 0.4
     
-    padTop = 1 - 0.3*canvas.GetTopMargin() - ROOT.gStyle.GetTickLength("y")
+    padTop = 1 - 0.3*canvas.GetTopMargin() - 2*ROOT.gStyle.GetTickLength("y")
     padRight = 1 - canvas.GetRightMargin() - 0.6*ROOT.gStyle.GetTickLength("x")
     padBottom = canvas.GetBottomMargin() + 0.6*ROOT.gStyle.GetTickLength("y")
     padLeft = canvas.GetLeftMargin() + 0.6*ROOT.gStyle.GetTickLength("x")
@@ -1477,7 +1477,7 @@ def root_plot1D(
     stack.GetYaxis().SetTitleSize(0.055)
     #print(stack.GetYaxis().GetTitleSize())
     #stack.GetYaxis().SetTitleSize(ROOT.gStyle.GetTitleSize("Y") * yTitleSizeScale)
-    stack.GetYaxis().SetTitleOffset(1)
+    stack.GetYaxis().SetTitleOffset(1.1)
     
     #stack.SetTitle(title)
 
