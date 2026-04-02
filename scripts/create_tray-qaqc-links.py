@@ -28,7 +28,7 @@ def main() :
     # Argument parser
     parser = argparse.ArgumentParser(
         formatter_class = utils.Formatter,
-        description = "Plots module summary",
+        description = "Create tray-qaqc links for EOS website",
     )
     
     parser.add_argument(

@@ -104,6 +104,9 @@ def main() :
             if (dm2 == dm1) or (dm2 in l_dms_to_replace) or (dm2 not in d_dm_results) :
                 continue
             
+            #print(dm1, dm2)
+            #if not d_dm_results[dm2]["grouping"] :
+            #    continue
             grouping_diff = abs(d_dm_results[dm1]["grouping"]/d_dm_results[dm2]["grouping"] - 1)
             
             match_cond = (

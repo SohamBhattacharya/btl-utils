@@ -66,33 +66,7 @@ output = subprocess.run(['rhapi.py',
                         stdout=subprocess.PIPE, env = myenv)
 CCs = output.stdout.decode('utf-8').split()
 CCs.pop(0)
-#CCs = ["32110052300339"]
-#CCs.extend([
-#"32110052300245",
-#"32110052300262",
-#"32110052300263",
-#"32110052300266",
-#"32110052300268",
-#"32110052300276",
-#"32110052300277",
-#"32110052300280",
-#"32110052300281",
-#"32110052300307",
-#"32110052300370",
-#"32110052300383",
-#"32110052300392",
-#"32110052300397",
-#"32110052300440",
-#"32110052300499",
-#"32110052300502",
-#"32110052300503",
-#"32110052300506",
-#"32110052300508",
-#"32110052300509",
-#"32110052300511",
-#"32110052300512",
-#"32110052300513",
-#])
+
 print('Found %d CC'%len(CCs))
 #print(CCs)
 
@@ -100,7 +74,8 @@ pcc_csv_file = "info/COMMON/pcc_analysis_summary.csv"
 pcc_df = pd.read_csv(pcc_csv_file)
 #print(pcc_df)
 
-cc_csv_file = "info/COMMON/cc_calibrations.csv"
+#cc_csv_file = "info/COMMON/cc_calibrations.csv"
+cc_csv_file = "info/COMMON/cc_calibrations_R2.csv"
 cc_df = pd.read_csv(cc_csv_file)
 #print(cc_df)
 
@@ -111,6 +86,10 @@ cc_df = pd.read_csv(cc_csv_file)
 cc_df['barcode'] = '32110052300' + cc_df['CC_num'].astype(int).astype(str).str.zfill(3)
 cc_df_filtered = cc_df.dropna(subset=['L0_EOM_IEO', 'L1_EOM_IEO'])
 cc_df_filtered = cc_df_filtered[cc_df_filtered['barcode'].isin(CCs)]
+
+# Filter out the CCs with V2 lpGBT, as they can be matched with any PCC
+cc_df_filtered = cc_df_filtered[(cc_df_filtered['LpGBT_L0_version'] != "V2") & (cc_df_filtered['LpGBT_L1_version'] != "V2")]
+
 cc_df_filtered['worst_IEO'] = cc_df_filtered[['L0_EOM_IEO', 'L1_EOM_IEO']].apply(lambda x: max(abs(x['L0_EOM_IEO'] - 15), abs(x['L1_EOM_IEO'] - 15)), axis=1)
 print('\n############################')
 print('Found %d CCs with IEO values'%len(cc_df_filtered))
