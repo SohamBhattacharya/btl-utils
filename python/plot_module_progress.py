@@ -44,16 +44,16 @@ TOTALS = {
 
 BARCODE_RANGES = {
     constants.SM.KIND_OF_PART: {
-        "MIB": (32110020000001, 32110020002800),
-        "PKU": (32110020002801, 32110020005600),
-        "UVA": (32110020005601, 32110020008400),
-        "CIT": (32110020008401, 32110020011200),
+        "MIB": constants.SM.BARCODE_RANGES[constants.LOCATION.MIB],
+        "PKU": constants.SM.BARCODE_RANGES[constants.LOCATION.PKU],
+        "UVA": constants.SM.BARCODE_RANGES[constants.LOCATION.UVA],
+        "CIT": constants.SM.BARCODE_RANGES[constants.LOCATION.CIT],
     },
     constants.DM.KIND_OF_PART: {
-        "MIB": (32110040000001, 32110040001400),
-        "PKU": (32110040001401, 32110040002800),
-        "UVA": (32110040002801, 32110040004200),
-        "CIT": (32110040004201, 32110040005600),
+        "MIB": constants.DM.BARCODE_RANGES[constants.LOCATION.MIB],
+        "PKU": constants.DM.BARCODE_RANGES[constants.LOCATION.PKU],
+        "UVA": constants.DM.BARCODE_RANGES[constants.LOCATION.UVA],
+        "CIT": constants.DM.BARCODE_RANGES[constants.LOCATION.CIT],
     },
 }
 
@@ -144,10 +144,13 @@ def main() :
         # Get the assembly location using the barcode
         for loc in LOC_BACS :
             
-            l_barcodes_loc = [
-                _module.barcode for _module in d_module_info[mtype][LOC_ALL].values()
-                if _module and _module.prod_datime and (BARCODE_RANGES[mtype][loc][0] <= int(_module.barcode) <= BARCODE_RANGES[mtype][loc][1])
-            ]
+            l_barcodes_loc = []
+            
+            for bcode_range in BARCODE_RANGES[mtype][loc] :
+                l_barcodes_loc.extend([
+                    _module.barcode for _module in d_module_info[mtype][LOC_ALL].values()
+                    if _module and _module.prod_datime and (int(bcode_range[0]) <= int(_module.barcode) <= int(bcode_range[1]))
+                ])
             
             #d_module_time[mtype][loc] = numpy.array([
             #    ROOT.TDatime(_module.prod_datime).Convert(toGMT = True)

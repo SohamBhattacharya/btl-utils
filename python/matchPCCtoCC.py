@@ -68,7 +68,8 @@ CCs = output.stdout.decode('utf-8').split()
 CCs.pop(0)
 
 print('Found %d CC'%len(CCs))
-#print(CCs)
+CCs.sort()
+print("\n".join(CCs))
 
 pcc_csv_file = "info/COMMON/pcc_analysis_summary.csv"
 pcc_df = pd.read_csv(pcc_csv_file)
@@ -84,15 +85,24 @@ cc_df = pd.read_csv(cc_csv_file)
 ##########################
 ### sort CCs by IEO values 
 cc_df['barcode'] = '32110052300' + cc_df['CC_num'].astype(int).astype(str).str.zfill(3)
-cc_df_filtered = cc_df.dropna(subset=['L0_EOM_IEO', 'L1_EOM_IEO'])
-cc_df_filtered = cc_df_filtered[cc_df_filtered['barcode'].isin(CCs)]
+cc_df_filtered = cc_df[cc_df['barcode'].isin(CCs)]
 
-# Filter out the CCs with V2 lpGBT, as they can be matched with any PCC
-cc_df_filtered = cc_df_filtered[(cc_df_filtered['LpGBT_L0_version'] != "V2") & (cc_df_filtered['LpGBT_L1_version'] != "V2")]
+# Filter out the CCs with V2 lpGBT (None entry implies V2 too), as they can be matched with any PCC
+cc_df_v2_cond = (
+    (cc_df_filtered['LpGBT_L0_version'] == "V2") | (cc_df_filtered['LpGBT_L1_version'] == "V2")
+    | (cc_df_filtered['LpGBT_L0_version'].isna()) | (cc_df_filtered['LpGBT_L1_version'].isna())
+)
+cc_df_v2 = cc_df_filtered[cc_df_v2_cond]
+print('\n############################')
+print('Found %d CCs with V2 lpGBT, which can be matched with any PCC:'%len(cc_df_v2))
+print(cc_df_v2[['barcode']].sort_values(by='barcode'))
+
+cc_df_filtered = cc_df_filtered[~cc_df_v2_cond]
+cc_df_filtered = cc_df_filtered.dropna(subset=['L0_EOM_IEO', 'L1_EOM_IEO'])
 
 cc_df_filtered['worst_IEO'] = cc_df_filtered[['L0_EOM_IEO', 'L1_EOM_IEO']].apply(lambda x: max(abs(x['L0_EOM_IEO'] - 15), abs(x['L1_EOM_IEO'] - 15)), axis=1)
 print('\n############################')
-print('Found %d CCs with IEO values'%len(cc_df_filtered))
+print('Found %d CCs (with V1 lpGBT) with IEO values'%len(cc_df_filtered))
 print(cc_df_filtered[['barcode', 'worst_IEO']].sort_values(by='worst_IEO', ascending=False))
 
 

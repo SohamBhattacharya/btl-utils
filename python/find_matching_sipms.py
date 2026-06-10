@@ -61,8 +61,8 @@ def main() :
     def sanitize(s) :
         return s.decode("utf-8").strip()
     
-    l_sipms_1 = numpy.loadtxt(args.list1, dtype = str, converters = strip).flatten().tolist()
-    l_sipms_2 = numpy.loadtxt(args.list2, dtype = str, converters = strip).flatten().tolist()
+    l_sipms_1 = numpy.loadtxt(args.list1, dtype = str, converters = strip, comments = "#").flatten().tolist()
+    l_sipms_2 = numpy.loadtxt(args.list2, dtype = str, converters = strip, comments = "#").flatten().tolist()
     
     l_sipms_1 = utils.natural_sort([_sipm if len(_sipm) == 14 else str(SIPM_BARCODE_BASE + int(_sipm)) for _sipm in l_sipms_1])
     l_sipms_2 = utils.natural_sort([_sipm if len(_sipm) == 14 else str(SIPM_BARCODE_BASE + int(_sipm)) for _sipm in l_sipms_2])
@@ -74,6 +74,9 @@ def main() :
     
     #a_sipm_vbrs_1 = numpy.array([d_sipminfo[_sipm]["vbr_avg"] for _sipm in l_sipms_1 if _sipm in d_sipminfo])
     a_sipm_vbrs_2 = numpy.array([d_sipminfo[_sipm]["vbr_avg"] for _sipm in l_sipms_2 if _sipm in d_sipminfo])
+    
+    # Sort list 1 by Vbr; better matching this way
+    l_sipms_1.sort(key = lambda _sipm : d_sipminfo[_sipm]["vbr_avg"])
     
     l_sipm_pairs = []
     
@@ -104,15 +107,35 @@ def main() :
         
         a_sipm_vbrs_2[idx_min] = 9999
     
-    for sipm1, sipm2 in l_sipm_pairs :
+    # Sort the pairs by barcode of the first SiPM in the pair; easier to search/find
+    l_sipm_pairs.sort(key = lambda _pair : _pair[0])
+    
+    print(
+        "Pair number"
+        " , "
+        "SiPM 1 (barcode)"
+        " , "
+        "SiPM 2 (barcode, tray)"
+        " , "
+        "ΔVbr"
+    )
+    
+    for ipair, (sipm1, sipm2) in enumerate(l_sipm_pairs) :
         
         sipm1_short = f"{int(sipm1)-SIPM_BARCODE_BASE:05d}"
         sipm2_short = f"{int(sipm2)-SIPM_BARCODE_BASE:05d}"
         
+        delta_vbr = abs(d_sipminfo[sipm1]['vbr_avg'] - d_sipminfo[sipm2]['vbr_avg'])
+        delta_vbr_rel = delta_vbr / d_sipminfo[sipm1]['vbr_avg'] * 100
+        
         print(
+            f"{ipair+1:04d}"
+            " , "
             f"{sipm1_short} ({d_sipminfo[sipm1]['vbr_avg']:0.2f})"
             " , "
             f"{sipm2_short} ({d_sipminfo[sipm2]['vbr_avg']:0.2f}, {d_sipm_tray.get(sipm2_short, 'NA')})"
+            " , "
+            f"{delta_vbr:0.2f} ({delta_vbr_rel:0.2f}%)"
         )
     
     return 0
