@@ -1,0 +1,27 @@
+
+def:
+  a_spe_L: "numpy.array(get_gry({spe_L}))"
+  a_spe_R: "numpy.array(get_gry({spe_R}))"
+  a_spe_bar: "numpy.array(get_gry({spe_bar}))"
+  
+  a_lo_L: "numpy.array(get_gry({lo_L}))"
+  a_lo_R: "numpy.array(get_gry({lo_R}))"
+  a_lo_bar: "numpy.array(get_gry({lo_bar}))"
+  
+  a_enres_L: "numpy.array(get_gry({enres_L}))"
+  a_enres_R: "numpy.array(get_gry({enres_R}))"
+  a_enres_bar: "numpy.array(get_gry({enres_bar}))"
+
+
+read:
+  spe_L: g_spe_L_vs_bar
+  spe_R: g_spe_R_vs_bar
+  spe_bar: g_avg_spe_vs_bar
+  
+  lo_L: g_L_light_yield_vs_bar
+  lo_R: g_R_light_yield_vs_bar
+  lo_bar: g_avg_light_yield_vs_bar
+  
+  enres_L: g_lyso_L_peak_res_vs_bar
+  enres_R: g_lyso_R_peak_res_vs_bar
+  enres_bar: g_avg_lyso_res_vs_bar

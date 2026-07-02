@@ -1626,6 +1626,33 @@ def root_plot1D(
     return 0
 
 
+def create_format_dict(d_cfg, rootfile, d_fmt = {}) :
+    
+    d_ret = {}
+    d_ret.update(d_fmt)
+    d_ret.update(d_cfg.get("values", {}))
+    
+    d_read_info = {}
+    for varkey, varname in d_cfg.get("read", {}).items() :
+        
+        d_read_info[varkey] = rootfile.Get(varname)
+        d_ret[varkey] = f"d_read_info['{varkey}']"
+    
+    for defkey, defexpr in d_cfg.get("def", {}).items() :
+        
+        defexpr = defexpr.format(**d_ret)
+        d_ret[defkey] = defexpr
+        
+        try:
+            d_ret[defkey] = eval(defexpr)
+        except Exception as excpt:
+            logger.error(f"Error evaluating definition \"{defkey}\": \n    {defexpr}")
+            print(excpt)
+            raise
+    
+    return d_ret
+
+
 def eval_category(rootfile, d_catcfgs, barcode = "", d_fmt = {}) :
     
     d_cat_result = copy.deepcopy(d_catcfgs)
@@ -1704,6 +1731,40 @@ def eval_category(rootfile, d_catcfgs, barcode = "", d_fmt = {}) :
     d_cat_result["category"] = cat
     
     return d_cat_result
+
+
+def eval_xml_dict(d_xml, d_fmt, dcopy = True) :
+    
+    if dcopy :
+        d_ret = copy.deepcopy(d_xml)
+    
+    else :
+        d_ret = d_xml
+    
+    for key, val in d_ret.items() :
+        
+        if isinstance(val, dict) :
+            
+            d_ret[key] = eval_xml_dict(val, d_fmt, dcopy = False)
+        
+        elif isinstance(val, list) :
+            
+            for idx in range(len(val)) :
+                
+                val[idx] = eval_xml_dict(val[idx], {**d_fmt, "channel": idx}, dcopy = False)
+        
+        elif isinstance(val, str) :
+            
+            #val_str = val.format(**d_fmt)
+            #d_ret[key] = eval(val_str)
+            
+            d_fmt_repr = {_k: f"d_fmt['{_k}']" for _k in d_fmt.keys()}
+            
+            d_ret[key] = val.format(**d_fmt_repr)
+            if "d_fmt" in d_ret[key] :
+                d_ret[key] = eval(d_ret[key])
+    
+    return d_ret
 
 
 def pdf_to_png(infilename, outfilename = None) :

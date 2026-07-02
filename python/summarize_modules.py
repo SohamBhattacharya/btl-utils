@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import copy
 import dataclasses
 import itertools
 import numpy
@@ -10,6 +11,7 @@ import ROOT
 import sortedcontainers
 import sys
 import tqdm
+import xmltodict
 
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString
 
@@ -105,6 +107,20 @@ def main() :
     parser.add_argument(
         "--defcfg",
         help = "YAML file with definitions of variables to be used in plots.\n",
+        type = str,
+        required = False,
+    )
+    
+    parser.add_argument(
+        "--xmlcfg",
+        help = "YAML file with definitions of variables in the XML template.\n",
+        type = str,
+        required = False,
+    )
+    
+    parser.add_argument(
+        "--xmltemplate",
+        help = "Template file for producing the XML output for uploading to database.\n",
         type = str,
         required = False,
     )
@@ -533,6 +549,37 @@ def main() :
         
         d_catcfgs = yaml.load(fopen.read())
     
+    # Read the XML config yaml
+    d_xmlcfg = {}
+    d_xml_template = {}
+    str_xml_template = None
+    
+    def postprocess_xml_dict(path, key, value) :
+        #print(f"Postprocessing XML dict: path = {path}, key = {key}, value = {value}")
+        if (key == "DATA") :
+            
+            tmp = value
+            value = []
+            
+            for i in range(0, 16) :
+                
+                value.append(copy.deepcopy(tmp))
+        
+        return key, value
+    
+    if (args.xmlcfg and args.xmltemplate) :
+        
+        with open(args.xmlcfg, "r") as fopen :
+            
+            d_xmlcfg = yaml.load(fopen.read())
+        
+        with open(args.xmltemplate, "r") as f :
+            str_xml_template = f.read()
+        
+        d_xml_template = xmltodict.parse(str_xml_template, postprocessor = postprocess_xml_dict)#, force_list = ("DATA",))#, postprocessor = postprocess_xml_dict)
+        #d_tmp = d_xml_template["ROOT"]["DATA_SET"]["DATA"]
+        #d_xml_template
+    
     # Read the definitions config yaml
     d_defs = {}
     
@@ -562,12 +609,14 @@ def main() :
         rootfile = ROOT.TFile.Open(module.fname)
         isbad = False
         
+        d_fmt = {**module.dict(), **d_defs}
+        
         try:
             d_module_cat = utils.eval_category(
                 rootfile = rootfile,
                 d_catcfgs = d_catcfgs,
                 barcode = module.barcode,
-                d_fmt = {**module.dict(), **d_defs},
+                d_fmt = d_fmt,
             )
         except ValueError as excpt:
             isbad = True
@@ -584,6 +633,21 @@ def main() :
         }
         
         module.results = d_cat_results["results"][module.barcode]
+        
+        d_xml_fmt = utils.create_format_dict(
+            rootfile = rootfile,
+            d_cfg = d_xmlcfg,
+            d_fmt = d_fmt
+        )
+        
+        d_xml_eval = utils.eval_xml_dict(d_xml = d_xml_template, d_fmt = d_xml_fmt)
+        
+        str_xml_out = xmltodict.unparse(d_xml_eval, pretty = True, indent = "  ")
+        fname_xml_out = f"{args.outdir}/{os.path.basename(args.xmltemplate).replace('template', module.barcode)}"
+        logging.info(f"Writing XML output to: {fname_xml_out} ...")
+        
+        with open(fname_xml_out, "w") as f :
+            f.write(str_xml_out)
         
         if isbad :
             continue

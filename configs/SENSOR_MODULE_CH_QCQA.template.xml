@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ROOT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <HEADER>
+    <TYPE>
+      <EXTENSION_TABLE_NAME>SENSOR_MODULE_CH_QCQA</EXTENSION_TABLE_NAME>
+      <NAME>SENSOR MODULE CH QCQA</NAME>
+    </TYPE>
+    <RUN>
+      <RUN_NAME>{run}</RUN_NAME>
+      <RUN_TYPE>template_run_type</RUN_TYPE>
+      <RUN_BEGIN_TIMESTAMP>template_run_begin</RUN_BEGIN_TIMESTAMP>
+      <RUN_END_TIMESTAMP>template_run_end</RUN_END_TIMESTAMP>
+    </RUN>
+  </HEADER>
+  <DATA_SET>
+    <VERSION>1</VERSION>
+    <PART>
+      <KIND_OF_PART>SensorModule</KIND_OF_PART>
+      <BARCODE>{barcode}</BARCODE>
+    </PART>
+    <DATA>
+      <CHANNEL>{channel}</CHANNEL>
+      
+      <CHSPELEFT>format({a_spe_L}[{channel}], "0.4f")</CHSPELEFT>
+      <CHSPERIGHT>format({a_spe_R}[{channel}], "0.4f")</CHSPERIGHT>
+      <BARSPE>format({a_spe_bar}[{channel}], "0.4f")</BARSPE>
+      
+      <CHLOLEFT>format({a_lo_L}[{channel}], "0.4f")</CHLOLEFT>
+      <CHLORIGHT>format({a_lo_R}[{channel}], "0.4f")</CHLORIGHT>
+      <BARLO>format({a_lo_bar}[{channel}], "0.4f")</BARLO>
+      
+      <CHWIDTHLEFT>format({a_enres_L}[{channel}], "0.4f")</CHWIDTHLEFT>
+      <CHWIDTHRIGHT>format({a_enres_R}[{channel}], "0.4f")</CHWIDTHRIGHT>
+      <BARWIDTH>format({a_enres_bar}[{channel}], "0.4f")</BARWIDTH>
+      
+      <TEMP>template_TEMP</TEMP>
+    </DATA>
+  </DATA_SET>
+</ROOT>
