@@ -567,7 +567,9 @@ def main() :
         
         return key, value
     
-    if (args.xmlcfg and args.xmltemplate) :
+    do_xml = (args.xmlcfg and args.xmltemplate)
+    
+    if do_xml :
         
         with open(args.xmlcfg, "r") as fopen :
             
@@ -634,20 +636,21 @@ def main() :
         
         module.results = d_cat_results["results"][module.barcode]
         
-        d_xml_fmt = utils.create_format_dict(
-            rootfile = rootfile,
-            d_cfg = d_xmlcfg,
-            d_fmt = d_fmt
-        )
-        
-        d_xml_eval = utils.eval_xml_dict(d_xml = d_xml_template, d_fmt = d_xml_fmt)
-        
-        str_xml_out = xmltodict.unparse(d_xml_eval, pretty = True, indent = "  ")
-        fname_xml_out = f"{args.outdir}/{os.path.basename(args.xmltemplate).replace('template', module.barcode)}"
-        logging.info(f"Writing XML output to: {fname_xml_out} ...")
-        
-        with open(fname_xml_out, "w") as f :
-            f.write(str_xml_out)
+        if do_xml:
+            d_xml_fmt = utils.create_format_dict(
+                rootfile = rootfile,
+                d_cfg = d_xmlcfg,
+                d_fmt = d_fmt
+            )
+            
+            d_xml_eval = utils.eval_xml_dict(d_xml = d_xml_template, d_fmt = d_xml_fmt)
+            
+            str_xml_out = xmltodict.unparse(d_xml_eval, pretty = True, indent = "  ")
+            fname_xml_out = f"{args.outdir}/{os.path.basename(args.xmltemplate).replace('template', module.barcode)}"
+            logging.info(f"Writing XML output to: {fname_xml_out} ...")
+            
+            with open(fname_xml_out, "w") as f :
+                f.write(str_xml_out)
         
         if isbad :
             continue

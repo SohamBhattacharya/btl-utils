@@ -1,0 +1,30 @@
+g1_spe_L:
+  entries:
+    spe_L:
+      plotx: "{a_xx}"
+      ploty: "get_gry({yy})"
+      defx:
+        a_xx: "(get_gry({xx2})[::-1] if ('{loc}' == 'CIT') else get_gry({xx1}))"
+      readx:
+        xx1: "g_spe_L_vs_bar"
+        xx2: "g_spe_R_vs_bar"
+      ready:
+        yy: "g_spe_L_vs_bar"
+      label: "All SMs"
+      color: 2
+      marker: 4
+      size: 0
+      drawopt: "P"
+      fit: 
+        pol0: "[0]+([1]*x)"
+  xmin: null
+  xmax: null
+  ymin: null
+  ymax: null
+  ndivisionsx: [5, 5, 0]
+  ndivisionsy: [5, 5, 0]
+  xtitle: "Single p.e. charge [pC]"
+  ytitle: "Single p.e. charge [pC]"
+  gridx: True
+  gridy: True
+  legendtitle: "#scale[1.25]{Bar left}"

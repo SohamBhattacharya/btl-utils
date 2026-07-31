@@ -24,10 +24,57 @@ h1_spe_LR_bar:
       label: "Right"
       color: 4
       fillstyle: 3001
+    spe_avg_vs_bar:
+      plot: "numpy.array({spe}.GetY())"
+      read:
+        spe: "g_avg_spe_vs_bar"
+      label: "Bar"
+      color: 1
+      fillstyle: 3001
   xmin: 2
   xmax: 5
   nbins: 150
   xtitle: "Single p.e. charge [pC]"
+  ytitle: "Entries"
+  gridx: True
+  gridy: False
+  labelmode: "stddev_by_mean"
+
+
+h1_spe_LR_bar_MIB-correction:
+  type: "hist1"
+  entries:
+    spe_L_vs_bar:
+      plot: "{sm_spe_R_corr_MIB_p0} + ({a_spe} * {sm_spe_R_corr_MIB_p1})"
+      def:
+        a_spe: "get_gry({spe})"
+      read:
+        spe: "g_spe_L_vs_bar"
+      label: "Left"
+      color: 2
+      fillstyle: 3001
+    spe_R_vs_bar:
+      plot: "{sm_spe_L_corr_MIB_p0} + ({a_spe} * {sm_spe_L_corr_MIB_p1})"
+      def:
+        a_spe: "get_gry({spe})"
+      read:
+        spe: "g_spe_R_vs_bar"
+      label: "Right"
+      color: 4
+      fillstyle: 3001
+    spe_avg_vs_bar:
+      plot: "{sm_spe_bar_corr_MIB_p0} + ({a_spe} * {sm_spe_bar_corr_MIB_p1})"
+      def:
+        a_spe: "get_gry({spe})"
+      read:
+        spe: "g_avg_spe_vs_bar"
+      label: "Bar"
+      color: 1
+      fillstyle: 3001
+  xmin: 2
+  xmax: 5
+  nbins: 150
+  xtitle: "Single p.e. charge (corr. to MIB) [pC]"
   ytitle: "Entries"
   gridx: True
   gridy: False
@@ -96,6 +143,46 @@ h1_lo_LR_bar:
   xmax: 5500
   nbins: 100
   xtitle: "Light output [p.e./MeV]"
+  ytitle: "Entries"
+  gridx: True
+  gridy: False
+  labelmode: "stddev_by_mean"
+
+
+h1_lo_LR_bar_MIB-correction:
+  type: "hist1"
+  entries:
+    L_light_yield_vs_bar:
+      plot: "{sm_lo_R_corr_MIB_p0} + ({a_lo} * {sm_lo_R_corr_MIB_p1})"
+      def:
+        a_lo: "get_gry({lo})"
+      read:
+        lo: "g_L_light_yield_vs_bar"
+      label: "Left"
+      color: 2
+      fillstyle: 3002
+    R_light_yield_vs_bar:
+      plot: "{sm_lo_L_corr_MIB_p0} + ({a_lo} * {sm_lo_L_corr_MIB_p1})"
+      def:
+        a_lo: "get_gry({lo})"
+      read:
+        lo: "g_R_light_yield_vs_bar"
+      label: "Right"
+      color: 4
+      fillstyle: 3002
+    avg_light_yield_vs_bar:
+      plot: "{sm_lo_bar_corr_MIB_p0} + ({a_lo} * {sm_lo_bar_corr_MIB_p1})"
+      def:
+        a_lo: "get_gry({lo})"
+      read:
+        lo: "g_avg_light_yield_vs_bar"
+      label: "Bar"
+      color: 1
+      fillstyle: 3002
+  xmin: 1500
+  xmax: 5500
+  nbins: 100
+  xtitle: "Light output (corr. to MIB) [p.e./MeV]"
   ytitle: "Entries"
   gridx: True
   gridy: False

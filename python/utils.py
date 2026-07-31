@@ -1340,7 +1340,8 @@ def root_plot1D(
     centertitley = True,
     centerlabelx = False,
     centerlabely = False,
-    gridx = False, gridy = False,
+    gridx = False,
+    gridy = False,
     ndivisionsx = None,
     ndivisionsy = None,
     ndivisionsy_ratio = (5, 5, 0),
@@ -1354,6 +1355,8 @@ def root_plot1D(
     legendtitle = "",
     legendheightscale = 1.0,
     legendwidthscale = 1.0,
+    legendpadtop_extra = 0.0,
+    legendpadleft_extra = 0.0,
     CMSextraText = "Internal",
     lumiText = "Phase-2"
     ) :
@@ -1367,13 +1370,13 @@ def root_plot1D(
     canvas.cd(1)
     
     nentries = sum([(len(_obj.GetTitle()) > 0) for _obj in l_hist+l_hist_overlay+l_graph_overlay])
-    legendHeight = legendheightscale * 0.065 * (nentries + 1.5*(len(legendtitle)>0))
+    legendHeight = legendheightscale * 0.065 * (numpy.ceil(nentries/legendncol) + 1.5*(len(legendtitle)>0))
     legendWidth = legendwidthscale * 0.4
     
-    padTop = 1 - 0.3*canvas.GetTopMargin() - 2*ROOT.gStyle.GetTickLength("y")
+    padTop = 1 - 0.3*canvas.GetTopMargin() - 2*ROOT.gStyle.GetTickLength("y") + legendpadtop_extra
     padRight = 1 - canvas.GetRightMargin() - 0.6*ROOT.gStyle.GetTickLength("x")
     padBottom = canvas.GetBottomMargin() + 0.6*ROOT.gStyle.GetTickLength("y")
-    padLeft = canvas.GetLeftMargin() + 0.6*ROOT.gStyle.GetTickLength("x")
+    padLeft = canvas.GetLeftMargin() + 0.6*ROOT.gStyle.GetTickLength("x") + legendpadleft_extra
     
     if(legendpos == "UR") :
         
@@ -1787,9 +1790,19 @@ def pdf_to_png(infilename, outfilename = None) :
 
 def get_cms_colors(idx, hex = False) :
     # https://cms-analysis.docs.cern.ch/guidelines/plotting/colors/
-    colors = ["#3f90da", "#ffa90e", "#bd1f01", "#94a4a2", "#832db6", "#a96b59", "#e76300", "#b9ac70", "#717581", "#92dadd"]
+    colors = [
+        "#3f90da", "#ffa90e", "#bd1f01", "#94a4a2", "#832db6", "#a96b59", "#e76300", "#b9ac70", "#717581", "#92dadd"
+        #"#5790fc", "#f89c20", "#e42536", "#964a8b", "#9c9ca1", "#7a21dd",
+    ]
     
     return colors[idx] if hex else ROOT.TColor.GetColor(colors[idx])
+
+
+def get_marker_style(idx) :
+    
+    #styles = [24, 25, 26, 27, 28, 30, 32]
+    styles = list(range(53, 68))
+    return styles[idx]
 
 
 def get_grx(gr) :
@@ -1847,3 +1860,15 @@ def load_yaml_file(fname) :
     with open(fname, "r") as fopen :
         d_cfg = yaml.load(fopen.read())
     return d_cfg
+
+
+def get_valid_locations() :
+    
+    l_locations = [_loc for _loc in dir(constants.LOCATION) if not _loc.startswith("__")]
+    
+    return l_locations
+
+
+def get_location_id(location) :
+    
+    return getattr(constants.LOCATION, location)

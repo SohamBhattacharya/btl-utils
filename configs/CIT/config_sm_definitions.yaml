@@ -1,0 +1,21 @@
+# N.B. CIT L/R is MIB R/L
+
+sm_spe_L_corr_MIB_p0: 1.6
+sm_spe_L_corr_MIB_p1: 0.66
+
+sm_spe_R_corr_MIB_p0: 3.0
+sm_spe_R_corr_MIB_p1: 0.27
+
+sm_spe_bar_corr_MIB_p0: 2.5
+sm_spe_bar_corr_MIB_p1: 0.41
+
+
+
+sm_lo_L_corr_MIB_p0: 0.64e3
+sm_lo_L_corr_MIB_p1: 0.75
+
+sm_lo_R_corr_MIB_p0: 0.46e3
+sm_lo_R_corr_MIB_p1: 0.82
+
+sm_lo_bar_corr_MIB_p0: 0.48e3
+sm_lo_bar_corr_MIB_p1: 0.81
