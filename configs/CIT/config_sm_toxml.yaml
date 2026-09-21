@@ -1,22 +1,42 @@
 
 def:
-  a_spe_L: "numpy.array(get_gry({spe_L}))"
-  a_spe_R: "numpy.array(get_gry({spe_R}))"
-  a_spe_bar: "numpy.array(get_gry({spe_bar}))"
+  a_spe_L: "get_gry({spe_L})"
+  a_spe_R: "get_gry({spe_R})"
+  a_spe_bar: "get_gry({spe_bar})"
   
-  a_lo_L: "numpy.array(get_gry({lo_L}))"
-  a_lo_R: "numpy.array(get_gry({lo_R}))"
-  a_lo_bar: "numpy.array(get_gry({lo_bar}))"
+  a_src_L: "get_gry({src_L})"
+  a_src_R: "get_gry({src_R})"
+  a_src_bar: "get_gry({src_bar})"
   
-  a_enres_L: "numpy.array(get_gry({enres_L}))"
-  a_enres_R: "numpy.array(get_gry({enres_R}))"
-  a_enres_bar: "numpy.array(get_gry({enres_bar}))"
+  a_lo_L: "get_gry({lo_L})"
+  a_lo_R: "get_gry({lo_R})"
+  a_lo_bar: "get_gry({lo_bar})"
+  
+  a_enres_L: "get_gry({enres_L})"
+  a_enres_R: "get_gry({enres_R})"
+  a_enres_bar: "get_gry({enres_bar})"
+  
+  a_spe_L_corr: "{sm_spe_L_corr_MIB} * {a_spe_L}"
+  a_spe_R_corr: "{sm_spe_R_corr_MIB} * {a_spe_R}"
+  a_spe_bar_corr: "{sm_spe_bar_corr_MIB} * {a_spe_bar}"
+  
+  a_lo_L_corr: "({sm_lo_L_corr_MIB_p0} * {a_lo_L}) + {sm_lo_L_corr_MIB_p1}"
+  a_lo_R_corr: "({sm_lo_R_corr_MIB_p0} * {a_lo_R}) + {sm_lo_R_corr_MIB_p1}"
+  a_lo_bar_corr: "({sm_lo_bar_corr_MIB_p0} * {a_lo_bar}) + {sm_lo_bar_corr_MIB_p1}"
+  
+  a_src_L_corr: "({sm_src_L_corr_MIB_p0} * {a_src_L}) + {sm_src_L_corr_MIB_p1}"
+  a_src_R_corr: "({sm_src_R_corr_MIB_p0} * {a_src_R}) + {sm_src_R_corr_MIB_p1}"
+  a_src_bar_corr: "({sm_src_bar_corr_MIB_p0} * {a_src_bar}) + {sm_src_bar_corr_MIB_p1}"
 
 
 read:
   spe_L: g_spe_L_vs_bar
   spe_R: g_spe_R_vs_bar
   spe_bar: g_avg_spe_vs_bar
+  
+  src_L: g_lyso_L_pc_per_kev_vs_bar
+  src_R: g_lyso_R_pc_per_kev_vs_bar
+  src_bar: g_avg_lyso_pc_per_kev_vs_bar
   
   lo_L: g_L_light_yield_vs_bar
   lo_R: g_R_light_yield_vs_bar

@@ -4,6 +4,7 @@ import copy
 import dataclasses
 import glob
 import importlib.util
+import io
 import itertools
 import json
 import logging
@@ -16,6 +17,7 @@ import socket
 import subprocess
 import sys
 import tqdm
+import time
 
 from ruamel.yaml import YAML
 yaml = YAML()
@@ -263,18 +265,27 @@ def run_db_query(query, port = 8113) :
     
     assert is_tunnel_open(port = port), "Open tunnel to database first."
     
-    dbquery_output = subprocess.run([
-        "./python/rhapi.py",
-        "-u", "http://localhost:8113",
-        "-a",
-        "-f", "json2",
-        query
-    ], stdout = subprocess.PIPE, check = True)
+    tries = 0
     
-    dbquery_output = dbquery_output.stdout.decode("utf-8")
-    dbquery_output = ast.literal_eval(dbquery_output)["data"]
-    
-    return dbquery_output
+    while tries < 5 :
+        try:
+            dbquery_output = subprocess.run([
+                "./python/rhapi.py",
+                "-u", "http://localhost:8113",
+                "-a",
+                "-f", "json2",
+                query
+            ], stdout = subprocess.PIPE, check = True)
+            
+            dbquery_output = dbquery_output.stdout.decode("utf-8")
+            dbquery_output = ast.literal_eval(dbquery_output)["data"]
+            
+            return dbquery_output
+        except Exception as e:
+            tries += 1
+            if tries >= 5:
+                raise e
+            time.sleep(5)
 
 
 def get_barcode_query(l_barcode_ranges, l_barcodes = []) :
@@ -319,18 +330,20 @@ def get_part_ids(barcode_min, barcode_max, l_barcode_ranges = []) :
     query = f"select s.* from mtd_cmsr.parts s where ({barcode_query})"
     print(query)
     
-    dbquery_output = subprocess.run([
-        "./python/rhapi.py",
-        "-u", "http://localhost:8113",
-        "-a",
-        "-f", "json2",
-        #f"select s.ID,s.BARCODE from mtd_cmsr.parts s where s.BARCODE >= '{barcode_min}' and s.BARCODE <='{barcode_max}'"
-        #f"select s.* from mtd_cmsr.parts s where s.BARCODE >= '{barcode_min}' AND s.BARCODE <='{barcode_max}'"
-        query
-    ], stdout = subprocess.PIPE, check = True)
+    #dbquery_output = subprocess.run([
+    #    "./python/rhapi.py",
+    #    "-u", "http://localhost:8113",
+    #    "-a",
+    #    "-f", "json2",
+    #    #f"select s.ID,s.BARCODE from mtd_cmsr.parts s where s.BARCODE >= '{barcode_min}' and s.BARCODE <='{barcode_max}'"
+    #    #f"select s.* from mtd_cmsr.parts s where s.BARCODE >= '{barcode_min}' AND s.BARCODE <='{barcode_max}'"
+    #    query
+    #], stdout = subprocess.PIPE, check = True)
+    #
+    #dbquery_output = dbquery_output.stdout.decode("utf-8")
+    #l_infodicts = ast.literal_eval(dbquery_output)["data"]
     
-    dbquery_output = dbquery_output.stdout.decode("utf-8")
-    l_infodicts = ast.literal_eval(dbquery_output)["data"]
+    l_infodicts = run_db_query(query)
     
     return l_infodicts
 
@@ -373,15 +386,19 @@ def get_part_barcodes(
     query = f"{query} AND ({barcode_query})" if (barcode_query is not None) else query
     
     print(query)
-    dbquery_output = subprocess.run([
-        "./python/rhapi.py",
-        "-u", "http://localhost:8113",
-        "-a",
-        query
-    ], stdout = subprocess.PIPE, check = True)
+    #dbquery_output = subprocess.run([
+    #    "./python/rhapi.py",
+    #    "-u", "http://localhost:8113",
+    #    "-a",
+    #    query
+    #], stdout = subprocess.PIPE, check = True)
+    #
+    #l_part_barcode = dbquery_output.stdout.decode("utf-8").split()[1:]
+    #l_part_barcode = [_barcode.strip() for _barcode in l_part_barcode]
     
-    l_part_barcode = dbquery_output.stdout.decode("utf-8").split()[1:]
-    l_part_barcode = [_barcode.strip() for _barcode in l_part_barcode]
+    
+    l_part_barcode = run_db_query(query)
+    l_part_barcode = [str(_info["barcode"]) for _info in l_part_barcode]
     
     return l_part_barcode
 
@@ -413,21 +430,23 @@ def get_daughter_info(
         query = f"select s.* from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids_tmp)).replace(',)', ')')}" # Remove the trailing comma in a single element tuple: (X,)
         print(query)
         
-        dbquery_output = subprocess.run([
-            "./python/rhapi.py",
-            "-u", "http://localhost:8113",
-            "-a",
-            "-f", "json2",
-            #f"select s.PART_PARENT_ID,s.BARCODE,s.KIND_OF_PART from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}" # Remove the trailing comma in a single element tuple: (X,)
-            query
-        ], stdout = subprocess.PIPE, check = True)
+        #dbquery_output = subprocess.run([
+        #    "./python/rhapi.py",
+        #    "-u", "http://localhost:8113",
+        #    "-a",
+        #    "-f", "json2",
+        #    #f"select s.PART_PARENT_ID,s.BARCODE,s.KIND_OF_PART from mtd_cmsr.parts s where s.PART_PARENT_ID in {str(tuple(l_parent_ids)).replace(',)', ')')}" # Remove the trailing comma in a single element tuple: (X,)
+        #    query
+        #], stdout = subprocess.PIPE, check = True)
+        #
+        ## position in RU: apositionInRu
+        ## ./python/rhapi.py -u http://localhost:8113 -a -f json2 "select c.* from mtd_cmsr.p10 c where c.BARCODE in ('32110040004706', '32110040004595')"
+        #
+        #dbquery_output = dbquery_output.stdout.decode("utf-8")
+        #
+        #l_daughter_infodicts_tmp = ast.literal_eval(dbquery_output)["data"]
         
-        # position in RU: apositionInRu
-        # ./python/rhapi.py -u http://localhost:8113 -a -f json2 "select c.* from mtd_cmsr.p10 c where c.BARCODE in ('32110040004706', '32110040004595')"
-        
-        dbquery_output = dbquery_output.stdout.decode("utf-8")
-        
-        l_daughter_infodicts_tmp = ast.literal_eval(dbquery_output)["data"]
+        l_daughter_infodicts_tmp = run_db_query(query)
         
         for parttype in [constants.SIPM.KIND_OF_PART, constants.SM.KIND_OF_PART, constants.DM.KIND_OF_PART, constants.RU.KIND_OF_PART] :
             
@@ -486,17 +505,20 @@ def get_sipm_tec_res(
 ) :
     assert is_tunnel_open(port = 8113), "Open tunnel to database first."
     
-    dbquery_output = subprocess.run([
-        "./python/rhapi.py",
-        "-u", "http://localhost:8113",
-        "-a",
-        "-f", "json2",
-        f"select s.part_barcode,s.rac from mtd_cmsr.c3060 s where s.part_barcode >= '{barcode_min}' and s.part_barcode <= '{barcode_max}'"
-    ], stdout = subprocess.PIPE, check = True)
+    query = f"select s.part_barcode,s.rac from mtd_cmsr.c3060 s where s.part_barcode >= '{barcode_min}' and s.part_barcode <= '{barcode_max}'"
+    l_tecdicts = run_db_query(query)
     
-    dbquery_output = dbquery_output.stdout.decode("utf-8")
-    
-    l_tecdicts = ast.literal_eval(dbquery_output)["data"]
+    #dbquery_output = subprocess.run([
+    #    "./python/rhapi.py",
+    #    "-u", "http://localhost:8113",
+    #    "-a",
+    #    "-f", "json2",
+    #    f"select s.part_barcode,s.rac from mtd_cmsr.c3060 s where s.part_barcode >= '{barcode_min}' and s.part_barcode <= '{barcode_max}'"
+    #], stdout = subprocess.PIPE, check = True)
+    #
+    #dbquery_output = dbquery_output.stdout.decode("utf-8")
+    #
+    #l_tecdicts = ast.literal_eval(dbquery_output)["data"]
     
     d_tec_res = {}
     
@@ -524,17 +546,20 @@ def get_sipm_vbrs(
 ) :
     assert is_tunnel_open(port = 8113), "Open tunnel to database first."
     
-    dbquery_output = subprocess.run([
-        "./python/rhapi.py",
-        "-u", "http://localhost:8113",
-        "-a",
-        "-f", "json2",
-        f"select s.part_barcode,s.VBRRT from mtd_cmsr.c3000 s where s.part_barcode >= '{barcode_min}' and s.part_barcode <= '{barcode_max}'"
-    ], stdout = subprocess.PIPE, check = True)
+    query = f"select s.part_barcode,s.VBRRT from mtd_cmsr.c3000 s where s.part_barcode >= '{barcode_min}' and s.part_barcode <= '{barcode_max}'"
+    l_vbrdicts = run_db_query(query)
     
-    dbquery_output = dbquery_output.stdout.decode("utf-8")
-    
-    l_vbrdicts = ast.literal_eval(dbquery_output)["data"]
+    #dbquery_output = subprocess.run([
+    #    "./python/rhapi.py",
+    #    "-u", "http://localhost:8113",
+    #    "-a",
+    #    "-f", "json2",
+    #    f"select s.part_barcode,s.VBRRT from mtd_cmsr.c3000 s where s.part_barcode >= '{barcode_min}' and s.part_barcode <= '{barcode_max}'"
+    #], stdout = subprocess.PIPE, check = True)
+    #
+    #dbquery_output = dbquery_output.stdout.decode("utf-8")
+    #
+    #l_vbrdicts = ast.literal_eval(dbquery_output)["data"]
     
     d_vbrs = {}
     
@@ -618,16 +643,18 @@ def get_part_position(
     query = f"select s.* from mtd_cmsr.{d_part_db['db']} s where ({barcode_query})"
     print(query)
     
-    dbquery_output = subprocess.run([
-        "./python/rhapi.py",
-        "-u", "http://localhost:8113",
-        "-a",
-        "-f", "json2",
-        query
-    ], stdout = subprocess.PIPE, check = True)
+    #dbquery_output = subprocess.run([
+    #    "./python/rhapi.py",
+    #    "-u", "http://localhost:8113",
+    #    "-a",
+    #    "-f", "json2",
+    #    query
+    #], stdout = subprocess.PIPE, check = True)
+    #
+    #dbquery_output = dbquery_output.stdout.decode("utf-8")
+    #l_infodicts = ast.literal_eval(dbquery_output)["data"]
     
-    dbquery_output = dbquery_output.stdout.decode("utf-8")
-    l_infodicts = ast.literal_eval(dbquery_output)["data"]
+    l_infodicts = run_db_query(query)
     
     d_part_positions = {}
     
@@ -1114,7 +1141,7 @@ def load_part_info(parttype, yamlfile, resultsyaml = None, extrainfo = None) :
     
     else :
         
-        print(f"{parttype} information file ({yamlfile}) does not exist. No {parttype} information loa`ded.")
+        print(f"{parttype} information file ({yamlfile}) does not exist. No {parttype} information loaded.")
     
     return d_parts
 
@@ -1641,11 +1668,17 @@ def create_format_dict(d_cfg, rootfile, d_fmt = {}) :
         d_read_info[varkey] = rootfile.Get(varname)
         d_ret[varkey] = f"d_read_info['{varkey}']"
     
+    l_keys_toeval = []
+    
     for defkey, defexpr in d_cfg.get("def", {}).items() :
         
         defexpr = defexpr.format(**d_ret)
         d_ret[defkey] = defexpr
         
+        l_keys_toeval.append(defkey)
+    
+    for defkey in l_keys_toeval :
+        defexpr = d_ret[defkey]
         try:
             d_ret[defkey] = eval(defexpr)
         except Exception as excpt:
@@ -1872,3 +1905,10 @@ def get_valid_locations() :
 def get_location_id(location) :
     
     return getattr(constants.LOCATION, location)
+
+
+def dict_to_yaml_string(d) :
+    
+    stream = io.StringIO()
+    yaml.dump(d, stream)
+    return stream.getvalue()

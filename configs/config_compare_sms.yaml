@@ -221,6 +221,40 @@ g1_spe_L:
   gridy: True
   legendtitle: "#scale[1.25]{Bar left}"
 
+
+g1_spe_L_ch{ch:02d}:
+  repeat: "ch:0-15"
+  entries:
+    spe_L:
+      plotx: "{{a_xx}}[{ch}]"
+      ploty: "get_gry({{yy}})[{ch}]"
+      defx:
+        a_xx: "(get_gry({{xx2}})[::-1] if ('{{loc}}' == 'CIT') else get_gry({{xx1}}))"
+      readx:
+        xx1: "g_spe_L_vs_bar"
+        xx2: "g_spe_R_vs_bar"
+      ready:
+        yy: "g_spe_L_vs_bar"
+      label: "All SMs"
+      color: 2
+      marker: 4
+      size: 0
+      drawopt: "P"
+      fit: 
+        pol0: "[0]+([1]*x)"
+  xmin: null
+  xmax: null
+  ymin: null
+  ymax: null
+  ndivisionsx: [5, 5, 0]
+  ndivisionsy: [5, 5, 0]
+  xtitle: "Single p.e. charge [pC]"
+  ytitle: "Single p.e. charge [pC]"
+  gridx: True
+  gridy: True
+  legendtitle: "#scale[1.25]{{Bar left channel {ch}}}"
+
+
 g1_spe_L_avg:
   entries:
     spe_L:
@@ -284,6 +318,38 @@ g1_spe_R:
   gridx: True
   gridy: True
   legendtitle: "#scale[1.25]{Bar right}"
+
+g1_spe_R_ch{ch:02d}:
+  repeat: "ch:0-15"
+  entries:
+    spe_R:
+      plotx: "{{a_xx}}[{ch}]"
+      ploty: "get_gry({{yy}})[{ch}]"
+      defx:
+        a_xx: "(get_gry({{xx2}})[::-1] if ('{{loc}}' == 'CIT') else get_gry({{xx1}}))"
+      readx:
+        xx1: "g_spe_R_vs_bar"
+        xx2: "g_spe_L_vs_bar"
+      ready:
+        yy: "g_spe_R_vs_bar"
+      label: "All SMs"
+      color: 2
+      marker: 4
+      size: 0
+      drawopt: "P"
+      fit: 
+        pol0: "[0]+([1]*x)"
+  xmin: null
+  xmax: null
+  ymin: null
+  ymax: null
+  ndivisionsx: [5, 5, 0]
+  ndivisionsy: [5, 5, 0]
+  xtitle: "Single p.e. charge [pC]"
+  ytitle: "Single p.e. charge [pC]"
+  gridx: True
+  gridy: True
+  legendtitle: "#scale[1.25]{{Bar right channel {ch}}}"
 
 g1_spe_R_avg:
   entries:
@@ -565,3 +631,73 @@ g1_peak-res_bar:
   gridx: True
   gridy: True
   legendtitle: "#scale[1.25]{Bar average}"
+
+
+g1_peak-res-abs_bar:
+  entries:
+    res_bar:
+      plotx: "{xx}"
+      ploty: "{yy}"
+      defx:
+        xx: "get_gry({xx1}) * get_gry({xx2})"
+      defy:
+        yy: "get_gry({yy1}) * get_gry({yy2})"
+      readx:
+        xx1: "g_avg_lyso_res_vs_bar"
+        xx2: "g_avg_lyso_pc_per_kev_vs_bar"
+      ready:
+        yy1: "g_avg_lyso_res_vs_bar"
+        yy2: "g_avg_lyso_pc_per_kev_vs_bar"
+      label: "All SMs"
+      color: 2
+      marker: 4
+      size: 0
+      drawopt: "P"
+      fit: 
+        pol0: "[0]+([1]*x)"
+  xmin: null
+  xmax: null
+  ymin: null
+  ymax: null
+  ndivisionsx: [5, 5, 0]
+  ndivisionsy: [5, 5, 0]
+  xtitle: "Peak energy resolution [pC]"
+  ytitle: "Peak energy resolution [pC]"
+  gridx: True
+  gridy: True
+  legendtitle: "#scale[1.25]{Bar average}"
+
+
+#g1_src-charge_by_lo_bar:
+#  entries:
+#    res_bar:
+#      plotx: "{xx}"
+#      ploty: "{yy}"
+#      defx:
+#        xx: "get_gry({xx1}) * 1e3 / get_gry({xx2})"
+#      defy:
+#        yy: "get_gry({yy1}) * 1e3 / get_gry({yy2})"
+#      readx:
+#        xx1: "g_avg_lyso_pc_per_kev_vs_bar"
+#        xx2: "g_avg_light_yield_vs_bar"
+#      ready:
+#        yy1: "g_avg_lyso_pc_per_kev_vs_bar"
+#        yy2: "g_avg_light_yield_vs_bar"
+#      label: "All SMs"
+#      color: 2
+#      marker: 4
+#      size: 0
+#      drawopt: "P"
+#      fit: 
+#        pol0: "[0]+([1]*x)"
+#  xmin: null
+#  xmax: null
+#  ymin: null
+#  ymax: null
+#  ndivisionsx: [5, 5, 0]
+#  ndivisionsy: [5, 5, 0]
+#  xtitle: "Q_{src} / LO"
+#  ytitle: "Q_{src} / LO"
+#  gridx: True
+#  gridy: True
+#  legendtitle: "#scale[1.25]{Bar average}"

@@ -73,6 +73,8 @@
             "any": "cpp",
             "variant": "cpp",
             "*.bak": "cpp"
-        }
+        },
+        "editor.trimAutoWhitespace": false,
+        "editor.autoIndent": "full"
     }
 }

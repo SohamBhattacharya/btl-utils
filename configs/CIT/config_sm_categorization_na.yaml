@@ -32,6 +32,7 @@ metrics:
   spe_low_nch: "numpy.count_nonzero(get_gry({spe_ch}) < {spe_ch_min})"
   
   lo_asymm_avg_high: "bool(numpy.mean(get_gry({lo_asymm_bar})) > {lo_asymm_avg_max})"
+  lo_asymm_avg: "float(numpy.mean(get_gry({lo_asymm_bar})))"
   
   bad_nbar_lo: >-
     numpy.count_nonzero(
@@ -76,6 +77,8 @@ values:
   lo_ch_min: "(0.80*3350)"
   lo_asymm_bar_max: 0.2
   lo_asymm_avg_max: 0.08
+  #lo_asymm_avg_max: 0.10
   res_bar_max: 0.06
-  spe_ch_max: "(1.2*3.5)"
+  #spe_ch_max: "(1.2*3.5)"
+  spe_ch_max: "(1.3*3.5)"
   spe_ch_min: "(0.8*3.5)"

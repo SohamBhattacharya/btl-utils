@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import ast
 import copy
 import itertools
 import os
@@ -130,6 +131,35 @@ def main() :
     with open(args.plotcfg, "r") as fopen :
         
         d_plotcfgs = yaml.load(fopen.read())
+    
+    d_plotcfgs_extra = {}
+    l_to_delete = []
+    
+    for plotname, plotcfg in d_plotcfgs.items() :
+        if "repeat" not in plotcfg:
+            continue
+        
+        repeat_str = plotcfg["repeat"]
+        repeat_key, repeat_ranges = repeat_str.split(":")
+        repeat_ranges = repeat_ranges.split(",")
+        repeat_list = []
+        for repeat_range_str in repeat_ranges:
+            repeat_range = repeat_range_str.split("-")
+            start, end = map(int, repeat_range) if len(repeat_range) == 2 else (int(repeat_range[0]), int(repeat_range[0]))
+            repeat_list.extend(range(start, end + 1))
+        
+        plotcfg_str = utils.dict_to_yaml_string(plotcfg)
+        for repeat_val in repeat_list:
+            d_format = {repeat_key: repeat_val}
+            plotname_repeat = plotname.format(**d_format)
+            d_plotcfgs_extra[plotname_repeat] = yaml.load(plotcfg_str.format(**d_format))
+        
+        l_to_delete.append(plotname)
+    
+    d_plotcfgs.update(d_plotcfgs_extra)
+    
+    for plotname in l_to_delete:
+        del d_plotcfgs[plotname]
     
     #l_loc_pairs = list(itertools.combinations(l_locations, 2))
     l_loc_pairs = list(itertools.permutations(l_locations, 2))

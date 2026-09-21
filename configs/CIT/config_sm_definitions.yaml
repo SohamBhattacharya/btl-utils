@@ -1,16 +1,31 @@
 # N.B. CIT L/R is MIB R/L
 
-sm_spe_L_corr_MIB_p0: 1.6
-sm_spe_L_corr_MIB_p1: 0.66
+## SPE charge: correct using BAC-MIB fit
+#sm_spe_L_corr_MIB_p0: 1.6
+#sm_spe_L_corr_MIB_p1: 0.66
+#
+#sm_spe_R_corr_MIB_p0: 3.0
+#sm_spe_R_corr_MIB_p1: 0.27
+#
+#sm_spe_bar_corr_MIB_p0: 2.5
+#sm_spe_bar_corr_MIB_p1: 0.41
 
-sm_spe_R_corr_MIB_p0: 3.0
-sm_spe_R_corr_MIB_p1: 0.27
+# SPE charge: scale to MIB ditribution mean
+sm_spe_L_corr_MIB: "(3.94/3.53)"
+sm_spe_R_corr_MIB: "(3.94/3.53)"
+sm_spe_bar_corr_MIB: "(3.94/3.53)"
 
-sm_spe_bar_corr_MIB_p0: 2.5
-sm_spe_bar_corr_MIB_p1: 0.41
+# Source charge: correct using BAC-MIB fit
+sm_src_L_corr_MIB_p0: 0.38
+sm_src_L_corr_MIB_p1: 0.87
 
+sm_src_R_corr_MIB_p0: 0.14
+sm_src_R_corr_MIB_p1: 1.0
 
+sm_src_bar_corr_MIB_p0: 0.22
+sm_src_bar_corr_MIB_p1: 0.95
 
+# LO: correct using BAC-MIB fit
 sm_lo_L_corr_MIB_p0: 0.64e3
 sm_lo_L_corr_MIB_p1: 0.75
 
@@ -19,3 +34,18 @@ sm_lo_R_corr_MIB_p1: 0.82
 
 sm_lo_bar_corr_MIB_p0: 0.48e3
 sm_lo_bar_corr_MIB_p1: 0.81
+
+# Energy resolution: scale to MIB ditribution mean
+sm_peak-res_L_corr_MIB: "(8.25/8.61)"
+sm_peak-res_R_corr_MIB: "(8.56/8.33)"
+sm_peak-res_bar_corr_MIB: "(4.59/4.47)"
+
+# Energy resolution: correct for change of setup (source, digitizer baseline, etc.) within a BAC, as needed
+sm_peak-res_L_cs_to_na-new-src: 1.16
+sm_peak-res_L_na-old-src_to_na-new-src: 0.88
+
+sm_peak-res_R_cs_to_na-new-src: 1.23
+sm_peak-res_R_na-old-src_to_na-new-src: 0.89
+
+sm_peak-res_bar_cs_to_na-new-src: 1.22
+sm_peak-res_bar_na-old-src_to_na-new-src: 0.90

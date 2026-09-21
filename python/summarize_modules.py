@@ -276,6 +276,15 @@ def main() :
     )
     
     parser.add_argument(
+        "--mixdmcats",
+        help = "List (space separated) of DM categories to mix when grouping them \n",
+        type = str,
+        nargs = "+",
+        required = False,
+        default = None
+    )
+    
+    parser.add_argument(
         "--flipru",
         help = "Will print RU DMs [0, 1, 2, 3] row at the top (default is at the bottom) \n",
         action = "store_true",
@@ -635,6 +644,7 @@ def main() :
         }
         
         module.results = d_cat_results["results"][module.barcode]
+        d_fmt.update(module.dict())
         
         if do_xml:
             d_xml_fmt = utils.create_format_dict(
@@ -1055,18 +1065,38 @@ def main() :
         
         l_used_dms = list(itertools.chain(*[_ru.dms.values() for _ru in d_produced_rus.values()]))
         
+        l_cat_groups = []
+        
+        if args.mixdmcats :
+            l_cat_groups.append([_cat for _cat in d_cat_results["categories"].keys() if _cat in args.mixdmcats])
+        
         for cat in d_cat_results["categories"].keys() :
+            if cat not in args.mixdmcats :
+                l_cat_groups.append([cat])
+        
+        #for cat in d_cat_results["categories"].keys() :
+        for l_cats in l_cat_groups :
             
-            l_dms = [{
-                "barcode": _dm,
-                "grouping": d_cat_results["results"][_dm]["grouping"],
-                "sm_cat": d_cat_results["results"][_dm]["sm_cat"]
-            } for _dm in d_cat_results["modules"][cat] if _dm not in l_used_dms and d_modules[_dm].location_id in l_location_ids]
+            #l_dms = [{
+            #    "barcode": _dm,
+            #    "grouping": d_cat_results["results"][_dm]["grouping"],
+            #    "sm_cat": d_cat_results["results"][_dm]["sm_cat"]
+            #} for _dm in d_cat_results["modules"][cat] if _dm not in l_used_dms and d_modules[_dm].location_id in l_location_ids]
+            
+            catgroup = "-".join(l_cats)
+            l_dms = []
+            
+            for cat in l_cats :
+                l_dms.extend([{
+                    "barcode": _dm,
+                    "grouping": d_cat_results["results"][_dm]["grouping"],
+                    "sm_cat": d_cat_results["results"][_dm]["sm_cat"]
+                } for _dm in d_cat_results["modules"][cat] if _dm not in l_used_dms and d_modules[_dm].location_id in l_location_ids])
             
             n_dms = len(l_dms)
             n_dms_ru = int(n_dms/12)*12
             n_dms_tray = int(n_dms/72)*72
-            logging.info(f"Finding groups in {n_dms} category {cat} DMs ...")
+            logging.info(f"Finding groups in {n_dms} category group {catgroup} DMs ...")
             
             l_dms = l_dms[0: n_dms_tray]
             # Shuffle DMs
@@ -1084,7 +1114,7 @@ def main() :
             
             for itray, l_dms_tray in enumerate(l_dm_tray_groups) :
                 
-                outfname = f"{args.outdir}/dm-groups_cat-{cat}_tray-{itray+1}.txt"
+                outfname = f"{args.outdir}/dm-groups_cat-{catgroup}_tray-{itray+1}.txt"
                 logging.info(f"Writing grouping results to: {outfname} ...")
                 
                 l_dm_ru_groups = [l_dms_tray[_i: _i+12] for _i in range(0, len(l_dms_tray), 12)]
@@ -1135,7 +1165,7 @@ def main() :
                 )
                 
                 l_lines_prefix = []
-                l_lines_prefix.append(f"Category {cat}, Tray {itray+1}")
+                l_lines_prefix.append(f"Category {catgroup}, Tray {itray+1}")
                 l_lines_prefix.append("\nTray metrics:")
                 
                 d_tray_metrics = {}

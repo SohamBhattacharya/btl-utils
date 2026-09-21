@@ -18,12 +18,13 @@
       <KIND_OF_PART>SensorModule</KIND_OF_PART>
       <BARCODE>{barcode}</BARCODE>
     </PART>
+    <CATEGORY>{category}</CATEGORY>
     <DATA>
       <CHANNEL>{channel}</CHANNEL>
       
-      <CHSPELEFT>format({a_spe_L}[{channel}], "0.4f")</CHSPELEFT>
-      <CHSPERIGHT>format({a_spe_R}[{channel}], "0.4f")</CHSPERIGHT>
-      <BARSPE>format({a_spe_bar}[{channel}], "0.4f")</BARSPE>
+      <CHSPELEFT>format({a_spe_L_corr}[{channel}], "0.4f")</CHSPELEFT>
+      <CHSPERIGHT>format({a_spe_R_corr}[{channel}], "0.4f")</CHSPERIGHT>
+      <BARSPE>format({a_spe_bar_corr}[{channel}], "0.4f")</BARSPE>
       
       <CHLOLEFT>format({a_lo_L}[{channel}], "0.4f")</CHLOLEFT>
       <CHLORIGHT>format({a_lo_R}[{channel}], "0.4f")</CHLORIGHT>

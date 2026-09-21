@@ -45,7 +45,7 @@ h1_spe_LR_bar_MIB-correction:
   type: "hist1"
   entries:
     spe_L_vs_bar:
-      plot: "{sm_spe_R_corr_MIB_p0} + ({a_spe} * {sm_spe_R_corr_MIB_p1})"
+      plot: "({sm_spe_R_corr_MIB} * {a_spe})"
       def:
         a_spe: "get_gry({spe})"
       read:
@@ -54,7 +54,7 @@ h1_spe_LR_bar_MIB-correction:
       color: 2
       fillstyle: 3001
     spe_R_vs_bar:
-      plot: "{sm_spe_L_corr_MIB_p0} + ({a_spe} * {sm_spe_L_corr_MIB_p1})"
+      plot: "({sm_spe_L_corr_MIB} * {a_spe})"
       def:
         a_spe: "get_gry({spe})"
       read:
@@ -63,7 +63,7 @@ h1_spe_LR_bar_MIB-correction:
       color: 4
       fillstyle: 3001
     spe_avg_vs_bar:
-      plot: "{sm_spe_bar_corr_MIB_p0} + ({a_spe} * {sm_spe_bar_corr_MIB_p1})"
+      plot: "({sm_spe_bar_corr_MIB} * {a_spe})"
       def:
         a_spe: "get_gry({spe})"
       read:
@@ -74,7 +74,7 @@ h1_spe_LR_bar_MIB-correction:
   xmin: 2
   xmax: 5
   nbins: 150
-  xtitle: "Single p.e. charge (corr. to MIB) [pC]"
+  xtitle: "Single p.e. charge (MIB corr.) [pC]"
   ytitle: "Entries"
   gridx: True
   gridy: False
@@ -109,6 +109,46 @@ h1_src-chg_LR_bar:
   xmax: 4
   nbins: 200
   xtitle: "Integrated charge [pC/keV]"
+  ytitle: "Entries"
+  gridx: True
+  gridy: False
+  labelmode: "stddev_by_mean"
+
+
+h1_src-chg_LR_bar_MIB-correction:
+  type: "hist1"
+  entries:
+    L_light_yield_vs_bar:
+      plot: "{sm_src_R_corr_MIB_p0} + ({a_src} * {sm_src_R_corr_MIB_p1})"
+      def:
+        a_src: "get_gry({src})"
+      read:
+        src: "g_lyso_L_pc_per_kev_vs_bar"
+      label: "Left"
+      color: 2
+      fillstyle: 3002
+    R_light_yield_vs_bar:
+      plot: "{sm_src_L_corr_MIB_p0} + ({a_src} * {sm_src_L_corr_MIB_p1})"
+      def:
+        a_src: "get_gry({src})"
+      read:
+        src: "g_lyso_R_pc_per_kev_vs_bar"
+      label: "Right"
+      color: 4
+      fillstyle: 3002
+    avg_light_yield_vs_bar:
+      plot: "{sm_src_bar_corr_MIB_p0} + ({a_src} * {sm_src_bar_corr_MIB_p1})"
+      def:
+        a_src: "get_gry({src})"
+      read:
+        src: "g_avg_lyso_pc_per_kev_vs_bar"
+      label: "Bar"
+      color: 1
+      fillstyle: 3002
+  xmin: 0
+  xmax: 4
+  nbins: 200
+  xtitle: "Integrated charge [pC/keV] (MIB corr.)"
   ytitle: "Entries"
   gridx: True
   gridy: False
@@ -276,7 +316,93 @@ h1_peak-res_LR_bar:
   xmin: 0
   xmax: 20
   nbins: 200
-  xtitle: "Peak energy resolution [%]"
+  xtitle: "Energy resolution [%]"
+  ytitle: "Entries"
+  gridx: True
+  gridy: False
+  labelmode: "stddev_by_mean"
+
+
+h1_peak-res_LR_bar_src-correction:
+  type: "hist1"
+  entries:
+    lyso_L_peak_res_vs_bar:
+      plot: "{res}*{rescorr}"
+      def:
+        res: "numpy.array({g1_res}.GetY())*100"
+        rescorr: "({sm_peak-res_L_cs_to_na-new-src} if ({run} <= 153) else ({sm_peak-res_L_na-old-src_to_na-new-src} if ({run} < 385) else 1.0))"
+      read:
+        g1_res: g_lyso_L_peak_res_vs_bar
+      label: "Left"
+      color: 2
+      fillstyle: 3002
+    lyso_R_peak_res_vs_bar:
+      plot: "{res}*{rescorr}"
+      def:
+        res: "numpy.array({g1_res}.GetY())*100"
+        rescorr: "({sm_peak-res_R_cs_to_na-new-src} if ({run} <= 153) else ({sm_peak-res_R_na-old-src_to_na-new-src} if ({run} < 385) else 1.0))"
+      read:
+        g1_res: "g_lyso_R_peak_res_vs_bar"
+      label: "Right"
+      color: 4
+      fillstyle: 3002
+    avg_lyso_res_vs_bar:
+      plot: "{res}*{rescorr}"
+      def:
+        res: "numpy.array({g1_res}.GetY())*100"
+        rescorr: "({sm_peak-res_bar_cs_to_na-new-src} if ({run} <= 153) else ({sm_peak-res_bar_na-old-src_to_na-new-src} if ({run} < 385) else 1.0))"
+      read:
+        g1_res: "g_avg_lyso_res_vs_bar"
+      label: "Bar"
+      color: 1
+      fillstyle: 3002
+  xmin: 0
+  xmax: 20
+  nbins: 200
+  xtitle: "Energy resolution (source corr.) [%]"
+  ytitle: "Entries"
+  gridx: True
+  gridy: False
+  labelmode: "stddev_by_mean"
+
+
+h1_peak-res_LR_bar_src-MIB-correction:
+  type: "hist1"
+  entries:
+    lyso_L_peak_res_vs_bar:
+      plot: "{res}*{rescorr}"
+      def:
+        res: "numpy.array({g1_res}.GetY())*100"
+        rescorr: "({sm_peak-res_R_corr_MIB} * ({sm_peak-res_L_cs_to_na-new-src} if ({run} <= 153) else ({sm_peak-res_L_na-old-src_to_na-new-src} if ({run} < 385) else 1.0)))"
+      read:
+        g1_res: g_lyso_L_peak_res_vs_bar
+      label: "Left"
+      color: 2
+      fillstyle: 3002
+    lyso_R_peak_res_vs_bar:
+      plot: "{res}*{rescorr}"
+      def:
+        res: "numpy.array({g1_res}.GetY())*100"
+        rescorr: "({sm_peak-res_L_corr_MIB} * ({sm_peak-res_R_cs_to_na-new-src} if ({run} <= 153) else ({sm_peak-res_R_na-old-src_to_na-new-src} if ({run} < 385) else 1.0)))"
+      read:
+        g1_res: "g_lyso_R_peak_res_vs_bar"
+      label: "Right"
+      color: 4
+      fillstyle: 3002
+    avg_lyso_res_vs_bar:
+      plot: "{res}*{rescorr}"
+      def:
+        res: "numpy.array({g1_res}.GetY())*100"
+        rescorr: "({sm_peak-res_bar_corr_MIB} * ({sm_peak-res_bar_cs_to_na-new-src} if ({run} <= 153) else ({sm_peak-res_bar_na-old-src_to_na-new-src} if ({run} < 385) else 1.0)))"
+      read:
+        g1_res: "g_avg_lyso_res_vs_bar"
+      label: "Bar"
+      color: 1
+      fillstyle: 3002
+  xmin: 0
+  xmax: 20
+  nbins: 200
+  xtitle: "Energy resolution (source+MIB corr.) [%]"
   ytitle: "Entries"
   gridx: True
   gridy: False
@@ -296,7 +422,30 @@ h1_peak-res-avg_bar:
   xmin: 0
   xmax: 10
   nbins: 100
-  xtitle: "Peak energy resolution [%]"
+  xtitle: "Energy resolution [%]"
+  ytitle: "Entries"
+  gridx: True
+  gridy: False
+  labelmode: "stddev_by_mean"
+
+
+h1_peak-res-avg_bar_src-correction:
+  type: "hist1"
+  entries:
+    avg_light_yield_vs_bar:
+      plot: "{res}*{rescorr}"
+      def:
+        res: "{g1_res}.GetMean(2)*100"
+        rescorr: "({sm_peak-res_bar_cs_to_na-new-src} if ({run} <= 153) else ({sm_peak-res_bar_na-old-src_to_na-new-src} if ({run} < 385) else 1.0))"
+      read:
+        g1_res: "g_avg_lyso_res_vs_bar"
+      label: "Bar avg."
+      color: 1
+      fillstyle: 3002
+  xmin: 0
+  xmax: 10
+  nbins: 100
+  xtitle: "Energy resolution (source corr.) [%]"
   ytitle: "Entries"
   gridx: True
   gridy: False
@@ -961,7 +1110,51 @@ g1_peak-res-avg_vs_barcode:
   ymax: 30
   ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 321100200]"
-  ytitle: "Peak energy resolution [%]"
+  ytitle: "Energy resolution [%]"
+  gridx: True
+  gridy: True
+
+
+g1_peak-res-min_vs_barcode:
+  type: "graph"
+  entries:
+    res_L_vs_barcode:
+      plotx: "int('{barcode}'.split('321100200')[1])"
+      ploty: "min(numpy.array({res}.GetY()))*100"
+      read:
+        res: "g_lyso_L_peak_res_vs_bar"
+      label: "Left min."
+      color: 2
+      marker: 4
+      size: 1
+      drawopt: "P"
+    res_R_vs_barcode:
+      plotx: "int('{barcode}'.split('321100200')[1])"
+      ploty: "min(numpy.array({res}.GetY()))*100"
+      read:
+        res: "g_lyso_R_peak_res_vs_bar"
+      label: "Right min."
+      color: 4
+      marker: 4
+      size: 1
+      drawopt: "P"
+    res_bar_vs_barcode:
+      plotx: "int('{barcode}'.split('321100200')[1])"
+      ploty: "min(numpy.array({res}.GetY()))*100"
+      read:
+        res: "g_avg_lyso_res_vs_bar"
+      label: "Bar min."
+      color: 1
+      marker: 4
+      size: 1
+      drawopt: "P"
+  xmin: null
+  xmax: null
+  ymin: 2
+  ymax: 30
+  ndivisionsx: [5, 5, 0]
+  xtitle: "SM barcode [prefix 321100200]"
+  ytitle: "Energy resolution [%]"
   gridx: True
   gridy: True
 
@@ -1005,7 +1198,7 @@ g1_peak-res-max_vs_barcode:
   ymax: 30
   ndivisionsx: [5, 5, 0]
   xtitle: "SM barcode [prefix 321100200]"
-  ytitle: "Peak energy resolution [%]"
+  ytitle: "Energy resolution [%]"
   gridx: True
   gridy: True
 
@@ -1028,7 +1221,30 @@ g1_peak-res-avg_vs_lyso:
   ymin: 0
   ymax: 10
   xtitle: "LYSO barcode [prefix 321100001]"
-  ytitle: "Peak energy resolution [%]"
+  ytitle: "Energy resolution [%]"
+  gridx: True
+  gridy: True
+
+
+g1_peak-res-avg_vs_run:
+  type: "graph"
+  entries:
+    res_bar_vs_lyso:
+      plotx: "int('{run}')"
+      ploty: "{res}.GetMean(2)*100"
+      read:
+        res: "g_avg_lyso_res_vs_bar"
+      label: "Bar avg."
+      color: 1
+      marker: 4
+      size: 1
+      drawopt: "P"
+  xmin: null
+  xmax: null
+  ymin: 0
+  ymax: 10
+  xtitle: "Run number"
+  ytitle: "Energy resolution [%]"
   gridx: True
   gridy: True
 
@@ -1051,7 +1267,7 @@ g1_peak-res-max_vs_lyso:
   ymin: 0
   ymax: 10
   xtitle: "LYSO barcode [prefix 321100001]"
-  ytitle: "Peak energy resolution [%]"
+  ytitle: "Energy resolution [%]"
   gridx: True
   gridy: True
 

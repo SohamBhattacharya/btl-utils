@@ -18,6 +18,9 @@ PLOT_NAMES=(
     g1_spe_R
     g1_spe_bar
     
+    $(for ch in {0..15}; do printf "g1_spe_L_ch%02d " ${ch}; done)
+    $(for ch in {0..15}; do printf "g1_spe_R_ch%02d " ${ch}; done)
+    
     g1_lo_L
     g1_lo_R
     g1_lo_bar
