@@ -26,13 +26,13 @@
       <CHSPERIGHT>format({a_spe_R_corr}[{channel}], "0.4f")</CHSPERIGHT>
       <BARSPE>format({a_spe_bar_corr}[{channel}], "0.4f")</BARSPE>
       
-      <CHLOLEFT>format({a_lo_L}[{channel}], "0.4f")</CHLOLEFT>
-      <CHLORIGHT>format({a_lo_R}[{channel}], "0.4f")</CHLORIGHT>
-      <BARLO>format({a_lo_bar}[{channel}], "0.4f")</BARLO>
+      <CHLOLEFT>format({a_lo_L_corr}[{channel}], "0.4f")</CHLOLEFT>
+      <CHLORIGHT>format({a_lo_R_corr}[{channel}], "0.4f")</CHLORIGHT>
+      <BARLO>format({a_lo_bar_corr}[{channel}], "0.4f")</BARLO>
       
-      <CHWIDTHLEFT>format({a_enres_L}[{channel}], "0.4f")</CHWIDTHLEFT>
-      <CHWIDTHRIGHT>format({a_enres_R}[{channel}], "0.4f")</CHWIDTHRIGHT>
-      <BARWIDTH>format({a_enres_bar}[{channel}], "0.4f")</BARWIDTH>
+      <CHWIDTHLEFT>format({a_enres_L_corr}[{channel}], "0.4f")</CHWIDTHLEFT>
+      <CHWIDTHRIGHT>format({a_enres_R_corr}[{channel}], "0.4f")</CHWIDTHRIGHT>
+      <BARWIDTH>format({a_enres_bar_corr}[{channel}], "0.4f")</BARWIDTH>
       
       <TEMP>template_TEMP</TEMP>
     </DATA>

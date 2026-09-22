@@ -1,32 +1,39 @@
-
 def:
-  a_spe_L: "get_gry({spe_L})"
-  a_spe_R: "get_gry({spe_R})"
+  a_spe_L: "get_gry({spe_R})"
+  a_spe_R: "get_gry({spe_L})"
   a_spe_bar: "get_gry({spe_bar})"
   
-  a_src_L: "get_gry({src_L})"
-  a_src_R: "get_gry({src_R})"
+  a_src_L: "get_gry({src_R})"
+  a_src_R: "get_gry({src_L})"
   a_src_bar: "get_gry({src_bar})"
   
-  a_lo_L: "get_gry({lo_L})"
-  a_lo_R: "get_gry({lo_R})"
+  a_lo_L: "get_gry({lo_R})"
+  a_lo_R: "get_gry({lo_L})"
   a_lo_bar: "get_gry({lo_bar})"
   
-  a_enres_L: "get_gry({enres_L})"
-  a_enres_R: "get_gry({enres_R})"
+  a_enres_L: "get_gry({enres_R})"
+  a_enres_R: "get_gry({enres_L})"
   a_enres_bar: "get_gry({enres_bar})"
   
-  a_spe_L_corr: "{sm_spe_L_corr_MIB} * {a_spe_L}"
-  a_spe_R_corr: "{sm_spe_R_corr_MIB} * {a_spe_R}"
-  a_spe_bar_corr: "{sm_spe_bar_corr_MIB} * {a_spe_bar}"
+  a_spe_L_corr: "({sm_spe_L_corr_MIB} * {a_spe_L})"
+  a_spe_R_corr: "({sm_spe_R_corr_MIB} * {a_spe_R})"
+  a_spe_bar_corr: "({sm_spe_bar_corr_MIB} * {a_spe_bar})"
   
-  a_lo_L_corr: "({sm_lo_L_corr_MIB_p0} * {a_lo_L}) + {sm_lo_L_corr_MIB_p1}"
-  a_lo_R_corr: "({sm_lo_R_corr_MIB_p0} * {a_lo_R}) + {sm_lo_R_corr_MIB_p1}"
-  a_lo_bar_corr: "({sm_lo_bar_corr_MIB_p0} * {a_lo_bar}) + {sm_lo_bar_corr_MIB_p1}"
+  a_lo_L_corr: "({sm_lo_L_corr_MIB_p0} + ({a_lo_L} * {sm_lo_L_corr_MIB_p1}))"
+  a_lo_R_corr: "({sm_lo_R_corr_MIB_p0} + ({a_lo_R} * {sm_lo_R_corr_MIB_p1}))"
+  a_lo_bar_corr: "({sm_lo_bar_corr_MIB_p0} + ({a_lo_bar} * {sm_lo_bar_corr_MIB_p1}))"
   
-  a_src_L_corr: "({sm_src_L_corr_MIB_p0} * {a_src_L}) + {sm_src_L_corr_MIB_p1}"
-  a_src_R_corr: "({sm_src_R_corr_MIB_p0} * {a_src_R}) + {sm_src_R_corr_MIB_p1}"
-  a_src_bar_corr: "({sm_src_bar_corr_MIB_p0} * {a_src_bar}) + {sm_src_bar_corr_MIB_p1}"
+  a_src_L_corr: "({sm_src_L_corr_MIB_p0} + ({a_src_L} * {sm_src_L_corr_MIB_p1}))"
+  a_src_R_corr: "({sm_src_R_corr_MIB_p0} + ({a_src_R} * {sm_src_R_corr_MIB_p1}))"
+  a_src_bar_corr: "({sm_src_bar_corr_MIB_p0} + ({a_src_bar} * {sm_src_bar_corr_MIB_p1}))"
+  
+  enres_L_corr: "({sm_peak-res_L_corr_MIB} * ({sm_peak-res_R_cs_to_na-new-src} if ({run} <= 153) else ({sm_peak-res_R_na-old-src_to_na-new-src} if ({run} < 385) else 1.0)))"
+  enres_R_corr: "({sm_peak-res_R_corr_MIB} * ({sm_peak-res_L_cs_to_na-new-src} if ({run} <= 153) else ({sm_peak-res_L_na-old-src_to_na-new-src} if ({run} < 385) else 1.0)))"
+  enres_bar_corr: "({sm_peak-res_bar_corr_MIB} * ({sm_peak-res_bar_cs_to_na-new-src} if ({run} <= 153) else ({sm_peak-res_bar_na-old-src_to_na-new-src} if ({run} < 385) else 1.0)))"
+  
+  a_enres_L_corr: "({enres_L_corr} * {a_enres_L})"
+  a_enres_R_corr: "({enres_R_corr} * {a_enres_R})"
+  a_enres_bar_corr: "({enres_bar_corr} * {a_enres_bar})"
 
 
 read:
