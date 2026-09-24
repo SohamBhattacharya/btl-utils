@@ -26,6 +26,10 @@
       <CHSPERIGHT>format({a_spe_R_corr}[{channel}], "0.4f")</CHSPERIGHT>
       <BARSPE>format({a_spe_bar_corr}[{channel}], "0.4f")</BARSPE>
       
+      <CHSRCLEFT>format({a_src_L_corr}[{channel}], "0.4f")</CHSRCLEFT>
+      <CHSRCRIGHT>format({a_src_R_corr}[{channel}], "0.4f")</CHSRCRIGHT>
+      <BARSRC>format({a_src_bar_corr}[{channel}], "0.4f")</BARSRC>
+      
       <CHLOLEFT>format({a_lo_L_corr}[{channel}], "0.4f")</CHLOLEFT>
       <CHLORIGHT>format({a_lo_R_corr}[{channel}], "0.4f")</CHLORIGHT>
       <BARLO>format({a_lo_bar_corr}[{channel}], "0.4f")</BARLO>
