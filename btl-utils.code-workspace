@@ -75,6 +75,11 @@
             "*.bak": "cpp"
         },
         "editor.trimAutoWhitespace": false,
-        "editor.autoIndent": "full"
+        "editor.autoIndent": "full",
+        "[python]": {
+            "editor.trimAutoWhitespace": false,
+            "editor.formatOnType": false,
+            "editor.autoIndent": "full"
+        }
     }
 }

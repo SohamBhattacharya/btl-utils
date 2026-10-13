@@ -31,41 +31,118 @@ parser.add_argument('-l', '--location', type=str, required=True, help="location 
 args = parser.parse_args()
 
 # Get list of PCCi 1.2 V
-#query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'PCCIv1.2\' and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
-query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'PCCIv1.2\' and s.PART_PARENT_ID is NULL and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
-output = subprocess.run(['rhapi.py', 
-                         '-u', 'http://localhost:8113',
-                         query,
-                         '-a'],
-                        stdout=subprocess.PIPE, env = myenv)
-PCC12s = output.stdout.decode('utf-8').split()
-PCC12s.pop(0)
+##query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'PCCIv1.2\' and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
+#query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'PCCIv1.2\' and s.PART_PARENT_ID is NULL and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
+#output = subprocess.run(['rhapi.py', 
+#                         '-u', 'http://localhost:8113',
+#                         query,
+#                         '-a'],
+#                        stdout=subprocess.PIPE, env = myenv)
+#PCC12s = output.stdout.decode('utf-8').split()
+#PCC12s.pop(0)
+
+PCC12s = [
+    "32110012310107",
+    "32110012310147",
+    "32110012310230",
+    "32110012310435",
+    "32110012310546",
+    "32110012310263",
+
+    # UVA
+    #"32110012310445",
+    #"32110012310261",
+    #"32110012310434",
+    #"32110012310137",
+    #"32110012310152",
+    #"32110012310283",
+    #"32110012310284",
+    #"32110012310079",
+    #"32110012310221",
+    #"32110012310364",
+    #"32110012310246",
+    #"32110012310343",
+]
+
 print('Found %d PCCIv1.2'%len(PCC12s))
 #print(PCC12s)
 
 # Get list of PCCi 2.5 V
-#query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'PCCIv2.5\' and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
-query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'PCCIv2.5\' and s.PART_PARENT_ID is NULL and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
-output = subprocess.run(['rhapi.py', 
-                         '-u', 'http://localhost:8113',
-                         query,
-                         '-a'],
-                        stdout=subprocess.PIPE, env = myenv)
-PCC25s = output.stdout.decode('utf-8').split()
-PCC25s.pop(0)
+##query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'PCCIv2.5\' and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
+#query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'PCCIv2.5\' and s.PART_PARENT_ID is NULL and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
+#output = subprocess.run(['rhapi.py', 
+#                         '-u', 'http://localhost:8113',
+#                         query,
+#                         '-a'],
+#                        stdout=subprocess.PIPE, env = myenv)
+#PCC25s = output.stdout.decode('utf-8').split()
+#PCC25s.pop(0)
+
+PCC25s = [
+    "32110025310124",
+    "32110025310173",
+    "32110025310393",
+    "32110025310274",
+    "32110025310094",
+    "32110025310414",
+    "32110025310151",
+    
+    # UVA
+    #"32110025310384",
+    #"32110025310419",
+    #"32110025310137",
+    #"32110025310357",
+    #"32110025310242",
+    #"32110025310213",
+    #"32110025310364",
+    #"32110025310164",
+    #"32110025310150",
+    #"32110025310264",
+    #"32110025310251",
+    #"32110025310396",
+]
+
 print('Found %d PCCIv2.5'%len(PCC25s))
 #print(PCC25s)
 
 # Get list of CC
-query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'CC\' and s.PART_PARENT_ID is NULL and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
-#query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'CC\' and ( s.PART_PARENT_ID is NULL or s.PART_PARENT_ID = 1000 ) and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
-output = subprocess.run(['rhapi.py', 
-                         '-u', 'http://localhost:8113',
-                         query,
-                         '-a'],
-                        stdout=subprocess.PIPE, env = myenv)
-CCs = output.stdout.decode('utf-8').split()
-CCs.pop(0)
+#query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'CC\' and s.PART_PARENT_ID is NULL and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
+##query = 'select s.BARCODE from mtd_cmsr.parts s where s.KIND_OF_PART = \'CC\' and ( s.PART_PARENT_ID is NULL or s.PART_PARENT_ID = 1000 ) and s.LOCATION_ID = %d'%(LOCATION_IDs[args.location])
+#output = subprocess.run(['rhapi.py', 
+#                         '-u', 'http://localhost:8113',
+#                         query,
+#                         '-a'],
+#                        stdout=subprocess.PIPE, env = myenv)
+#CCs = output.stdout.decode('utf-8').split()
+#CCs.pop(0)
+
+CCs = [
+    #"32110052300319",
+    #"32110052300291",
+    #"32110052300288",
+    #"32110052300339",
+    #"32110052300499",
+    #"32110052300511",
+    #"32110052300383",
+    
+    "32110052300319",
+    "32110052300291",
+    "32110052300288",
+    "32110052300339",
+    "32110052300499",
+    "32110052300511",
+    "32110052300383",
+    
+    
+    # UVA
+    #"32110052300119",
+    #"32110052300225",
+    #"32110052300308",
+    
+    # CERN
+    #"32110052300121",
+    #"32110052300297",
+]
 
 print('Found %d CC'%len(CCs))
 CCs.sort()

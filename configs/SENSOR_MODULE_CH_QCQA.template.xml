@@ -7,9 +7,9 @@
     </TYPE>
     <RUN>
       <RUN_NAME>{run}</RUN_NAME>
-      <RUN_TYPE>template_run_type</RUN_TYPE>
-      <RUN_BEGIN_TIMESTAMP>template_run_begin</RUN_BEGIN_TIMESTAMP>
-      <RUN_END_TIMESTAMP>template_run_end</RUN_END_TIMESTAMP>
+      <RUN_TYPE>{run_type}</RUN_TYPE>
+      <RUN_BEGIN_TIMESTAMP></RUN_BEGIN_TIMESTAMP>
+      <RUN_END_TIMESTAMP></RUN_END_TIMESTAMP>
     </RUN>
   </HEADER>
   <DATA_SET>
@@ -22,23 +22,23 @@
     <DATA>
       <CHANNEL>{channel}</CHANNEL>
       
-      <CHSPELEFT>format({a_spe_L_corr}[{channel}], "0.4f")</CHSPELEFT>
-      <CHSPERIGHT>format({a_spe_R_corr}[{channel}], "0.4f")</CHSPERIGHT>
-      <BARSPE>format({a_spe_bar_corr}[{channel}], "0.4f")</BARSPE>
+      <CH_SPE_LEFT>format({a_spe_L_corr}[{channel}], "0.4f")</CH_SPE_LEFT>
+      <CH_SPE_RIGHT>format({a_spe_R_corr}[{channel}], "0.4f")</CH_SPE_RIGHT>
+      <BAR_SPE>format({a_spe_bar_corr}[{channel}], "0.4f")</BAR_SPE>
       
-      <CHSRCLEFT>format({a_src_L_corr}[{channel}], "0.4f")</CHSRCLEFT>
-      <CHSRCRIGHT>format({a_src_R_corr}[{channel}], "0.4f")</CHSRCRIGHT>
-      <BARSRC>format({a_src_bar_corr}[{channel}], "0.4f")</BARSRC>
+      <CH_SRC_LEFT>format({a_src_L_corr}[{channel}], "0.4f")</CH_SRC_LEFT>
+      <CH_SRC_RIGHT>format({a_src_R_corr}[{channel}], "0.4f")</CH_SRC_RIGHT>
+      <BAR_SRC>format({a_src_bar_corr}[{channel}], "0.4f")</BAR_SRC>
       
-      <CHLOLEFT>format({a_lo_L_corr}[{channel}], "0.4f")</CHLOLEFT>
-      <CHLORIGHT>format({a_lo_R_corr}[{channel}], "0.4f")</CHLORIGHT>
-      <BARLO>format({a_lo_bar_corr}[{channel}], "0.4f")</BARLO>
+      <CH_LO_LEFT>format({a_lo_L_corr}[{channel}], "0.4f")</CH_LO_LEFT>
+      <CH_LO_RIGHT>format({a_lo_R_corr}[{channel}], "0.4f")</CH_LO_RIGHT>
+      <BAR_LO>format({a_lo_bar_corr}[{channel}], "0.4f")</BAR_LO>
       
-      <CHWIDTHLEFT>format({a_enres_L_corr}[{channel}], "0.4f")</CHWIDTHLEFT>
-      <CHWIDTHRIGHT>format({a_enres_R_corr}[{channel}], "0.4f")</CHWIDTHRIGHT>
-      <BARWIDTH>format({a_enres_bar_corr}[{channel}], "0.4f")</BARWIDTH>
+      <CH_ERES_LEFT>format({a_enres_L_corr}[{channel}], "0.4f")</CH_ERES_LEFT>
+      <CH_ERES_RIGHT>format({a_enres_R_corr}[{channel}], "0.4f")</CH_ERES_RIGHT>
+      <BAR_ERES>format({a_enres_bar_corr}[{channel}], "0.4f")</BAR_ERES>
       
-      <TEMP>template_TEMP</TEMP>
+      <TEMP>0.0</TEMP>
     </DATA>
   </DATA_SET>
 </ROOT>

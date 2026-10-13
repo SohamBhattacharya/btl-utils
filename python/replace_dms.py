@@ -110,8 +110,9 @@ def main() :
             grouping_diff = abs(d_dm_results[dm1]["grouping"]/d_dm_results[dm2]["grouping"] - 1)
             
             match_cond = (
-                d_dm_results[dm1]["category"] == d_dm_results[dm2]["category"]
-                and d_dm_results[dm1]["nfoamlayers"] == d_dm_results[dm2]["nfoamlayers"]
+                True
+                #d_dm_results[dm1]["category"] == d_dm_results[dm2]["category"]
+                #and d_dm_results[dm1]["nfoamlayers"] == d_dm_results[dm2]["nfoamlayers"]
                 and grouping_diff < 0.1
             )
             

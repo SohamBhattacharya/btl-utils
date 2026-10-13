@@ -1455,6 +1455,20 @@ def root_plot1D(
     
     stack.Draw(stackdrawopt)
     
+    #canvas.cd(1).Modified()
+    
+    # For some stupid reason calling stack axis/histogram seg-faults the first time in vscode debug run, but succeeds on retry
+    # This does not happen
+    try_count = 0
+    while try_count <= 1:
+        try:
+            stack.GetHistogram()
+            try_count += 1
+        except:
+            if try_count > 1:
+                raise
+            pass
+    
     if timeformatx :
         
         stack.GetXaxis().SetTimeDisplay(1)
@@ -1636,7 +1650,6 @@ def root_plot1D(
     outfile_noext = os.path.splitext(outfile)[0]
     
     if (len(outdir)) :
-    
         os.system(f"mkdir -p {outdir}")
     
     canvas.SaveAs(f"{outfile_noext}.pdf")
