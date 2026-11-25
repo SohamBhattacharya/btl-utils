@@ -668,8 +668,8 @@ def main() -> None:
     version_problems = len(conflict_barcodes) + len(lower_barcodes)
     print(f"Version problems with {version_problems}/{total_modules} modules (no upload attempted):")
     print(f"  {len(conflict_barcodes)}/{version_problems} conflicts, {len(lower_barcodes)}/{version_problems} invalid versions")
-    print(f"  Conflicts written to: {conflict_file}")
-    print(f"  Invalid versions written to: {lower_version_file}")
+    print(f"  Modules with version conflicts written to: {conflict_file}")
+    print(f"  Modules with invalid versions written to: {lower_version_file}")
 
 
 if __name__ == "__main__":
