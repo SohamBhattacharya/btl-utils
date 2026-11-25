@@ -80,6 +80,12 @@
             "editor.trimAutoWhitespace": false,
             "editor.formatOnType": false,
             "editor.autoIndent": "full"
+        },
+        "chat.tools.terminal.autoApprove": {
+            "/^python3 -m py_compile /media/soham/D/Programs/Caltech/MTD/BTL/btl-production/btl-utils/python/upload_db\\.py$/": {
+                "approve": true,
+                "matchCommandLine": true
+            }
         }
     }
 }

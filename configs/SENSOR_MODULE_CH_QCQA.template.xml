@@ -8,17 +8,22 @@
     <RUN>
       <RUN_NAME>{run}</RUN_NAME>
       <RUN_TYPE>{run_type}</RUN_TYPE>
-      <RUN_BEGIN_TIMESTAMP></RUN_BEGIN_TIMESTAMP>
-      <RUN_END_TIMESTAMP></RUN_END_TIMESTAMP>
+      <RUN_BEGIN_TIMESTAMP>2026-01-01 00:00:00</RUN_BEGIN_TIMESTAMP>
+      <RUN_END_TIMESTAMP>2026-01-01 00:00:00</RUN_END_TIMESTAMP>
     </RUN>
   </HEADER>
   <DATA_SET>
-    <VERSION>1</VERSION>
+    <VERSION>str({version}).strip()</VERSION>
     <PART>
       <KIND_OF_PART>SensorModule</KIND_OF_PART>
       <BARCODE>{barcode}</BARCODE>
     </PART>
-    <CATEGORY>{category}</CATEGORY>
+    <PREDEFINED_ATTRIBUTES>
+      <ATTRIBUTE>
+        <NAME>CATEGORY</NAME>
+        <VALUE>{category}</VALUE>
+      </ATTRIBUTE>
+    </PREDEFINED_ATTRIBUTES>
     <DATA>
       <CHANNEL>{channel}</CHANNEL>
       

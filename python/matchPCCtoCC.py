@@ -42,27 +42,28 @@ args = parser.parse_args()
 #PCC12s.pop(0)
 
 PCC12s = [
-    "32110012310107",
-    "32110012310147",
-    "32110012310230",
-    "32110012310435",
-    "32110012310546",
-    "32110012310263",
+    "PCC12V3-0147",
+    "PCC12V3-0230",
+    "PCC12V3-0107",
+    "PCC12V3-0546",
+    "PCC12V3-0435",
 
     # UVA
-    #"32110012310445",
-    #"32110012310261",
-    #"32110012310434",
-    #"32110012310137",
-    #"32110012310152",
-    #"32110012310283",
-    #"32110012310284",
-    #"32110012310079",
-    #"32110012310221",
-    #"32110012310364",
-    #"32110012310246",
-    #"32110012310343",
+    "PCC12V3-0343",
+    "PCC12V3-0137",
+    "PCC12V3-0283",
+    "PCC12V3-0246",
+    "PCC12V3-0221",
+    "PCC12V3-0364",
+    "PCC12V3-0079",
+    "PCC12V3-0261",
+    "PCC12V3-0445",
+    "PCC12V3-0152",
+    "PCC12V3-0434",
+    "PCC12V3-0284",
 ]
+
+PCC12s = [_s.replace("PCC12V3-", "3211001231") for _s in PCC12s]
 
 print('Found %d PCCIv1.2'%len(PCC12s))
 #print(PCC12s)
@@ -79,28 +80,28 @@ print('Found %d PCCIv1.2'%len(PCC12s))
 #PCC25s.pop(0)
 
 PCC25s = [
-    "32110025310124",
-    "32110025310173",
-    "32110025310393",
-    "32110025310274",
-    "32110025310094",
-    "32110025310414",
-    "32110025310151",
+    "PCC25V3-0414",
+    "PCC25V3-0393",
+    "PCC25V3-0274",
+    "PCC25V3-0094",
+    "PCC25V3-0173",
     
     # UVA
-    #"32110025310384",
-    #"32110025310419",
-    #"32110025310137",
-    #"32110025310357",
-    #"32110025310242",
-    #"32110025310213",
-    #"32110025310364",
-    #"32110025310164",
-    #"32110025310150",
-    #"32110025310264",
-    #"32110025310251",
-    #"32110025310396",
+    "PCC25V3-0396",
+    "PCC25V3-0150",
+    "PCC25V3-0213",
+    "PCC25V3-0357",
+    "PCC25V3-0251",
+    "PCC25V3-0164",
+    "PCC25V3-0364",
+    "PCC25V3-0419",
+    "PCC25V3-0137",
+    "PCC25V3-0242",
+    "PCC25V3-0384",
+    "PCC25V3-0264",
 ]
+
+PCC25s = [_s.replace("PCC25V3-", "3211002531") for _s in PCC25s]
 
 print('Found %d PCCIv2.5'%len(PCC25s))
 #print(PCC25s)
@@ -117,31 +118,16 @@ print('Found %d PCCIv2.5'%len(PCC25s))
 #CCs.pop(0)
 
 CCs = [
-    #"32110052300319",
-    #"32110052300291",
-    #"32110052300288",
-    #"32110052300339",
-    #"32110052300499",
-    #"32110052300511",
-    #"32110052300383",
-    
-    "32110052300319",
-    "32110052300291",
-    "32110052300288",
-    "32110052300339",
-    "32110052300499",
-    "32110052300511",
-    "32110052300383",
-    
+    "32110052300398",
     
     # UVA
-    #"32110052300119",
-    #"32110052300225",
-    #"32110052300308",
+    "32110052300119",
+    "32110052300225",
+    "32110052300308",
     
-    # CERN
-    #"32110052300121",
-    #"32110052300297",
+    # MIB
+    "32110052300121",
+    "32110052300297",
 ]
 
 print('Found %d CC'%len(CCs))
@@ -203,15 +189,15 @@ df_25V_filtered = df_25V_filtered[df_25V_filtered['barcode'].isin(PCC25s)]
 df_25V_filtered = df_25V_filtered.sort_values(by='vouty_-31_-29_avg', ascending=False)
 
 pairings_EOM8 = []
-for jj in range(min(len(df_12V_filtered),len(df_25V_filtered))):
-    accept = False
-    for limit in limits_EOM8:
-        if df_12V_filtered.iloc[jj]['vouty_-31_-29_avg'] > limit[0] and df_25V_filtered.iloc[jj]['vouty_-31_-29_avg'] > limit[1]:
-            accept = True
-    if accept == True:
-        pairings_EOM8.append((df_12V_filtered.iloc[jj]['barcode'],df_25V_filtered.iloc[jj]['barcode']))
-    if len(pairings_EOM8) == 9:
-        break
+#for jj in range(min(len(df_12V_filtered),len(df_25V_filtered))):
+#    accept = False
+#    for limit in limits_EOM8:
+#        if df_12V_filtered.iloc[jj]['vouty_-31_-29_avg'] > limit[0] and df_25V_filtered.iloc[jj]['vouty_-31_-29_avg'] > limit[1]:
+#            accept = True
+#    if accept == True:
+#        pairings_EOM8.append((df_12V_filtered.iloc[jj]['barcode'],df_25V_filtered.iloc[jj]['barcode']))
+#    if len(pairings_EOM8) == 9:
+#        break
 
 print('\n###############################')
 print('PCC pairings for EOM8 CC boards:')

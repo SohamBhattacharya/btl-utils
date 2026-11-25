@@ -16,6 +16,10 @@
 ## Database tunnel
 `./scripts/start_db_tunnel.sh <lxplus username>`
 
+The script reports the current tunnel status and starts it only when it is not
+already running. Use `--status` to check without starting, `--restart` to
+recreate it, or `--close` to stop it.
+
 ## Get module and part information from database
 
 * Create the script for your BAC (under `scripts/<BAC>`) if not already there. For e.g.

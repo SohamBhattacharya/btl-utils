@@ -44,6 +44,15 @@ def main() :
         required = False,
         default = [],
     )
+
+    parser.add_argument(
+        "--dmpool",
+        help = "Space delimited list of candidate DMs (or files with a barcode per line). If provided, DB lookup is skipped.\n",
+        type = str,
+        nargs = "+",
+        required = False,
+        default = [],
+    )
     
     parser.add_argument(
         "--location",
@@ -80,14 +89,32 @@ def main() :
     l_dms_to_replace = utils.natural_sort(list(set(l_dms_to_replace)))
     #print(l_dms_to_replace)
     
-    l_avalable_dms = utils.run_db_query(
-        "select s.BARCODE from mtd_cmsr.parts s"
-        f" where s.KIND_OF_PART = '{constants.DM.KIND_OF_PART}'"
-        " and ((s.PART_PARENT_ID is NULL) or (s.PART_PARENT_ID = 1000))"
-        f" and s.LOCATION_ID in {str(tuple(l_loc_ids)).replace(',)', ')')}"
-    )
+    l_avalable_dms = []
+    for dm in args.dmpool :
+        
+        if (os.path.isfile(dm)) :
+            
+            l_tmp = numpy.loadtxt(dm, dtype = str).flatten()
+            l_avalable_dms.extend(l_tmp)
+        
+        else :
+            
+            l_avalable_dms.append(dm)
     
-    l_avalable_dms = [_dm["barcode"] for _dm in l_avalable_dms]
+    if l_avalable_dms :
+        
+        l_avalable_dms = utils.natural_sort(list(set(l_avalable_dms)))
+    
+    else :
+        
+        l_avalable_dms = utils.run_db_query(
+            "select s.BARCODE from mtd_cmsr.parts s"
+            f" where s.KIND_OF_PART = '{constants.DM.KIND_OF_PART}'"
+            " and ((s.PART_PARENT_ID is NULL) or (s.PART_PARENT_ID = 1000))"
+            f" and s.LOCATION_ID in {str(tuple(l_loc_ids)).replace(',)', ')')}"
+        )
+        
+        l_avalable_dms = [_dm["barcode"] for _dm in l_avalable_dms]
     
     #print(l_avalable_dms)
     

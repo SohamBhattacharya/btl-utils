@@ -36,6 +36,8 @@ def:
   a_enres_bar_corr: "({enres_bar_corr} * {a_enres_bar})"
   
   run_type: "'Cs-137' if ({run} <= 153) else 'Na-22'"
+  
+  version: "1"
 
 
 read:
